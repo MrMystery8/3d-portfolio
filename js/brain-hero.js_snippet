@@ -1,0 +1,49 @@
+
+function createSectionLabels(group) {
+    // Map section IDs to display names
+    const sectionNames = {
+        'section-projects': 'PROJECTS',
+        'section-experience': 'EXPERIENCE',
+        'section-skills': 'SKILLS',
+        'section-awards': 'AWARDS'
+    };
+
+    const createdLabels = new Set();
+
+    group.traverse((child) => {
+        if (child.isMesh) {
+            const sectionId = brainSectionMap[child.name];
+            if (sectionId && !createdLabels.has(sectionId)) {
+                // Determine position: Center of the mesh
+                child.geometry.computeBoundingBox();
+                const center = new THREE.Vector3();
+                child.geometry.boundingBox.getCenter(center);
+                
+                // Apply mesh transformation if needed (though we are adding TO the mesh or group)
+                // If we add to the group, we need the position relative to the group.
+                // The child is already in the group, so 'center' is in local coordinates of the child?
+                // No, boundingBox is in local coordinates.
+                // So 'center' is the local center.
+                // We can add the label as a child of the mesh!
+                // This ensures it moves exactly with the mesh.
+                
+                const div = document.createElement('div');
+                div.className = 'brain-label';
+                div.textContent = sectionNames[sectionId];
+                div.dataset.section = sectionId; // For easy selection/styling
+
+                const label = new CSS2DObject(div);
+                label.position.copy(center);
+                
+                // Offset slightly outwards to float above
+                // We can use the normal or just push it out from center of brain
+                // Brain center is roughly 0,0,0
+                const dir = center.clone().normalize();
+                label.position.add(dir.multiplyScalar(0.5)); 
+
+                child.add(label);
+                createdLabels.add(sectionId);
+            }
+        }
+    });
+}

@@ -60,9 +60,10 @@ body {
 
 #hero-text {
     position: absolute;
-    left: 10%;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 40px;
+    bottom: 40px;
+    top: auto;
+    transform: none;
     z-index: 2;
     /* Text above brain */
     text-align: left;
@@ -70,7 +71,7 @@ body {
     /* Let clicks pass through to brain if overlapping */
     opacity: 1;
     transition: opacity 0.5s ease;
-    max-width: 600px;
+    max-width: 400px;
 }
 
 /* ... existing styles ... */
@@ -285,4 +286,68 @@ body.brain-mode-mini #hero-text {
 #close-settings:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
+}
+
+/* --- 3D Labels --- */
+.brain-label {
+    font-family: 'Outfit', sans-serif;
+    color: rgba(0, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    /* Let clicks pass through to the 3D model */
+    user-select: none;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+}
+
+.brain-label.active {
+    color: #fff;
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    border-color: rgba(0, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+    z-index: 100;
+}
+
+/* --- Scroll Snap --- */
+html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+/* Ensure body doesn't interfere */
+body {
+    overflow-x: hidden;
+}
+
+#hero,
+.content-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    /* Force stop at each section */
+}
+
+/* Adjust section height to ensure clean snapping */
+.content-section {
+    min-height: 100vh;
+    /* Ensure full height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Hide labels in mini mode (scrolled down) */
+body.brain-mode-mini .brain-label {
+    opacity: 0 !important;
+    transition: opacity 0.3s ease;
 }

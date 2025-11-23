@@ -48,43 +48,63 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(brainContainer);
     }
 
-    function updateBrainState() {
-        if (document.body.classList.contains('mobile-view')) return; // Skip on mobile if needed
+    // State for smooth animation
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    function updateTargetProgress() {
+        if (document.body.classList.contains('mobile-view')) return;
 
         const scrollY = window.scrollY;
         const viewportHeight = window.innerHeight;
-        const viewportWidth = window.innerWidth;
         const heroHeight = hero ? hero.offsetHeight : viewportHeight;
 
-        // Calculate progress: 0 at top, 1 at 100vh (start of second section)
-        let progress = Math.min(scrollY / Math.max(heroHeight, 1), 1);
-        progress = Math.max(progress, 0);
+        // Calculate target progress based on scroll
+        // 1.0 * heroHeight means transition completes exactly when scrolling past hero
+        targetProgress = Math.min(scrollY / Math.max(heroHeight, 1), 1);
+        targetProgress = Math.max(targetProgress, 0);
+    }
 
-        // Smooth easing for natural feel
-        const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease in-out quad
-        const t = ease(progress);
+    function animateBrain() {
+        requestAnimationFrame(animateBrain);
+
+        // Lerp currentProgress towards targetProgress
+        // Factor 0.05 gives a nice smooth inertia
+        const diff = targetProgress - currentProgress;
+
+        // Snap if close enough to save calc, but always keep loop running for responsiveness
+        if (Math.abs(diff) < 0.0005) {
+            currentProgress = targetProgress;
+        } else {
+            currentProgress += diff * 0.05;
+        }
+
+        // Use currentProgress for all calculations
+        const t = currentProgress; // Linear interpolation for the state itself, ease handled by lerp physics
+
+        // Apply easing for the visual transformation if desired, 
+        // but the lerp itself provides an ease-out feel.
+        // Let's stick to the lerp value 't' directly for the transformation factor
+        // to keep it physically responsive.
+
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
 
         // HERO STATE: Brain center should be at viewport center
         const startW = viewportWidth;
         const startH = viewportHeight;
-        // Brain is at the center of the canvas, so container top-left is at 0,0
-        // and brain center is at viewportWidth/2, viewportHeight/2
         const startBrainCenterX = viewportWidth / 2;
         const startBrainCenterY = viewportHeight / 2;
 
         // MINI STATE: Brain center should be at top-right with margin
-        const margin = 20;
-        const minSize = 80;
-        const maxSize = 150;
-        const endSize = Math.max(Math.min(maxSize, viewportWidth * 0.15), minSize);
+        const margin = 5; // Tighter corner as requested
+        const minSize = 180;
+        const maxSize = 350;
+        const endSize = Math.max(Math.min(maxSize, viewportWidth * 0.3), minSize);
 
-        // We want the brain CENTER to be at top-right corner with margin
-        // So if brain is rendered at center of canvas, and we want brain at position (x, y),
-        // then container top-left should be at (x - endSize/2, y - endSize/2)
-        const desiredBrainX = viewportWidth - margin - endSize / 2; // Right side with margin, accounting for brain being at canvas center
-        const desiredBrainY = margin + endSize / 2; // Top side with margin, accounting for brain being at canvas center
+        const desiredBrainX = viewportWidth - margin - endSize / 2;
+        const desiredBrainY = margin + endSize / 2;
 
-        // Now calculate container position to achieve desired brain center
         // Interpolate dimensions
         const currentW = startW + (endSize - startW) * t;
         const currentH = startH + (endSize - startH) * t;
@@ -93,18 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentBrainCenterX = startBrainCenterX + (desiredBrainX - startBrainCenterX) * t;
         const currentBrainCenterY = startBrainCenterY + (desiredBrainY - startBrainCenterY) * t;
 
-        // Calculate container top-left position based on desired brain center
+        // Calculate container top-left position
         const currentTop = currentBrainCenterY - currentH / 2;
         const currentLeft = currentBrainCenterX - currentW / 2;
 
-        // NEW APPROACH: Fixed Canvas + Viewport Scissor + Clip Path
-        // Instead of resizing the DOM element, we keep it full screen and use clip-path
-        // to restrict interactions, and setViewport/setScissor to restrict rendering.
-
-        // 1. Update Three.js Viewport/Scissor
+        // Update Three.js Viewport/Scissor
         updateBrainViewport(currentLeft, currentTop, currentW, currentH);
 
-        // 2. Update DOM Clip Path (inset: top right bottom left)
+        // Update DOM Clip Path
         const insetTop = currentTop;
         const insetRight = viewportWidth - (currentLeft + currentW);
         const insetBottom = viewportHeight - (currentTop + currentH);
@@ -112,38 +128,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         brainContainer.style.clipPath = `inset(${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px)`;
 
-        // Ensure container is always full screen fixed
-        brainContainer.style.width = '100vw';
-        brainContainer.style.height = '100vh';
-        brainContainer.style.top = '0';
-        brainContainer.style.left = '0';
-        brainContainer.style.position = 'fixed';
-        brainContainer.style.zIndex = '999999';
-        brainContainer.style.transform = 'translate3d(0, 0, 0)';
-
-        // Fade out hero text smoothly
+        // Fade out hero text
         if (heroText) {
-            heroText.style.opacity = Math.max(1 - (scrollY / (viewportHeight * 0.6)), 0);
+            // Fade out faster than the brain moves
+            heroText.style.opacity = Math.max(1 - (t * 2), 0);
         }
 
-        // Toggle brain behavior mode based on scroll progress
-        // At 95% progress, the hero section is nearly scrolled out of view,
-        // so we change the brain's BEHAVIOR (not appearance - that's continuous):
-        // - In HERO mode: clicking brain lobes navigates to content sections
-        // - In MINI mode: clicking anywhere on brain returns to top (scroll to 0)
-        if (progress >= 0.95) {
+        // Toggle brain behavior mode
+        // Use targetProgress for mode switching to feel responsive to scroll intent
+        if (targetProgress >= 0.95) {
             document.body.classList.add('brain-mode-mini');
         } else {
             document.body.classList.remove('brain-mode-mini');
         }
     }
 
-    // Update immediately on scroll - no throttling for smooth transitions
-    window.addEventListener('scroll', updateBrainState, { passive: true });
-    window.addEventListener('resize', updateBrainState);
+    // Listeners
+    window.addEventListener('scroll', updateTargetProgress, { passive: true });
+    window.addEventListener('resize', () => {
+        updateTargetProgress();
+        // Force update immediately on resize to prevent glitches
+        currentProgress = targetProgress;
+    });
 
-    // Initial call
-    updateBrainState();
+    // Start loop
+    updateTargetProgress();
+    animateBrain();
 
     /* 
     // Intersection Observer for Hero State - REMOVED in favor of scroll logic
