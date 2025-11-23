@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybernetic Brain Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <header id="hero">
+        <div id="brain-hero-container">
+            <!-- Three.js canvas injected here -->
+        </div>
+        <div id="hero-text">
+            <h1>NEURAL INTERFACE</h1>
+            <p class="subtitle">Interactive 3D Portfolio</p>
+            <p class="instruction">Drag to rotate • Click brain areas to navigate</p>
+        </div>
+    </header>
+
+    <!-- Mini brain overlay (initially hidden by CSS/JS state) -->
+    <button id="brain-mini" aria-label="Return to top">
+        <!-- Visuals handled by CSS or shared canvas -->
+    </button>
+
+    <main id="content">
+        <section id="section-projects" class="content-section">
+            <div class="section-content">
+                <h2>01. Featured Projects</h2>
+                <p>Building AI-driven systems, from RAG platforms to 3D games.</p>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Minhas Rupsi Platform</h3>
+                        <p>Full-stack RAG learning platform improving query response by >60%.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Local LLM Ecosystem</h3>
+                        <p>Android/Web clients for local open-source LLMs via LM Studio.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Area-51 Game</h3>
+                        <p>3D survival game with procedural terrain using Three.js.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Conversational Clone</h3>
+                        <p>Hybrid RAG system replicating conversational styles.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-experience" class="content-section">
+            <div class="section-content">
+                <h2>02. Work Experience</h2>
+                <p>Professional roles in software engineering and research.</p>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Software Engineer Intern</h3>
+                        <p>ORCA Team (Aug 2025 - Present). Refactoring loan-origination workflows.</p>
+                    </div>
+                    <div class="card">
+                        <h3>R&D Assistant</h3>
+                        <p>Developing proof-of-concept web prototypes (Nov 2024 - Present).</p>
+                    </div>
+                    <div class="card">
+                        <h3>Teaching Assistant</h3>
+                        <p>Python with AI Basics. Guided students in building Gemini chatbots.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-skills" class="content-section">
+            <div class="section-content">
+                <h2>03. Skills & Education</h2>
+                <p>Academic excellence and technical proficiency.</p>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Education</h3>
+                        <p>BSc CS (AI) at APU (CGPA 3.94). Dual degree with De Montfort UK.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Tech Stack</h3>
+                        <p>Python, JS, HTML/CSS, SQL, AI Agents, Three.js.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-awards" class="content-section">
+            <div class="section-content">
+                <h2>04. Awards & Recognition</h2>
+                <p>Achievements in competitions and certifications.</p>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Certifications</h3>
+                        <p>Hugging Face AI Agents, Google Labs Trusted Tester.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Competitions</h3>
+                        <p>Scinnova V Runner Up, Euclid Distinction, World Scholar's Cup Gold.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

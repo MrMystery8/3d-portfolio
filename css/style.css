@@ -1,0 +1,192 @@
+:root {
+    --bg-color: #050915;
+    --text-color: #e0e6ed;
+    --accent-color: #00ffff;
+    --accent-dim: rgba(0, 255, 255, 0.1);
+    --font-main: 'Outfit', sans-serif;
+    --section-padding: 100px 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Hero Section */
+#hero {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#brain-hero-container {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    /* Always float above page content */
+    pointer-events: none;
+    /* Let clicks pass through empty areas */
+    transform: translate3d(0, 0, 0);
+    /* GPU acceleration */
+    transform-origin: top left;
+    will-change: width, height, top, left, transform;
+    /* Smooth transitions handled by JS for precise control, no CSS transition to avoid conflicts */
+}
+
+#brain-hero-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    /* Re-enable events on the canvas itself */
+}
+
+#hero-text {
+    position: relative;
+    z-index: 2;
+    /* Text above brain */
+    text-align: center;
+    pointer-events: none;
+    /* Let clicks pass through to brain if overlapping */
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+/* ... existing styles ... */
+
+/* Mini Brain State */
+body.brain-mode-mini #brain-hero-container {
+    /* Size/position handled in JS; keep highest stacking for overlay */
+    z-index: 99999;
+    background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    /* Make the whole bubble clickable in mini mode */
+}
+
+body.brain-mode-mini #hero-text {
+    opacity: 0;
+}
+
+/* Content Sections */
+#content {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    /* Let hero bg show through if needed, or solid */
+    /* Add some margin top so content starts below hero fold */
+    /* Actually, we want natural scroll, so content follows hero */
+}
+
+.content-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--section-padding);
+    border-top: 1px solid var(--accent-dim);
+    background: linear-gradient(180deg, var(--bg-color) 0%, #0a1125 100%);
+    opacity: 0.3;
+    /* Dim inactive sections */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: scale(0.95);
+}
+
+.content-section.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.section-content {
+    max-width: 800px;
+    width: 100%;
+}
+
+.content-section h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-color);
+}
+
+.content-section p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border: 1px solid var(--accent-dim);
+    border-radius: 8px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+}
+
+.card h3 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1a233a;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* Mobile / Fallback */
+@media (max-width: 768px) {
+    #hero-text h1 {
+        font-size: 2.5rem;
+    }
+
+    #brain-hero-container {
+        opacity: 0.5;
+    }
+
+    /* Fade brain on mobile if heavy */
+    body.brain-mode-mini #brain-hero-container {
+        opacity: 0.6;
+    }
+}
