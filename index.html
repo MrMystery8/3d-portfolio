@@ -36,6 +36,77 @@
         <!-- Visuals handled by CSS or shared canvas -->
     </button>
 
+    <!-- Settings UI -->
+    <button id="settings-btn" aria-label="Open Settings">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+        </svg>
+    </button>
+
+    <div id="settings-panel" class="hidden">
+        <h3>Simulation Settings</h3>
+
+        <div class="setting-group">
+            <label for="node-count">Node Count: <span id="val-node-count">100</span></label>
+            <input type="range" id="node-count" min="0" max="1000" step="10" value="100">
+        </div>
+
+        <div class="setting-group">
+            <label for="conn-dist">Connection Dist: <span id="val-conn-dist">0.3</span></label>
+            <input type="range" id="conn-dist" min="0" max="2.0" step="0.1" value="0.3">
+        </div>
+
+        <div class="setting-group">
+            <label for="sig-count">Signal Count: <span id="val-sig-count">10</span></label>
+            <input type="range" id="sig-count" min="0" max="100" step="1" value="10">
+        </div>
+
+        <div class="setting-group">
+            <label for="sig-speed">Signal Speed: <span id="val-sig-speed">0.8</span></label>
+            <input type="range" id="sig-speed" min="0" max="10.0" step="0.1" value="0.8">
+        </div>
+
+        <div class="setting-group">
+            <label for="sig-size">Signal Size: <span id="val-sig-size">1.0</span></label>
+            <input type="range" id="sig-size" min="0" max="5.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="setting-group">
+            <label for="net-opacity">Network Opacity: <span id="val-net-opacity">0.1</span></label>
+            <input type="range" id="net-opacity" min="0" max="1.0" step="0.05" value="0.1">
+        </div>
+
+        <div class="setting-group">
+            <label for="sig-opacity">Signal Opacity: <span id="val-sig-opacity">1.0</span></label>
+            <input type="range" id="sig-opacity" min="0" max="1.0" step="0.05" value="1.0">
+        </div>
+
+        <div class="setting-group">
+            <label for="brain-opacity">Brain Opacity: <span id="val-brain-opacity">0.15</span></label>
+            <input type="range" id="brain-opacity" min="0" max="1.0" step="0.05" value="0.15">
+        </div>
+
+        <div class="setting-group">
+            <label for="brain-size">Brain Size: <span id="val-brain-size">1.5</span></label>
+            <input type="range" id="brain-size" min="0.5" max="3.0" step="0.1" value="1.5">
+        </div>
+
+        <div class="setting-group">
+            <label for="rot-x">Rotation Speed X: <span id="val-rot-x">0.0</span></label>
+            <input type="range" id="rot-x" min="0" max="2.0" step="0.1" value="0.0">
+        </div>
+
+        <div class="setting-group">
+            <label for="rot-y">Rotation Speed Y: <span id="val-rot-y">0.5</span></label>
+            <input type="range" id="rot-y" min="0" max="2.0" step="0.1" value="0.5">
+        </div>
+
+        <button id="close-settings">Close</button>
+    </div>
+
     <main id="content">
         <section id="section-projects" class="content-section">
             <div class="section-content">

@@ -1,4 +1,4 @@
-import { initBrain, onScrollToSection, resetToHero } from './brain-hero.js';
+import { initBrain, onScrollToSection, resetToHero, updateBrainViewport, updateSimulationParams } from './brain-hero.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check for mobile or reduced motion
@@ -64,40 +64,62 @@ document.addEventListener('DOMContentLoaded', () => {
         const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease in-out quad
         const t = ease(progress);
 
-        // Hero State (full bleed)
+        // HERO STATE: Brain center should be at viewport center
         const startW = viewportWidth;
         const startH = viewportHeight;
-        const startTop = 0;
-        const startLeft = 0;
+        // Brain is at the center of the canvas, so container top-left is at 0,0
+        // and brain center is at viewportWidth/2, viewportHeight/2
+        const startBrainCenterX = viewportWidth / 2;
+        const startBrainCenterY = viewportHeight / 2;
 
-        // Mini State - ensure it never goes off-screen
+        // MINI STATE: Brain center should be at top-right with margin
         const margin = 20;
-        const minSize = 80; // Minimum size to ensure visibility
-        const maxSize = 150; // Maximum size for mini brain
+        const minSize = 80;
+        const maxSize = 150;
         const endSize = Math.max(Math.min(maxSize, viewportWidth * 0.15), minSize);
-        const endTop = margin;
-        // Calculate right-aligned position, ensuring it stays fully on-screen
-        const endLeft = Math.max(viewportWidth - endSize - margin, margin);
 
-        // Interpolate dimensions and position
+        // We want the brain CENTER to be at top-right corner with margin
+        // So if brain is rendered at center of canvas, and we want brain at position (x, y),
+        // then container top-left should be at (x - endSize/2, y - endSize/2)
+        const desiredBrainX = viewportWidth - margin - endSize / 2; // Right side with margin, accounting for brain being at canvas center
+        const desiredBrainY = margin + endSize / 2; // Top side with margin, accounting for brain being at canvas center
+
+        // Now calculate container position to achieve desired brain center
+        // Interpolate dimensions
         const currentW = startW + (endSize - startW) * t;
         const currentH = startH + (endSize - startH) * t;
-        const currentTop = startTop + (endTop - startTop) * t;
-        const currentLeft = startLeft + (endLeft - startLeft) * t;
 
-        // Apply styles directly for smooth continuous updates
-        brainContainer.style.width = `${currentW}px`;
-        brainContainer.style.height = `${currentH}px`;
-        brainContainer.style.top = `${currentTop}px`;
-        brainContainer.style.left = `${currentLeft}px`;
+        // Interpolate brain center position
+        const currentBrainCenterX = startBrainCenterX + (desiredBrainX - startBrainCenterX) * t;
+        const currentBrainCenterY = startBrainCenterY + (desiredBrainY - startBrainCenterY) * t;
+
+        // Calculate container top-left position based on desired brain center
+        const currentTop = currentBrainCenterY - currentH / 2;
+        const currentLeft = currentBrainCenterX - currentW / 2;
+
+        // NEW APPROACH: Fixed Canvas + Viewport Scissor + Clip Path
+        // Instead of resizing the DOM element, we keep it full screen and use clip-path
+        // to restrict interactions, and setViewport/setScissor to restrict rendering.
+
+        // 1. Update Three.js Viewport/Scissor
+        updateBrainViewport(currentLeft, currentTop, currentW, currentH);
+
+        // 2. Update DOM Clip Path (inset: top right bottom left)
+        const insetTop = currentTop;
+        const insetRight = viewportWidth - (currentLeft + currentW);
+        const insetBottom = viewportHeight - (currentTop + currentH);
+        const insetLeft = currentLeft;
+
+        brainContainer.style.clipPath = `inset(${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px)`;
+
+        // Ensure container is always full screen fixed
+        brainContainer.style.width = '100vw';
+        brainContainer.style.height = '100vh';
+        brainContainer.style.top = '0';
+        brainContainer.style.left = '0';
         brainContainer.style.position = 'fixed';
-        brainContainer.style.zIndex = '99999'; // Enforce z-index to stay above all content
-        brainContainer.style.transform = 'translate3d(0, 0, 0)'; // GPU acceleration
-
-        // Dispatch resize event for Three.js renderer
-        window.dispatchEvent(new CustomEvent('brain-resize', {
-            detail: { width: currentW, height: currentH }
-        }));
+        brainContainer.style.zIndex = '999999';
+        brainContainer.style.transform = 'translate3d(0, 0, 0)';
 
         // Fade out hero text smoothly
         if (heroText) {
@@ -169,4 +191,89 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
+
+    // Settings UI Logic
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const closeSettingsBtn = document.getElementById('close-settings');
+
+    if (settingsBtn && settingsPanel && closeSettingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.remove('hidden');
+        });
+
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.add('hidden');
+        });
+
+        // Sliders
+        const inputs = {
+            nodeCount: document.getElementById('node-count'),
+            connectionDistance: document.getElementById('conn-dist'),
+            signalCount: document.getElementById('sig-count'),
+            signalSpeed: document.getElementById('sig-speed'),
+            signalSize: document.getElementById('sig-size'),
+            networkOpacity: document.getElementById('net-opacity'),
+            signalOpacity: document.getElementById('sig-opacity'),
+            brainOpacity: document.getElementById('brain-opacity'),
+            brainSize: document.getElementById('brain-size'),
+            rotationSpeedX: document.getElementById('rot-x'),
+            rotationSpeedY: document.getElementById('rot-y')
+        };
+
+        const displays = {
+            nodeCount: document.getElementById('val-node-count'),
+            connectionDistance: document.getElementById('val-conn-dist'),
+            signalCount: document.getElementById('val-sig-count'),
+            signalSpeed: document.getElementById('val-sig-speed'),
+            signalSize: document.getElementById('val-sig-size'),
+            networkOpacity: document.getElementById('val-net-opacity'),
+            signalOpacity: document.getElementById('val-sig-opacity'),
+            brainOpacity: document.getElementById('val-brain-opacity'),
+            brainSize: document.getElementById('val-brain-size'),
+            rotationSpeedX: document.getElementById('val-rot-x'),
+            rotationSpeedY: document.getElementById('val-rot-y')
+        };
+
+        // Debounce helper
+        const debounce = (func, wait) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        };
+
+        // Create debounced updaters for heavy params
+        const debouncedUpdate = debounce((key, value) => {
+            console.log(`Debounced update for ${key}: ${value}`);
+            const params = {};
+            params[key] = parseFloat(value);
+            updateSimulationParams(params);
+        }, 300); // 300ms delay
+
+        // Attach listeners
+        Object.keys(inputs).forEach(key => {
+            const input = inputs[key];
+            if (input) {
+                const isHeavy = (key !== 'signalSpeed');
+
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value;
+
+                    // Update display immediately
+                    displays[key].textContent = value;
+
+                    if (isHeavy) {
+                        debouncedUpdate(key, value);
+                    } else {
+                        // Speed updates are cheap, do immediately
+                        const params = {};
+                        params[key] = parseFloat(value);
+                        updateSimulationParams(params);
+                    }
+                });
+            }
+        });
+    }
 });

@@ -59,18 +59,14 @@ body {
 }
 
 #hero-text {
-    position: absolute;
-    left: 10%;
-    top: 50%;
-    transform: translateY(-50%);
+    position: relative;
     z-index: 2;
     /* Text above brain */
-    text-align: left;
+    text-align: center;
     pointer-events: none;
     /* Let clicks pass through to brain if overlapping */
     opacity: 1;
     transition: opacity 0.5s ease;
-    max-width: 600px;
 }
 
 /* ... existing styles ... */
@@ -196,93 +192,4 @@ body.brain-mode-mini #hero-text {
     body.brain-mode-mini #brain-hero-container {
         opacity: 0.6;
     }
-}
-
-/* Settings UI */
-#settings-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000000;
-    background: rgba(5, 9, 21, 0.8);
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#settings-btn:hover {
-    background: var(--accent-color);
-    color: var(--bg-color);
-    box-shadow: 0 0 15px var(--accent-color);
-}
-
-#settings-panel {
-    position: fixed;
-    top: 70px;
-    left: 20px;
-    width: 300px;
-    background: rgba(5, 9, 21, 0.95);
-    border: 1px solid var(--accent-color);
-    border-radius: 12px;
-    padding: 20px;
-    z-index: 1000000;
-    backdrop-filter: blur(10px);
-    color: var(--text-color);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-#settings-panel.hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
-}
-
-#settings-panel h3 {
-    color: var(--accent-color);
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-    border-bottom: 1px solid var(--accent-dim);
-    padding-bottom: 10px;
-}
-
-.setting-group {
-    margin-bottom: 15px;
-}
-
-.setting-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-}
-
-.setting-group input[type="range"] {
-    width: 100%;
-    accent-color: var(--accent-color);
-}
-
-#close-settings {
-    width: 100%;
-    padding: 8px;
-    margin-top: 10px;
-    background: transparent;
-    border: 1px solid var(--accent-dim);
-    color: var(--text-color);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-#close-settings:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
 }
