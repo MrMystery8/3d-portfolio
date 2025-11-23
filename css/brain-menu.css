@@ -1,0 +1,172 @@
+/* Brain Navigation Menu - Minimal Vertical Index (Option B) */
+
+#brain-nav-menu {
+    position: fixed;
+    left: 60px;
+    right: auto;
+    top: 55%;
+    /* Positioned visually under the top-left heading */
+    transform: translateY(-50%);
+    z-index: 1000000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: auto;
+}
+
+/* Hide menu in mini-brain mode */
+body.brain-mode-mini #brain-nav-menu {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.brain-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    /* Removed glass card background/borders */
+    background: transparent;
+    box-shadow: none;
+    border: none;
+}
+
+/* Removed decorative pseudo-elements */
+.brain-nav-list::before,
+.brain-nav-list::after {
+    display: none;
+}
+
+.brain-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* Left align */
+    gap: 20px;
+    cursor: pointer;
+    padding: 5px 0;
+    background: transparent;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.6;
+    /* Default lower opacity */
+}
+
+.brain-nav-item:hover,
+.brain-nav-item.active {
+    opacity: 1;
+    transform: translateX(10px);
+    /* Move towards the right (brain) */
+}
+
+.nav-number {
+    font-family: 'Outfit', monospace;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--accent-color);
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.brain-nav-item:hover .nav-number,
+.brain-nav-item.active .nav-number {
+    opacity: 1;
+    font-weight: 600;
+}
+
+.nav-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.brain-nav-item:hover .nav-label,
+.brain-nav-item.active .nav-label {
+    color: #fff;
+    letter-spacing: 3px;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+/* Active indicator - moved to LEFT for standard sidebar feel */
+.brain-nav-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0%;
+    background: var(--accent-color);
+    transition: height 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px var(--accent-color);
+    border-radius: 2px;
+}
+
+.brain-nav-item:hover::before,
+.brain-nav-item.active::before {
+    height: 70%;
+    /* Not full height, looks more techy */
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Remove the old right-side indicator */
+.brain-nav-item::after {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    #brain-nav-menu {
+        left: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    #brain-nav-menu {
+        display: none;
+    }
+}
+
+/* Animation for menu items on load */
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+        /* Slide from left */
+    }
+
+    to {
+        opacity: 0.6;
+        transform: translateX(0);
+    }
+}
+
+.brain-nav-item {
+    animation: fadeInSlide 0.8s ease-out backwards;
+}
+
+.brain-nav-item:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.brain-nav-item:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.brain-nav-item:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.brain-nav-item:nth-child(4) {
+    animation-delay: 0.5s;
+}

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybernetic Brain Portfolio</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/brain-menu.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -24,11 +25,47 @@
         <div id="brain-hero-container">
             <!-- Three.js canvas injected here -->
         </div>
+
+        <!-- Interaction Overlay for Connector Lines -->
+        <svg id="interaction-overlay" xmlns="http://www.w3.org/2000/svg">
+            <path id="connector-line" d="" stroke="var(--accent-color)" stroke-width="1.5" fill="none"
+                stroke-linecap="round" />
+            <circle id="connector-dot" cx="0" cy="0" r="3" fill="var(--accent-color)" />
+        </svg>
+
+        <!-- Repositioned Hero Text (Top-Left) -->
         <div id="hero-text">
-            <h1>NEURAL INTERFACE</h1>
+            <div class="brand-mark">AYAAN MINHAS</div>
+            <h1>Neural Interface</h1>
             <p class="subtitle">Interactive 3D Portfolio</p>
-            <p class="instruction">Drag to rotate • Click brain areas to navigate</p>
+            <p class="instruction">Drag to rotate · Click brain areas to navigate</p>
         </div>
+
+        <!-- Minimal Vertical Menu (Right) -->
+        <nav id="brain-nav-menu">
+            <ul class="brain-nav-list">
+                <li class="brain-nav-item" data-section="section-projects"
+                    data-brain-region="Brain_Part_01_BRAIN_TEXTURE_blinn2_0">
+                    <span class="nav-number">01</span>
+                    <span class="nav-label">PROJECTS</span>
+                </li>
+                <li class="brain-nav-item" data-section="section-experience"
+                    data-brain-region="Brain_Part_02_BRAIN_TEXTURE_blinn2_0">
+                    <span class="nav-number">02</span>
+                    <span class="nav-label">EXPERIENCE</span>
+                </li>
+                <li class="brain-nav-item" data-section="section-skills"
+                    data-brain-region="Brain_Part_03_BRAIN_TEXTURE_blinn2_0">
+                    <span class="nav-number">03</span>
+                    <span class="nav-label">SKILLS</span>
+                </li>
+                <li class="brain-nav-item" data-section="section-awards"
+                    data-brain-region="Brain_Part_04_BRAIN_TEXTURE_blinn2_0">
+                    <span class="nav-number">04</span>
+                    <span class="nav-label">AWARDS</span>
+                </li>
+            </ul>
+        </nav>
     </header>
 
     <!-- Mini brain overlay (initially hidden by CSS/JS state) -->

@@ -2,29 +2,18 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { config } from './config.js';
 
-let scene, camera, renderer, labelRenderer, controls;
-let brainGroup;
+let scene, camera, renderer, controls;
+let brainGroup, brainPivot;
 let raycaster, mouse;
 const container = document.getElementById('brain-hero-container');
 
-// Simulation Data (Mutable)
-let simulationParams = {
-    nodeCount: 100,
-    connectionDistance: 0.3,
-    signalCount: 10,
-    signalSpeed: 0.8,
-    signalSize: 1.0,
-    networkOpacity: 0.1,
-    signalOpacity: 1.0,
-    brainOpacity: 0.15,
-    brainSize: 2.2,
-    rotationSpeedX: 0.0,
-    rotationSpeedY: 0.1
-};
+// Current active section for mini-brain highlighting
+let currentActiveSection = null;
 
-let labelObjects = []; // Store CSS2DObjects for occlusion logic
+// Simulation Data (Mutable, initialized from config)
+let simulationParams = { ...config.simulation };
 
 let nodes = []; // { position: Vector3, neighbors: [] }
 let signals = []; // { currentPos: Vector3, targetNodeIdx: int, progress: float, pathStart: Vector3, pathEnd: Vector3 }
@@ -61,7 +50,7 @@ export function initBrain() {
 
     // 2. Camera
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 6);
+    camera.position.set(config.scene.cameraPosition.x, config.scene.cameraPosition.y, config.scene.cameraPosition.z);
 
     // 3. Renderer
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -71,13 +60,7 @@ export function initBrain() {
     renderer.setScissorTest(true);
     container.appendChild(renderer.domElement);
 
-    // 3b. Label Renderer
-    labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0px';
-    labelRenderer.domElement.style.pointerEvents = 'none'; // Allow clicks to pass through to WebGL
-    container.appendChild(labelRenderer.domElement);
+
 
     // 4. Lights
     const ambientLight = new THREE.HemisphereLight(0x00ffff, 0x000033, 0.5);
@@ -87,14 +70,15 @@ export function initBrain() {
     mainLight.position.set(5, 5, 5);
     scene.add(mainLight);
 
-    // 5. Controls
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.autoRotate = false; // We handle rotation manually now
-    controls.autoRotateSpeed = 0.5;
+    // 5. Controls (Manual Rotation)
+    // We removed OrbitControls to allow off-center positioning without "swinging"
+    // controls = new OrbitControls(camera, renderer.domElement);
+    // controls.enableDamping = true;
+    // controls.dampingFactor = 0.05;
+    // controls.enableZoom = false;
+    // controls.enablePan = false;
+    // controls.autoRotate = false; // We handle rotation manually now
+    // controls.autoRotateSpeed = 0.5;
 
     // 6. Load Model & Generate Network
     const loader = new GLTFLoader();
@@ -102,13 +86,26 @@ export function initBrain() {
     loader.load('assets/brain_areas.glb', (gltf) => {
         brainGroup = gltf.scene;
 
-        // Center and Scale
+        // Create a Pivot Group to handle rotation and positioning cleanly
+        // This ensures the brain always rotates around its visual center
+        brainPivot = new THREE.Group();
+        scene.add(brainPivot);
+        brainPivot.add(brainGroup);
+
+        // Center BrainGroup relative to Pivot
         const box = new THREE.Box3().setFromObject(brainGroup);
         const center = box.getCenter(new THREE.Vector3());
-        brainGroup.position.sub(center);
+        brainGroup.position.sub(center); // Visual center is now at Pivot (0,0,0)
+
         // Initial scale based on params
         const initialScale = simulationParams.brainSize;
         brainGroup.scale.set(initialScale, initialScale, initialScale);
+
+        // Position the Pivot (From Config)
+        brainPivot.position.set(config.scene.brainPivotPosition.x, config.scene.brainPivotPosition.y, config.scene.brainPivotPosition.z);
+
+        // Set initial rotation on the Pivot
+        brainPivot.rotation.y = config.scene.initialRotationY;
 
         // 6a. Setup Brain Shell (Glassy look)
         brainGroup.traverse((child) => {
@@ -126,13 +123,10 @@ export function initBrain() {
                 child.renderOrder = 1; // Render after internal structure
             }
         });
-        scene.add(brainGroup);
+        // scene.add(brainGroup); // Removed, added to pivot instead
 
         // 6b. Generate Neural Network
         generateNeuralNetwork(brainGroup);
-
-        // 6c. Create Section Labels
-        createSectionLabels(brainGroup);
 
         animate();
     }, undefined, (error) => {
@@ -144,10 +138,29 @@ export function initBrain() {
     mouse = new THREE.Vector2();
 
     // Event Listeners
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mousemove', onMouseMove, false);
+    window.addEventListener('mousedown', onMouseDown, false);
+    window.addEventListener('mouseup', onMouseUp, false);
+
+    // Clear hover when mouse leaves the window/document
+    document.addEventListener('mouseleave', () => {
+        if (hoveredObject) {
+            hoveredObject.material.opacity = simulationParams.brainOpacity;
+            hoveredObject.material.emissive = new THREE.Color(0x000000);
+            hoveredObject.material.emissiveIntensity = 0;
+
+            const event = new CustomEvent('brain-region-hover', {
+                detail: { regionName: hoveredObject.name, active: false }
+            });
+            window.dispatchEvent(event);
+
+            hoveredObject = null;
+            document.body.style.cursor = 'default';
+        }
+        isDragging = false; // Also stop dragging
+    });
+
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 function createOrbTexture() {
@@ -207,12 +220,86 @@ function generateNeuralNetwork(group) {
 
     // 1. Generate Nodes (Neurons)
     const nodePositions = [];
-    const samplesPerMesh = Math.floor(simulationParams.nodeCount / samplerMeshes.length);
+
+    // Calculate total surface area to distribute nodes evenly
+    let totalArea = 0;
+    const meshAreas = [];
+
+    // Helper variables for area calculation
+    const _p1 = new THREE.Vector3();
+    const _p2 = new THREE.Vector3();
+    const _p3 = new THREE.Vector3();
+    const _edge1 = new THREE.Vector3();
+    const _edge2 = new THREE.Vector3();
+    const _cross = new THREE.Vector3();
 
     samplerMeshes.forEach(mesh => {
+        const geometry = mesh.geometry;
+        const position = geometry.attributes.position;
+        const index = geometry.index;
+        let area = 0;
+
+        if (index) {
+            for (let i = 0; i < index.count; i += 3) {
+                _p1.fromBufferAttribute(position, index.getX(i));
+                _p2.fromBufferAttribute(position, index.getX(i + 1));
+                _p3.fromBufferAttribute(position, index.getX(i + 2));
+                _edge1.subVectors(_p2, _p1);
+                _edge2.subVectors(_p3, _p1);
+                _cross.crossVectors(_edge1, _edge2);
+                area += 0.5 * _cross.length();
+            }
+        } else {
+            for (let i = 0; i < position.count; i += 3) {
+                _p1.fromBufferAttribute(position, i);
+                _p2.fromBufferAttribute(position, i + 1);
+                _p3.fromBufferAttribute(position, i + 2);
+                _edge1.subVectors(_p2, _p1);
+                _edge2.subVectors(_p3, _p1);
+                _cross.crossVectors(_edge1, _edge2);
+                area += 0.5 * _cross.length();
+            }
+        }
+
+        // Account for scale if necessary (assuming uniform scale for now as they are parts of same GLB)
+        // area *= mesh.scale.x * mesh.scale.y; 
+
+        meshAreas.push(area);
+        totalArea += area;
+    });
+
+    const minDistance = simulationParams.minNodeDistance !== undefined ? simulationParams.minNodeDistance : 0.15; // Minimum distance between nodes to prevent clustering
+    const maxAttempts = 30;   // Max attempts to find a valid position
+
+    samplerMeshes.forEach((mesh, index) => {
         const sampler = new MeshSurfaceSampler(mesh).build();
-        for (let i = 0; i < samplesPerMesh; i++) {
-            sampler.sample(tempPosition);
+
+        // Calculate weighted count based on area
+        // Use Math.max(1, ...) to ensure at least one node if it's a tiny part, 
+        // or just let it be 0 if it's really small. Let's stick to proportional.
+        let countForMesh = Math.round(simulationParams.nodeCount * (meshAreas[index] / totalArea));
+
+        for (let i = 0; i < countForMesh; i++) {
+            let validPosition = false;
+            let attempts = 0;
+
+            // Try to find a position that isn't too close to existing nodes
+            while (!validPosition && attempts < maxAttempts) {
+                sampler.sample(tempPosition);
+                validPosition = true;
+
+                // Check distance to all previously generated nodes
+                for (const node of nodes) {
+                    if (tempPosition.distanceTo(node.position) < minDistance) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                attempts++;
+            }
+
+            // If we couldn't find a valid position after maxAttempts, 
+            // we accept the last sampled one (in tempPosition) to ensure we meet the node count.
 
             nodes.push({
                 position: tempPosition.clone(),
@@ -322,42 +409,74 @@ function spawnSignal(index) {
     };
 }
 
-function createSectionLabels(group) {
-    // Map section IDs to display names
-    const sectionNames = {
-        'section-projects': 'PROJECTS',
-        'section-experience': 'EXPERIENCE',
-        'section-skills': 'SKILLS',
-        'section-awards': 'AWARDS'
-    };
+// Update mini-brain highlighting based on active section
+export function updateActiveSectionHighlight(sectionId) {
+    if (!brainGroup) return;
+    currentActiveSection = sectionId;
 
-    const createdLabels = new Set();
-    labelObjects = []; // Reset
+    // Only apply highlighting in mini mode
+    if (!document.body.classList.contains('brain-mode-mini')) {
+        // Reset all highlights when not in mini mode
+        resetAllBrainHighlights();
+        return;
+    }
 
-    group.traverse((child) => {
-        if (child.isMesh) {
-            const sectionId = brainSectionMap[child.name];
-            if (sectionId && !createdLabels.has(sectionId)) {
-                // Determine position: Center of the mesh
-                child.geometry.computeBoundingBox();
-                const center = new THREE.Vector3();
-                child.geometry.boundingBox.getCenter(center);
+    // Clear all highlights first to ensure only one region is highlighted
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
+            child.material.opacity = simulationParams.brainOpacity;
+            child.material.emissive = new THREE.Color(0x000000);
+            child.material.emissiveIntensity = 0;
+        }
+    });
 
-                const div = document.createElement('div');
-                div.className = 'brain-label';
-                div.textContent = sectionNames[sectionId];
-                div.dataset.section = sectionId; // For easy selection/styling
+    // Now highlight only the active section
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
+            const meshSectionId = brainSectionMap[child.name];
 
-                const label = new CSS2DObject(div);
-                label.position.copy(center);
+            if (meshSectionId === sectionId) {
+                // Highlight the active section
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
+                child.material.emissive = new THREE.Color(0x00ffff);
+                child.material.emissiveIntensity = 0.3;
+            }
+        }
+    });
+}
 
-                // Offset slightly outwards to float above
-                const dir = center.clone().normalize();
-                label.position.add(dir.multiplyScalar(0.5));
+// Reset all brain region highlights to base state
+function resetAllBrainHighlights() {
+    if (!brainGroup) return;
 
-                child.add(label);
-                createdLabels.add(sectionId);
-                labelObjects.push(label);
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
+            child.material.opacity = simulationParams.brainOpacity;
+            child.material.emissive = new THREE.Color(0x000000);
+            child.material.emissiveIntensity = 0;
+        }
+    });
+}
+
+// Highlight brain region based on menu hover
+export function highlightBrainRegion(brainRegionName, highlighted) {
+    if (!brainGroup) return;
+    if (document.body.classList.contains('brain-mode-mini')) return; // Don't allow hover in mini mode
+
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child.name === brainRegionName) {
+            if (highlighted) {
+                // Smart Hover Logic
+                let hoverOpacity;
+                if (simulationParams.brainOpacity < 0.5) {
+                    hoverOpacity = Math.min(simulationParams.brainOpacity + 0.3, 1.0);
+                } else {
+                    hoverOpacity = Math.max(simulationParams.brainOpacity - 0.3, 0.1);
+                }
+                child.material.opacity = hoverOpacity;
+            } else {
+                // Reset to base state
+                child.material.opacity = simulationParams.brainOpacity;
             }
         }
     });
@@ -370,7 +489,7 @@ export function updateSimulationParams(newParams) {
     simulationParams = { ...simulationParams, ...newParams };
 
     // Re-generate network if structural params changed
-    if (newParams.nodeCount !== undefined || newParams.connectionDistance !== undefined || newParams.signalCount !== undefined) {
+    if (newParams.nodeCount !== undefined || newParams.minNodeDistance !== undefined || newParams.connectionDistance !== undefined || newParams.signalCount !== undefined) {
         if (brainGroup) {
             console.log('Rebuilding neural network...');
             generateNeuralNetwork(brainGroup);
@@ -507,14 +626,20 @@ function onWindowResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     renderer.setSize(width, height);
-    labelRenderer.setSize(width, height);
 }
 
+// Manual Rotation State
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+
 function onMouseDown(event) {
+    isDragging = true;
+    previousMousePosition = { x: event.clientX, y: event.clientY };
     mouseDownPos.set(event.clientX, event.clientY);
 }
 
 function onMouseUp(event) {
+    isDragging = false;
     const mouseUpPos = new THREE.Vector2(event.clientX, event.clientY);
     const distance = mouseDownPos.distanceTo(mouseUpPos);
     if (distance < 5) onClick(event);
@@ -558,7 +683,16 @@ function onClick(event) {
         const sectionId = brainSectionMap[object.name];
 
         if (sectionId) {
-            scrollToSection(sectionId);
+            // Dispatch event for main.js to handle UI effects (menu ping)
+            const event = new CustomEvent('brain-section-clicked', {
+                detail: { sectionId: sectionId }
+            });
+            window.dispatchEvent(event);
+
+            // Delay scroll to allow animation to complete
+            setTimeout(() => {
+                scrollToSection(sectionId);
+            }, config.interaction.scrollDelay);
         }
     }
 }
@@ -567,6 +701,24 @@ let hoveredObject = null;
 
 function onMouseMove(event) {
     if (document.body.classList.contains('brain-mode-mini')) return;
+
+    // Handle Drag Rotation
+    if (isDragging && brainPivot) {
+        const deltaMove = {
+            x: event.clientX - previousMousePosition.x,
+            y: event.clientY - previousMousePosition.y
+        };
+
+        // Rotate the pivot
+        brainPivot.rotation.y += deltaMove.x * 0.005;
+        brainPivot.rotation.x += deltaMove.y * 0.005;
+
+        previousMousePosition = { x: event.clientX, y: event.clientY };
+
+        // Don't do hover effects while dragging
+        return;
+    }
+
     if (!brainGroup) return;
 
     if (event.clientX < currentViewport.x ||
@@ -600,44 +752,86 @@ function onMouseMove(event) {
     if (intersects.length > 0) {
         const object = intersects[0].object;
         if (hoveredObject !== object) {
-            if (hoveredObject) hoveredObject.material.opacity = simulationParams.brainOpacity;
+            if (hoveredObject) {
+                hoveredObject.material.opacity = simulationParams.brainOpacity;
+                hoveredObject.material.emissive = new THREE.Color(0x000000);
+                hoveredObject.material.emissiveIntensity = 0;
+            }
             hoveredObject = object;
 
-            // Smart Hover Logic
-            let hoverOpacity;
-            if (simulationParams.brainOpacity < 0.5) {
-                hoverOpacity = Math.min(simulationParams.brainOpacity + 0.3, 1.0);
-            } else {
-                hoverOpacity = Math.max(simulationParams.brainOpacity - 0.3, 0.1);
-            }
+            // Smart Hover Logic - MATCHING setBrainRegionHighlight
+            // Use the same visual style as menu hover
+            hoveredObject.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
+            hoveredObject.material.emissive = new THREE.Color(0x00ffff);
+            hoveredObject.material.emissiveIntensity = 0.25; // Subtle glow
 
-            hoveredObject.material.opacity = hoverOpacity;
             document.body.style.cursor = 'pointer';
 
-            // Highlight Label
+            // Clear all menu highlights first, then highlight the current one
+            document.querySelectorAll('.brain-nav-item.active').forEach(el => el.classList.remove('active'));
+
             const sectionId = brainSectionMap[hoveredObject.name];
             if (sectionId) {
-                const label = document.querySelector(`.brain-label[data-section="${sectionId}"]`);
-                if (label) label.classList.add('active');
+                const menuItem = document.querySelector(`.brain-nav-item[data-section="${sectionId}"]`);
+                if (menuItem) {
+                    menuItem.classList.add('active');
+                    // Trigger connector line from main.js logic?
+                    // We need a way to call showConnector from here, OR expose a callback.
+                    // Since main.js imports brain-hero.js, we can't easily circular dependency call back.
+                    // Better to dispatch a custom event that main.js listens to.
+                    const event = new CustomEvent('brain-region-hover', {
+                        detail: { regionName: hoveredObject.name, menuItem: menuItem, active: true }
+                    });
+                    window.dispatchEvent(event);
+                }
             }
         }
     } else {
         if (hoveredObject) {
-            // Remove Highlight from Label
-            const sectionId = brainSectionMap[hoveredObject.name];
-            if (sectionId) {
-                const label = document.querySelector(`.brain-label[data-section="${sectionId}"]`);
-                if (label) label.classList.remove('active');
-            }
-
+            // Reset to base state
             hoveredObject.material.opacity = simulationParams.brainOpacity;
+            hoveredObject.material.emissive = new THREE.Color(0x000000);
+            hoveredObject.material.emissiveIntensity = 0;
+
+            // Dispatch event to hide connector
+            const event = new CustomEvent('brain-region-hover', {
+                detail: { regionName: hoveredObject.name, active: false }
+            });
+            window.dispatchEvent(event);
+
             hoveredObject = null;
             document.body.style.cursor = 'default';
         }
 
-        // EXTRA SAFETY: Ensure no labels are stuck in active state if we are not hovering anything
-        document.querySelectorAll('.brain-label.active').forEach(el => el.classList.remove('active'));
+        // Clear all menu highlights when not hovering any brain region
+        // ONLY if we are not hovering the menu itself (which is handled by CSS/JS elsewhere)
+        // Actually, for simplicity, let's clear active state if it was set by brain hover
+        // But we need to distinguish between "hovered by mouse on menu" and "hovered by mouse on brain"
+        // For now, let's just clear it. The menu hover listeners will re-apply if needed.
+        document.querySelectorAll('.brain-nav-item.active').forEach(el => el.classList.remove('active'));
     }
+}
+
+// External trigger to highlight a brain region (e.g. from menu hover)
+export function setBrainRegionHighlight(regionName, active) {
+    if (!brainGroup) return;
+    if (document.body.classList.contains('brain-mode-mini')) return;
+
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child.name === regionName) {
+            if (active) {
+                // Glow effect - REDUCED INTENSITY
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8); // Slightly lower max opacity
+                child.material.emissive = new THREE.Color(0x00ffff);
+                child.material.emissiveIntensity = 0.25; // Reduced from 0.5 for subtler effect
+            } else {
+                // Reset
+                child.material.opacity = simulationParams.brainOpacity;
+                child.material.emissive = new THREE.Color(0x000000);
+                child.material.emissiveIntensity = 0;
+            }
+        }
+    });
 }
 
 function scrollToSection(id) {
@@ -648,15 +842,54 @@ function scrollToSection(id) {
 export function resetToHero() { }
 export function onScrollToSection() { }
 
+// Get 2D screen coordinates for a brain region
+export function getBrainRegionScreenPosition(regionName) {
+    if (!brainGroup || !camera || !renderer) return null;
+
+    let targetMesh = null;
+    brainGroup.traverse((child) => {
+        if (child.isMesh && child.name === regionName) {
+            targetMesh = child;
+        }
+    });
+
+    if (!targetMesh) return null;
+
+    // Get center of the mesh in world coordinates
+    // We can use the bounding box center
+    if (!targetMesh.geometry.boundingBox) targetMesh.geometry.computeBoundingBox();
+
+    const center = new THREE.Vector3();
+    targetMesh.geometry.boundingBox.getCenter(center);
+
+    // Apply object transformations to get world position
+    targetMesh.localToWorld(center);
+
+    // Project to screen coordinates
+    center.project(camera);
+
+    // Convert to CSS coordinates
+    // Note: We need to account for the viewport offset if using setViewport/setScissor
+    // But project() gives us NDC (-1 to +1) relative to the camera's view.
+    // Since we use setViewport, the camera sees the "whole" canvas as its frustum?
+    // No, setViewport maps NDC to window coordinates.
+    // So we need to map NDC to the CURRENT VIEWPORT rect.
+
+    const x = (center.x * 0.5 + 0.5) * currentViewport.width + currentViewport.x;
+    const y = (-(center.y * 0.5) + 0.5) * currentViewport.height + currentViewport.y; // Flip Y for CSS
+
+    return { x, y };
+}
+
 function animate() {
     requestAnimationFrame(animate);
 
     const delta = 0.016; // Approx 60fps
 
-    // 1. Rotate Brain
-    if (brainGroup) {
-        brainGroup.rotation.y += simulationParams.rotationSpeedY * delta;
-        brainGroup.rotation.x += simulationParams.rotationSpeedX * delta;
+    // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
+    if (brainPivot) {
+        brainPivot.rotation.y += simulationParams.rotationSpeedY * delta;
+        brainPivot.rotation.x += simulationParams.rotationSpeedX * delta;
     }
 
     // 2. Update Signals
@@ -711,74 +944,9 @@ function animate() {
         }
     }
 
-    controls.update();
-    controls.update();
+    // controls.update();
 
-    // Occlusion Logic for Labels
-    if (brainGroup && labelObjects.length > 0) {
-        const cameraDir = new THREE.Vector3();
-        camera.getWorldDirection(cameraDir); // Vector pointing FROM camera TO target
-
-        labelObjects.forEach(label => {
-            // Get world position of the label
-            const worldPos = new THREE.Vector3();
-            label.getWorldPosition(worldPos);
-
-            // Vector from Brain Center to Label
-            // Brain center is at brainGroup.position (which is 0,0,0 in world usually, but let's be safe)
-            const brainCenter = new THREE.Vector3();
-            brainGroup.getWorldPosition(brainCenter);
-
-            const labelDir = new THREE.Vector3().subVectors(worldPos, brainCenter).normalize();
-
-            // Dot product with camera direction
-            // Camera looks at 0,0,0. 
-            // If label is on front, its normal points towards camera.
-            // Camera direction points INTO the scene.
-            // So if dot(labelDir, cameraDir) < 0, it's facing the camera.
-            // Wait, let's use the vector from Camera to Label.
-
-            // Simpler: Dot product of (Label Position - Brain Center) and (Camera Position - Brain Center)
-            // Actually, just check if the label is closer to camera than the center? No.
-
-            // Standard "Backface Culling" logic:
-            // View Vector = CameraPos - LabelPos
-            // Normal Vector = LabelPos - BrainCenter
-            // if dot(View, Normal) > 0, it's visible.
-
-            const viewVector = new THREE.Vector3().subVectors(camera.position, worldPos).normalize();
-            const normalVector = new THREE.Vector3().subVectors(worldPos, brainCenter).normalize();
-
-            const dot = viewVector.dot(normalVector);
-
-            // If dot > 0.2, it's clearly visible.
-            // If dot < 0, it's behind.
-            // Let's fade it out smoothly.
-
-            const div = label.element;
-            if (dot > 0.2) {
-                div.style.opacity = 0.5; // Default visible opacity
-                div.style.transform = `scale(1)`;
-                div.style.pointerEvents = 'auto'; // Enable hover
-            } else if (dot > -0.1) {
-                // Fade out zone
-                const t = (dot + 0.1) / 0.3; // Map -0.1..0.2 to 0..1
-                div.style.opacity = 0.5 * t;
-                div.style.transform = `scale(${0.8 + 0.2 * t})`;
-                div.style.pointerEvents = 'none'; // Disable hover when fading
-            } else {
-                div.style.opacity = 0;
-                div.style.pointerEvents = 'none';
-            }
-
-            // If active (hovered), force full opacity if it's not completely hidden
-            if (div.classList.contains('active') && dot > -0.1) {
-                div.style.opacity = 1;
-                div.style.transform = `scale(1.1)`;
-            }
-        });
-    }
+    // controls.update(); // Removed manual controls
 
     renderer.render(scene, camera);
-    labelRenderer.render(scene, camera);
 }

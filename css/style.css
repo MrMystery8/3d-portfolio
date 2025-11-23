@@ -60,18 +60,54 @@ body {
 
 #hero-text {
     position: absolute;
-    left: 40px;
-    bottom: 40px;
-    top: auto;
+    left: 60px;
+    top: 60px;
+    bottom: auto;
     transform: none;
     z-index: 2;
-    /* Text above brain */
     text-align: left;
     pointer-events: none;
-    /* Let clicks pass through to brain if overlapping */
     opacity: 1;
     transition: opacity 0.5s ease;
-    max-width: 400px;
+    max-width: 500px;
+}
+
+.brand-mark {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+#hero-text h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+#hero-text .subtitle {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 30px;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+#hero-text .instruction {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    border-left: 2px solid var(--accent-color);
+    padding-left: 15px;
+    max-width: 300px;
 }
 
 /* ... existing styles ... */
@@ -203,31 +239,33 @@ body.brain-mode-mini #hero-text {
 #settings-btn {
     position: fixed;
     top: 20px;
-    left: 20px;
+    right: 20px;
+    left: auto;
     z-index: 1000000;
-    background: rgba(5, 9, 21, 0.8);
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    padding: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 8px;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 #settings-btn:hover {
-    background: var(--accent-color);
-    color: var(--bg-color);
-    box-shadow: 0 0 15px var(--accent-color);
+    background: rgba(5, 9, 21, 0.8);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
 #settings-panel {
     position: fixed;
     top: 70px;
-    left: 20px;
+    right: 20px;
+    left: auto;
     width: 300px;
     background: rgba(5, 9, 21, 0.95);
     border: 1px solid var(--accent-color);
@@ -288,7 +326,8 @@ body.brain-mode-mini #hero-text {
     color: var(--accent-color);
 }
 
-/* --- 3D Labels --- */
+/* --- OLD 3D Labels (REMOVED - Now using vertical menu) --- */
+/*
 .brain-label {
     font-family: 'Outfit', sans-serif;
     color: rgba(0, 255, 255, 0.6);
@@ -297,7 +336,6 @@ body.brain-mode-mini #hero-text {
     text-transform: uppercase;
     letter-spacing: 1px;
     pointer-events: none;
-    /* Let clicks pass through to the 3D model */
     user-select: none;
     text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
     transition: all 0.3s ease;
@@ -318,6 +356,7 @@ body.brain-mode-mini #hero-text {
     transform: scale(1.1);
     z-index: 100;
 }
+*/
 
 /* --- Scroll Snap --- */
 html {
@@ -346,8 +385,107 @@ body {
     justify-content: center;
 }
 
-/* Hide labels in mini mode (scrolled down) */
-body.brain-mode-mini .brain-label {
-    opacity: 0 !important;
-    transition: opacity 0.3s ease;
+/* REMOVED - No longer needed with vertical menu */
+/* --- Interaction Overlay --- */
+#interaction-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999998;
+    /* Below menu, above brain container (if needed, but brain is 999999) */
+    /* Actually, brain container is 999999. We want line ON TOP of brain but BELOW menu? */
+    /* Let's put it very high, but pointer-events none makes it safe. */
+    z-index: 2000000;
+}
+
+#connector-line {
+    stroke: var(--accent-color);
+    stroke-width: 1px;
+    filter: drop-shadow(0 0 2px var(--accent-color));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#connector-dot {
+    fill: var(--accent-color);
+    filter: drop-shadow(0 0 2px var(--accent-color));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#interaction-overlay.active #connector-line,
+#interaction-overlay.active #connector-dot {
+    opacity: 0.6;
+    /* Subtle default opacity */
+}
+
+/* Pulse Animation for Line */
+@keyframes linePulse {
+    0% {
+        stroke-opacity: 0.6;
+        stroke-width: 1px;
+    }
+
+    50% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+        filter: drop-shadow(0 0 8px var(--accent-color));
+    }
+
+    100% {
+        stroke-opacity: 0.6;
+        stroke-width: 1px;
+    }
+}
+
+.pulsing-line {
+    animation: linePulse 0.4s ease-out;
+    opacity: 1 !important;
+    /* Force full opacity during pulse */
+}
+
+/* Ping Animation for Menu Items */
+@keyframes pingRing {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.8);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(0, 255, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 255, 0);
+    }
+}
+
+.ping-effect {
+    animation: pingRing 0.6s cubic-bezier(0, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure ping shows on top */
+.ping-effect::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #fff;
+    animation: fadeOut 0.6s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-50%) scale(3);
+    }
 }
