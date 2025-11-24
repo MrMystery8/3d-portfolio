@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="css/brain-menu.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script type="importmap">
         {
             "imports": {
@@ -21,6 +23,7 @@
 </head>
 
 <body>
+    <canvas id="bg-canvas"></canvas>
     <header id="hero">
         <div id="brain-hero-container">
             <!-- Three.js canvas injected here -->
@@ -37,12 +40,13 @@
         <div id="hero-text">
             <div class="brand-mark">AYAAN MINHAS</div>
             <h1>Neural Interface</h1>
-            <p class="subtitle">Interactive 3D Portfolio</p>
-            <p class="instruction">Drag to rotate · Click brain areas to navigate</p>
+            <p class="subtitle">3D Portfolio</p>
+            <p class="instruction">Drag · Click brain areas</p>
         </div>
 
-        <!-- Minimal Vertical Menu (Right) -->
+        <!-- Minimal Vertical Menu (Left) -->
         <nav id="brain-nav-menu">
+            <div class="nav-header">INTERFACE MAP</div>
             <ul class="brain-nav-list">
                 <li class="brain-nav-item" data-section="section-projects"
                     data-brain-region="Brain_Part_01_BRAIN_TEXTURE_blinn2_0">

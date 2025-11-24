@@ -458,6 +458,24 @@ function resetAllBrainHighlights() {
     });
 }
 
+// Highlight ALL brain regions (for mini-brain hover)
+function highlightAllBrainRegions(enable) {
+    if (!brainGroup) return;
+
+    if (enable) {
+        brainGroup.traverse((child) => {
+            if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
+                child.material.emissive = new THREE.Color(0x00ffff);
+                child.material.emissiveIntensity = 0.3;
+            }
+        });
+    } else {
+        // Revert to active section state
+        updateActiveSectionHighlight(currentActiveSection);
+    }
+}
+
 // Highlight brain region based on menu hover
 export function highlightBrainRegion(brainRegionName, highlighted) {
     if (!brainGroup) return;
@@ -631,6 +649,8 @@ function onWindowResize() {
 // Manual Rotation State
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
+let rotationVelocity = { x: 0, y: 0 };
+const friction = 0.95;
 
 function onMouseDown(event) {
     isDragging = true;
@@ -698,9 +718,30 @@ function onClick(event) {
 }
 
 let hoveredObject = null;
+let isHoveringMiniBrain = false;
 
 function onMouseMove(event) {
-    if (document.body.classList.contains('brain-mode-mini')) return;
+    if (document.body.classList.contains('brain-mode-mini')) {
+        // Check if mouse is over the mini brain viewport
+        if (event.clientX >= currentViewport.x &&
+            event.clientX <= currentViewport.x + currentViewport.width &&
+            event.clientY >= currentViewport.y &&
+            event.clientY <= currentViewport.y + currentViewport.height) {
+
+            if (!isHoveringMiniBrain) {
+                isHoveringMiniBrain = true;
+                document.body.style.cursor = 'pointer';
+                highlightAllBrainRegions(true);
+            }
+        } else {
+            if (isHoveringMiniBrain) {
+                isHoveringMiniBrain = false;
+                document.body.style.cursor = 'default';
+                highlightAllBrainRegions(false);
+            }
+        }
+        return;
+    }
 
     // Handle Drag Rotation
     if (isDragging && brainPivot) {
@@ -710,8 +751,15 @@ function onMouseMove(event) {
         };
 
         // Rotate the pivot
-        brainPivot.rotation.y += deltaMove.x * 0.005;
-        brainPivot.rotation.x += deltaMove.y * 0.005;
+        const rotationSpeed = 0.005;
+        brainPivot.rotation.y += deltaMove.x * rotationSpeed;
+        brainPivot.rotation.x += deltaMove.y * rotationSpeed;
+
+        // Update velocity for inertia
+        rotationVelocity = {
+            x: deltaMove.x * rotationSpeed,
+            y: deltaMove.y * rotationSpeed
+        };
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
 
@@ -890,6 +938,16 @@ function animate() {
     if (brainPivot) {
         brainPivot.rotation.y += simulationParams.rotationSpeedY * delta;
         brainPivot.rotation.x += simulationParams.rotationSpeedX * delta;
+
+        // Apply inertia when not dragging
+        if (!isDragging) {
+            brainPivot.rotation.y += rotationVelocity.x;
+            brainPivot.rotation.x += rotationVelocity.y;
+
+            // Apply friction
+            rotationVelocity.x *= friction;
+            rotationVelocity.y *= friction;
+        }
     }
 
     // 2. Update Signals

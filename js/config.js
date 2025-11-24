@@ -50,6 +50,9 @@ export const config = {
     // INTERACTION TIMING
     // ============================================================================
     interaction: {
-        scrollDelay: 600,          // Delay (ms) before scrolling starts after click
+        scrollDelay: 450,          // Delay (ms) before scrolling starts after click
+        pingAnimationDuration: 350, // Duration (ms) of the ping/ripple animation
+        scrollSensitivity: 5,     // Threshold for scroll intent detection (higher = harder to trigger)
+        fastScrollSensitivity: 40, // Threshold for fast scroll jump (triggers jump to start/end)
     }
 };

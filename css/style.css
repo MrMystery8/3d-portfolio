@@ -3,7 +3,8 @@
     --text-color: #e0e6ed;
     --accent-color: #00ffff;
     --accent-dim: rgba(0, 255, 255, 0.1);
-    --font-main: 'Outfit', sans-serif;
+    --font-main: 'Rajdhani', sans-serif;
+    --font-body: 'Outfit', sans-serif;
     --section-padding: 100px 20px;
 }
 
@@ -16,9 +17,22 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: var(--font-main);
+    font-family: var(--font-body);
     overflow-x: hidden;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; REMOVED */
+}
+
+/* Dynamic Background */
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
+    /* Subtle blend */
 }
 
 /* Hero Section */
@@ -61,53 +75,90 @@ body {
 #hero-text {
     position: absolute;
     left: 60px;
-    top: 60px;
-    bottom: auto;
+    top: 70px;
+    /* Slightly lower for better balance */
+    /* Fixed position at top */
     transform: none;
+    /* No centering */
     z-index: 2;
     text-align: left;
     pointer-events: none;
     opacity: 1;
     transition: opacity 0.5s ease;
-    max-width: 500px;
+    max-width: 400px;
+    /* Compact width */
 }
 
 .brand-mark {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 3px;
     color: var(--accent-color);
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     text-transform: uppercase;
     opacity: 0.8;
+    font-family: var(--font-body);
+}
+
+.brand-mark::after {
+    content: none;
+    /* Remove decorative line */
 }
 
 #hero-text h1 {
-    font-size: 4rem;
+    font-family: var(--font-main);
+    font-size: 3.0rem;
+    /* Slightly smaller for balance */
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    line-height: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    color: #fff;
+    /* Solid white, no gradient */
+    text-shadow: none;
+    /* Remove glow */
+}
+
+/* Scramble effect handles content */
+
+
+/* Scramble Effect Helper */
+.dud {
+    color: var(--accent-color);
+    opacity: 0.7;
 }
 
 #hero-text .subtitle {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     color: var(--text-color);
-    margin-bottom: 30px;
-    font-weight: 300;
+    margin-bottom: 10px;
+    font-weight: 400;
     opacity: 0.9;
+    font-family: var(--font-body);
 }
 
 #hero-text .instruction {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
     border-left: 2px solid var(--accent-color);
-    padding-left: 15px;
-    max-width: 300px;
+    padding-left: 12px;
+    max-width: 250px;
+    font-family: var(--font-body);
+    margin-bottom: 60px;
+    /* Increased separation */
+    position: relative;
+}
+
+/* Divider after instructions */
+#hero-text .instruction::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -30px;
+    width: 80px;
+    height: 1px;
+    background: rgba(0, 255, 255, 0.3);
 }
 
 /* ... existing styles ... */
@@ -165,9 +216,43 @@ body.brain-mode-mini #hero-text {
 }
 
 .content-section h2 {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    color: var(--accent-color);
+    font-family: var(--font-main);
+    font-size: 4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 2rem;
+
+    /* Outline Style */
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    position: relative;
+    transition: all 0.5s ease;
+    display: inline-block;
+    width: auto;
+    /* Changed from 100% to auto for inline effect */
+}
+
+/* Fill effect on reveal/hover */
+.content-section h2.revealed,
+.content-section h2:hover {
+    color: #fff;
+    -webkit-text-stroke: 1px #fff;
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+/* Tech Marker */
+.content-section h2::before {
+    content: none;
+    /* Removed diamond */
+}
+
+.content-section h2.revealed::before {
+    opacity: 1;
+}
+
+.content-section h2::after {
+    content: none;
 }
 
 .content-section p {
@@ -197,6 +282,11 @@ body.brain-mode-mini #hero-text {
 }
 
 .card h3 {
+    font-family: var(--font-main);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     color: var(--accent-color);
     margin-bottom: 10px;
 }
@@ -238,14 +328,14 @@ body.brain-mode-mini #hero-text {
 /* Settings UI */
 #settings-btn {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 60px;
+    right: 60px;
     left: auto;
     z-index: 1000000;
     background: transparent;
-    border: 1px solid transparent;
+    border: 1px solid var(--accent-dim);
     color: rgba(255, 255, 255, 0.3);
-    padding: 8px;
+    padding: 6px;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -359,22 +449,14 @@ body.brain-mode-mini #hero-text {
 */
 
 /* --- Scroll Snap --- */
-html {
-    scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
-}
+
 
 /* Ensure body doesn't interfere */
 body {
     overflow-x: hidden;
 }
 
-#hero,
-.content-section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    /* Force stop at each section */
-}
+
 
 /* Adjust section height to ensure clean snapping */
 .content-section {
@@ -462,8 +544,13 @@ body {
     }
 }
 
+:root {
+    --ping-duration: 0.6s;
+    /* Default, overridden by JS */
+}
+
 .ping-effect {
-    animation: pingRing 0.6s cubic-bezier(0, 0, 0.2, 1);
+    animation: pingRing var(--ping-duration) cubic-bezier(0, 0, 0.2, 1);
     position: relative;
     z-index: 1;
 }
@@ -480,7 +567,7 @@ body {
     background: #fff;
     border-radius: 50%;
     box-shadow: 0 0 15px #fff;
-    animation: fadeOut 0.6s ease-out forwards;
+    animation: fadeOut var(--ping-duration) ease-out forwards;
 }
 
 @keyframes fadeOut {

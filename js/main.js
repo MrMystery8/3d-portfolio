@@ -1,7 +1,16 @@
 import { initBrain, onScrollToSection, resetToHero, updateBrainViewport, updateSimulationParams, highlightBrainRegion, updateActiveSectionHighlight, setBrainRegionHighlight, getBrainRegionScreenPosition } from './brain-hero.js';
 import { config } from './config.js';
+import { initBackground } from './background.js';
+import { initTextEffects } from './text-effects.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Background & Text Effects
+    initBackground();
+    initTextEffects();
+
+    // Set CSS variables from config
+    document.documentElement.style.setProperty('--ping-duration', `${config.interaction.pingAnimationDuration}ms`);
+
     // Check for mobile or reduced motion
     const isMobile = window.innerWidth < 768;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -173,6 +182,107 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTargetProgress();
     animateBrain();
 
+    // Start loop
+    updateTargetProgress();
+    animateBrain();
+
+    // --- STRICT SECTION SCROLLING (Wheel Hijack) ---
+    let isAnimating = false;
+    let lastAbsDelta = 0;
+
+    // Collect all scroll targets: Hero + Sections
+    // We assume they appear in DOM order
+    const getScrollTargets = () => {
+        return [document.getElementById('hero'), ...document.querySelectorAll('.content-section')];
+    };
+
+    window.addEventListener('wheel', (e) => {
+        e.preventDefault(); // STOP native scroll
+
+        // INTENT DETECTION (Smart Momentum Filter)
+        // We track the absolute delta to detect acceleration (new gesture) vs deceleration (momentum)
+        const currentAbsDelta = Math.abs(e.deltaY);
+        const isAccelerating = currentAbsDelta > lastAbsDelta;
+
+        // Always update history
+        lastAbsDelta = currentAbsDelta;
+
+        // If we are already animating, we ignore everything
+        // But we still updated lastAbsDelta so we know the state when animation finishes
+        if (isAnimating) return;
+
+        // Filter:
+        // 1. Must be accelerating (new swipe)
+        // 2. Must be above sensitivity threshold (ignore noise)
+        if (!isAccelerating) return;
+        if (currentAbsDelta < config.interaction.scrollSensitivity) return;
+
+        const direction = Math.sign(e.deltaY); // 1 for down, -1 for up
+        if (direction === 0) return;
+
+        const targets = getScrollTargets();
+
+        // Find current section index
+        // We define "current" as the one taking up the most screen space or closest to top
+        const scrollY = window.scrollY;
+        let currentIndex = 0;
+        let minDistance = Infinity;
+
+        targets.forEach((target, index) => {
+            if (!target) return;
+            const rect = target.getBoundingClientRect();
+            const distance = Math.abs(rect.top);
+            if (distance < minDistance) {
+                minDistance = distance;
+                currentIndex = index;
+            }
+        });
+
+        // Determine target index
+        let targetIndex;
+
+        // FAST SCROLL JUMP
+        if (currentAbsDelta > config.interaction.fastScrollSensitivity) {
+            if (direction > 0) {
+                // Jump to END
+                targetIndex = targets.length - 1;
+            } else {
+                // Jump to START
+                targetIndex = 0;
+            }
+        } else {
+            // Normal Step
+            targetIndex = currentIndex + direction;
+        }
+
+        // Clamp index
+        targetIndex = Math.max(0, Math.min(targetIndex, targets.length - 1));
+
+        // If we are already at the target (e.g. trying to scroll up at top), do nothing
+        if (targetIndex === currentIndex) return;
+
+        // Animate
+        isAnimating = true;
+        const targetSection = targets[targetIndex];
+        const targetTop = scrollY + targetSection.getBoundingClientRect().top;
+
+        window.scrollTo({
+            top: targetTop,
+            behavior: 'smooth'
+        });
+
+        // Lock scroll for a duration to prevent rapid skipping
+        // Native smooth scroll duration is variable, but ~800ms is usually safe
+        setTimeout(() => {
+            isAnimating = false;
+            // Reset delta history to ensure next scroll is fresh?
+            // Actually, we don't want to reset to 0 immediately, or a trailing momentum event might trigger?
+            // No, trailing momentum will be SMALLER than the high value we just had.
+            // So keeping lastAbsDelta high is good. It forces the user to really swipe again.
+        }, 800);
+
+    }, { passive: false }); // REQUIRED for preventDefault
+
     // Intersection Observer for Active Sections
     const sections = document.querySelectorAll('.content-section');
     const sectionObserver = new IntersectionObserver((entries) => {
@@ -298,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 menuItem.classList.remove('ping-effect');
                 connectorLine.classList.remove('pulsing-line');
-            }, 600); // Match animation duration
+            }, config.interaction.pingAnimationDuration);
         }
     });
 
