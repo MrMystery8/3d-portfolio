@@ -134,9 +134,38 @@ document.addEventListener('DOMContentLoaded', () => {
         brainContainer.style.clipPath = `inset(${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px)`;
 
         // Fade out hero text
-        if (heroText) {
-            // Fade out faster than the brain moves
-            heroText.style.opacity = Math.max(1 - (t * 2), 0);
+        // Fade out hero elements
+        const heroElements = [
+            document.getElementById('hero-title'),
+            document.getElementById('hero-instructions')
+        ];
+
+        heroElements.forEach(el => {
+            if (el) {
+                el.style.opacity = Math.max(1 - (t * 2), 0);
+            }
+        });
+
+
+
+        // Animate Menu (Sync with scroll)
+        const brainMenu = document.getElementById('brain-nav-menu');
+        if (brainMenu) {
+            // Fade out and slide up
+            // We want it to be fully gone by t=0.5 (similar to hero text)
+            const menuOpacity = Math.max(1 - (t * 2.5), 0);
+            brainMenu.style.opacity = menuOpacity;
+
+            // Slide up significantly (to top of page)
+            const yOffset = -500 * t;
+            brainMenu.style.transform = `translateX(-50%) translateY(${yOffset}px)`;
+
+            // Disable interactions when invisible
+            if (menuOpacity < 0.1) {
+                brainMenu.style.pointerEvents = 'none';
+            } else {
+                brainMenu.style.pointerEvents = 'auto';
+            }
         }
 
         // Fade out settings button
@@ -163,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             document.body.classList.remove('brain-mode-mini');
 
-            // If we just exited mini mode, reset highlights
+            // If we just exited mini mode, reset highlights and clear active section
             if (wasInMiniMode) {
                 updateActiveSectionHighlight(null); // This will reset all highlights
             }
@@ -279,6 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Actually, we don't want to reset to 0 immediately, or a trailing momentum event might trigger?
             // No, trailing momentum will be SMALLER than the high value we just had.
             // So keeping lastAbsDelta high is good. It forces the user to really swipe again.
+
+            // After scroll completes, check which section is active and update mini-brain highlight
+            detectInitialActiveSection();
         }, 800);
 
     }, { passive: false }); // REQUIRED for preventDefault
@@ -295,12 +327,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update mini-brain highlighting
                 const sectionId = entry.target.id;
+                // Always call this - the function itself will check if we're in mini mode
                 updateActiveSectionHighlight(sectionId);
             }
         });
     }, { threshold: 0.5 });
 
     sections.forEach(section => sectionObserver.observe(section));
+
+    // Detect initial active section on page load
+    // This handles cases where the page is reloaded while already scrolled to a section
+    function detectInitialActiveSection() {
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        let activeSection = null;
+        let maxVisibility = 0;
+
+        sections.forEach(section => {
+            const rect = section.getBoundingClientRect();
+            const sectionTop = rect.top + scrollY;
+            const sectionBottom = sectionTop + rect.height;
+            const viewportTop = scrollY;
+            const viewportBottom = scrollY + viewportHeight;
+
+            // Calculate how much of the section is visible
+            const visibleTop = Math.max(sectionTop, viewportTop);
+            const visibleBottom = Math.min(sectionBottom, viewportBottom);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            const visibilityRatio = visibleHeight / rect.height;
+
+            if (visibilityRatio > maxVisibility) {
+                maxVisibility = visibilityRatio;
+                activeSection = section;
+            }
+        });
+
+        if (activeSection && maxVisibility > 0.5) {
+            sections.forEach(s => s.classList.remove('active'));
+            activeSection.classList.add('active');
+            updateActiveSectionHighlight(activeSection.id);
+        }
+    }
+
+    // Run initial detection after a short delay to ensure the brain is initialized
+    setTimeout(detectInitialActiveSection, 100);
+
 
     // Connector Line Logic
     const overlay = document.getElementById('interaction-overlay');
@@ -335,19 +407,15 @@ document.addEventListener('DOMContentLoaded', () => {
         connectorLine.style.opacity = '1';
         connectorDot.style.opacity = '1';
 
-        // Get menu item position (right side of text)
+        // Get menu item position (Bottom Center)
         const rect = activeMenuItem.getBoundingClientRect();
-        // The menu item is wide (flex), but we want the line to start near the text end.
-        // Since we don't have a wrapper around just the text, we can approximate or use the label width if needed.
-        // But rect.right is fine if the item isn't too wide.
-        // Let's add a small gap from the right edge.
-        const menuX = rect.right + 15;
-        const menuY = rect.top + rect.height / 2;
+        const menuX = rect.left + rect.width / 2;
+        const menuY = rect.bottom + 10;
 
         // Draw line
-        // Curve it slightly for a tech feel
-        const midX = (brainPos.x + menuX) / 2;
-        const d = `M${brainPos.x},${brainPos.y} C${midX},${brainPos.y} ${midX},${menuY} ${menuX},${menuY}`;
+        // Vertical S-curve for top menu
+        const midY = (brainPos.y + menuY) / 2;
+        const d = `M${brainPos.x},${brainPos.y} C${brainPos.x},${midY} ${menuX},${midY} ${menuX},${menuY}`;
 
         connectorLine.setAttribute('d', d);
         connectorDot.setAttribute('cx', brainPos.x);
@@ -396,6 +464,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const menuItem = document.querySelector(`.brain-nav-item[data-section="${sectionId}"]`);
 
         if (menuItem) {
+            // Set ping color based on section
+            let pingColor = '#00ffff'; // Default cyan
+            if (sectionId === 'section-projects') pingColor = `#${config.brainMapping.colors.projects.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-experience') pingColor = `#${config.brainMapping.colors.experience.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-skills') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-awards') pingColor = `#${config.brainMapping.colors.awards.toString(16).padStart(6, '0')}`;
+
+            menuItem.style.setProperty('--ping-color', pingColor);
+
             // Trigger Ping Animation
             menuItem.classList.add('ping-effect');
 
@@ -407,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Cleanup animations
             setTimeout(() => {
                 menuItem.classList.remove('ping-effect');
+                menuItem.style.removeProperty('--ping-color');
                 connectorLine.classList.remove('pulsing-line');
             }, config.interaction.pingAnimationDuration);
         }
@@ -418,6 +496,16 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent immediate scroll
 
+            // Set ping color based on section
+            const sectionId = item.dataset.section;
+            let pingColor = '#00ffff'; // Default cyan
+            if (sectionId === 'section-projects') pingColor = `#${config.brainMapping.colors.projects.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-experience') pingColor = `#${config.brainMapping.colors.experience.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-skills') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-awards') pingColor = `#${config.brainMapping.colors.awards.toString(16).padStart(6, '0')}`;
+
+            item.style.setProperty('--ping-color', pingColor);
+
             // 1. Trigger Ping Animation
             item.classList.add('ping-effect');
 
@@ -428,7 +516,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Wait for animation then scroll
             setTimeout(() => {
-                const sectionId = item.dataset.section;
                 const section = document.getElementById(sectionId);
                 if (section) {
                     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -437,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Cleanup animations and hide connector
                 setTimeout(() => {
                     item.classList.remove('ping-effect');
+                    item.style.removeProperty('--ping-color');
                     connectorLine.classList.remove('pulsing-line');
                     hideConnector(); // Ensure line disappears
                 }, 100); // Short delay after scroll start
@@ -454,8 +542,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add active class to this menu item
             item.classList.add('active');
 
-            // Highlight the corresponding brain region
-            const brainRegion = item.dataset.brainRegion;
+            // Look up the brain region from config based on section ID
+            const sectionId = item.dataset.section;
+            const brainRegion = Object.keys(config.brainMapping.sections).find(
+                key => config.brainMapping.sections[key] === sectionId
+            );
+
             if (brainRegion) {
                 setBrainRegionHighlight(brainRegion, true);
                 showConnector(brainRegion, item);
@@ -469,8 +561,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Remove active class from this menu item
             item.classList.remove('active');
 
-            // Reset brain region highlight
-            const brainRegion = item.dataset.brainRegion;
+            // Look up the brain region from config based on section ID
+            const sectionId = item.dataset.section;
+            const brainRegion = Object.keys(config.brainMapping.sections).find(
+                key => config.brainMapping.sections[key] === sectionId
+            );
+
             if (brainRegion) {
                 setBrainRegionHighlight(brainRegion, false);
                 hideConnector();

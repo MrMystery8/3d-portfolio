@@ -1,51 +1,31 @@
-/* Brain Navigation Menu - Minimal Vertical Index (Option B) */
+/* Brain Navigation Menu - Centered Top (Option D) */
 
 #brain-nav-menu {
     position: fixed;
-    left: 60px;
-    /* Back to left */
+    top: 20vh;
+    /* Moved down below header */
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
     right: auto;
-    /* Moved to Right */
-    top: 350px;
-    /* Refined positioning */
-    /* Below hero text */
-    transform: none;
     z-index: 1000000;
     opacity: 1;
-    transition: opacity 0.5s ease;
+    /* transition removed for JS control */
     pointer-events: auto;
-    text-align: left;
-    /* Ensure text aligns right */
+
+    /* Prominence Styling */
+    background: rgba(5, 9, 21, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 10px 40px;
+    border-radius: 50px;
+    /* Pill shape */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Hide menu in mini-brain mode */
-body.brain-mode-mini #brain-nav-menu {
-    opacity: 0;
-    pointer-events: none;
-}
+/* Hide menu in mini-brain mode - Handled by JS now */
 
 .nav-header {
-    font-family: var(--font-main);
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
-    width: 100%;
-    display: block;
-    position: relative;
-}
-
-.nav-header::before {
-    content: none;
-    /* Removed diamond */
-}
-
-.nav-header::after {
-    content: none;
+    display: none;
 }
 
 .brain-nav-list {
@@ -53,78 +33,89 @@ body.brain-mode-mini #brain-nav-menu {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 30px;
-    position: relative;
-    /* Removed glass card background/borders */
+    flex-direction: row;
+    gap: 50px;
+    /* Wider gap for prominence */
+    align-items: center;
     background: transparent;
-    box-shadow: none;
-    border: none;
-}
-
-/* Removed decorative pseudo-elements */
-.brain-nav-list::before,
-.brain-nav-list::after {
-    display: none;
 }
 
 .brain-nav-item {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 14px;
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.7;
     transition: all 0.3s ease;
-    padding: 6px 0;
-    padding-left: 10px;
-    border-left: 2px solid transparent;
+    padding: 5px 0;
     font-family: var(--font-main);
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .brain-nav-item:hover,
 .brain-nav-item.active {
     opacity: 1;
-    border-left-color: var(--accent-color);
-    padding-left: 14px;
+    transform: scale(1.05);
+    /* Subtle scale up */
+}
+
+/* Underline indicator */
+.brain-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 100%;
+    height: 2px;
+    background: var(--accent-color);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.brain-nav-item:hover::after,
+.brain-nav-item.active::after {
+    transform: translateX(-50%) scaleX(1);
 }
 
 .nav-number {
     font-family: 'Courier New', monospace;
     font-size: 0.8rem;
-    font-weight: 400;
-    color: rgba(0, 255, 255, 0.5);
-    margin-right: 16px;
-    transition: all 0.3s ease;
-}
-
-.brain-nav-item:hover .nav-number,
-.brain-nav-item.active .nav-number {
+    font-weight: 600;
     color: var(--accent-color);
+    margin-right: 10px;
+    opacity: 0.8;
 }
 
 .nav-label {
     font-family: var(--font-main);
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    /* Larger text */
+    font-weight: 700;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
+    letter-spacing: 1.5px;
 }
 
 .brain-nav-item:hover .nav-label,
 .brain-nav-item.active .nav-label {
-    color: #fff;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
     #brain-nav-menu {
-        left: 30px;
-        right: auto;
+        padding: 10px 20px;
+        width: 90%;
+        /* Full width on smaller screens */
+        justify-content: center;
+        display: flex;
+    }
+
+    .brain-nav-list {
+        gap: 20px;
+        justify-content: space-between;
+        width: 100%;
     }
 }
 
@@ -135,20 +126,20 @@ body.brain-mode-mini #brain-nav-menu {
 }
 
 /* Animation for menu items on load */
-@keyframes fadeInSlide {
+@keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(-20px);
     }
 
     to {
-        opacity: 0.6;
-        transform: translateX(0);
+        opacity: 0.7;
+        transform: translateY(0);
     }
 }
 
 .brain-nav-item {
-    animation: fadeInSlide 0.8s ease-out backwards;
+    animation: fadeInDown 0.8s ease-out backwards;
 }
 
 .brain-nav-item:nth-child(1) {

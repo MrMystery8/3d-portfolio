@@ -31,15 +31,8 @@ let currentViewport = {
 };
 
 // Mapping from Mesh Names to Section IDs (for navigation on the shell)
-const brainSectionMap = {
-    'Brain_Part_01_BRAIN_TEXTURE_blinn2_0': 'section-projects',
-    'Brain_Part_02_BRAIN_TEXTURE_blinn2_0': 'section-experience',
-    'Brain_Part_03_BRAIN_TEXTURE_blinn2_0': 'section-skills',
-    'Brain_Part_04_BRAIN_TEXTURE_blinn2_0': 'section-awards',
-    // Aliases
-    'Brain_Part_05_BRAIN_TEXTURE_blinn2_0': 'section-projects',
-    'Brain_Part_06_BRAIN_TEXTURE_blinn2_0': 'section-experience',
-};
+// Mapping from Mesh Names to Section IDs (for navigation on the shell)
+const brainSectionMap = config.brainMapping.sections;
 
 // Track mouse down for drag detection
 let mouseDownPos = new THREE.Vector2();
@@ -425,10 +418,14 @@ export function updateActiveSectionHighlight(sectionId) {
     brainGroup.traverse((child) => {
         if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
             child.material.opacity = simulationParams.brainOpacity;
+            child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             child.material.emissive = new THREE.Color(0x000000);
             child.material.emissiveIntensity = 0;
         }
     });
+
+    // Only highlight if we have a valid sectionId
+    if (!sectionId) return;
 
     // Now highlight only the active section
     brainGroup.traverse((child) => {
@@ -436,10 +433,19 @@ export function updateActiveSectionHighlight(sectionId) {
             const meshSectionId = brainSectionMap[child.name];
 
             if (meshSectionId === sectionId) {
-                // Highlight the active section
+                // Highlight the active section with its specific color
+                let highlightColor = config.brainMapping.colors.default;
+
+                // Determine color based on section ID
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+
                 child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
-                child.material.emissive = new THREE.Color(0x00ffff);
-                child.material.emissiveIntensity = 0.3;
+                child.material.color = new THREE.Color(highlightColor); // Set base color
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4; // Increased intensity
             }
         }
     });
@@ -452,6 +458,7 @@ function resetAllBrainHighlights() {
     brainGroup.traverse((child) => {
         if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
             child.material.opacity = simulationParams.brainOpacity;
+            child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             child.material.emissive = new THREE.Color(0x000000);
             child.material.emissiveIntensity = 0;
         }
@@ -466,7 +473,9 @@ function highlightAllBrainRegions(enable) {
         brainGroup.traverse((child) => {
             if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
                 child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
-                child.material.emissive = new THREE.Color(0x00ffff);
+                // Use default white color for whole brain highlight
+                child.material.color = new THREE.Color(config.brainMapping.colors.default);
+                child.material.emissive = new THREE.Color(config.brainMapping.colors.default);
                 child.material.emissiveIntensity = 0.3;
             }
         });
@@ -483,6 +492,9 @@ export function highlightBrainRegion(brainRegionName, highlighted) {
 
     brainGroup.traverse((child) => {
         if (child.isMesh && child.name === brainRegionName) {
+            // Only highlight if mapped
+            if (!brainSectionMap[child.name]) return;
+
             if (highlighted) {
                 // Smart Hover Logic
                 let hoverOpacity;
@@ -492,9 +504,25 @@ export function highlightBrainRegion(brainRegionName, highlighted) {
                     hoverOpacity = Math.max(simulationParams.brainOpacity - 0.3, 0.1);
                 }
                 child.material.opacity = hoverOpacity;
+
+                // Set emissive color based on section
+                const sectionId = brainSectionMap[child.name];
+                let highlightColor = config.brainMapping.colors.default;
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+
+                child.material.color = new THREE.Color(highlightColor); // Set base color
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4; // Increased intensity
+
             } else {
                 // Reset to base state
                 child.material.opacity = simulationParams.brainOpacity;
+                child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
+                child.material.emissive = new THREE.Color(0x000000);
+                child.material.emissiveIntensity = 0;
             }
         }
     });
@@ -802,6 +830,7 @@ function onMouseMove(event) {
         if (hoveredObject !== object) {
             if (hoveredObject) {
                 hoveredObject.material.opacity = simulationParams.brainOpacity;
+                hoveredObject.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
                 hoveredObject.material.emissive = new THREE.Color(0x000000);
                 hoveredObject.material.emissiveIntensity = 0;
             }
@@ -809,18 +838,28 @@ function onMouseMove(event) {
 
             // Smart Hover Logic - MATCHING setBrainRegionHighlight
             // Use the same visual style as menu hover
+
+            // Determine color based on section ID
+            const sectionId = brainSectionMap[hoveredObject.name];
+            let highlightColor = config.brainMapping.colors.default;
+            if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+            else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+            else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
+            else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+
             hoveredObject.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
-            hoveredObject.material.emissive = new THREE.Color(0x00ffff);
-            hoveredObject.material.emissiveIntensity = 0.25; // Subtle glow
+            hoveredObject.material.color = new THREE.Color(highlightColor);
+            hoveredObject.material.emissive = new THREE.Color(highlightColor);
+            hoveredObject.material.emissiveIntensity = 0.4;
 
             document.body.style.cursor = 'pointer';
 
             // Clear all menu highlights first, then highlight the current one
             document.querySelectorAll('.brain-nav-item.active').forEach(el => el.classList.remove('active'));
 
-            const sectionId = brainSectionMap[hoveredObject.name];
-            if (sectionId) {
-                const menuItem = document.querySelector(`.brain-nav-item[data-section="${sectionId}"]`);
+            const mappedSectionId = brainSectionMap[hoveredObject.name];
+            if (mappedSectionId) {
+                const menuItem = document.querySelector(`.brain-nav-item[data-section="${mappedSectionId}"]`);
                 if (menuItem) {
                     menuItem.classList.add('active');
                     // Trigger connector line from main.js logic?
@@ -838,6 +877,7 @@ function onMouseMove(event) {
         if (hoveredObject) {
             // Reset to base state
             hoveredObject.material.opacity = simulationParams.brainOpacity;
+            hoveredObject.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             hoveredObject.material.emissive = new THREE.Color(0x000000);
             hoveredObject.material.emissiveIntensity = 0;
 
@@ -860,21 +900,33 @@ function onMouseMove(event) {
     }
 }
 
-// External trigger to highlight a brain region (e.g. from menu hover)
 export function setBrainRegionHighlight(regionName, active) {
     if (!brainGroup) return;
     if (document.body.classList.contains('brain-mode-mini')) return;
 
     brainGroup.traverse((child) => {
         if (child.isMesh && child.name === regionName) {
+            // Only highlight if this region is mapped in our config
+            if (!brainSectionMap[child.name]) return;
+
             if (active) {
-                // Glow effect - REDUCED INTENSITY
-                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8); // Slightly lower max opacity
-                child.material.emissive = new THREE.Color(0x00ffff);
-                child.material.emissiveIntensity = 0.25; // Reduced from 0.5 for subtler effect
+                // Determine color based on section ID
+                const sectionId = brainSectionMap[child.name];
+                let highlightColor = config.brainMapping.colors.default;
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+
+                // Glow effect
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
+                child.material.color = new THREE.Color(highlightColor);
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4;
             } else {
                 // Reset
                 child.material.opacity = simulationParams.brainOpacity;
+                child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
                 child.material.emissive = new THREE.Color(0x000000);
                 child.material.emissiveIntensity = 0;
             }

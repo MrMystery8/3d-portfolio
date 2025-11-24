@@ -27,11 +27,11 @@ export const config = {
     // SCENE & CAMERA
     // ============================================================================
     scene: {
-        cameraPosition: { x: 0, y: 0, z: 6 },
+        cameraPosition: { x: 0, y: 0, z: 8 },
 
         // The Pivot Group handles the brain's position on screen while keeping rotation centered.
         // Adjust x/y to move the brain around the screen.
-        brainPivotPosition: { x: 0.8, y: -1.2, z: -1.0 },
+        brainPivotPosition: { x: 0.0, y: -1.5, z: 0 },
 
         initialRotationY: 0.4,     // Initial Y rotation in radians
     },
@@ -40,19 +40,45 @@ export const config = {
     // MINI BRAIN TRANSFORMATION (Scroll Behavior)
     // ============================================================================
     miniBrain: {
-        margin: 0,                 // Margin from top-right corner in mini mode
+        margin: -70,                 // Margin from top-right corner in mini mode
         minSize: 150,              // Minimum pixel size of the mini brain
         maxSize: 300,              // Maximum pixel size of the mini brain
-        targetProgressThreshold: 0.95, // Scroll progress (0-1) to switch to mini mode
+        targetProgressThreshold: 0.85, // Scroll progress (0-1) to switch to mini mode
     },
 
     // ============================================================================
     // INTERACTION TIMING
     // ============================================================================
     interaction: {
-        scrollDelay: 450,          // Delay (ms) before scrolling starts after click
+        scrollDelay: 520,          // Delay (ms) before scrolling starts after click
         pingAnimationDuration: 350, // Duration (ms) of the ping/ripple animation
         scrollSensitivity: 5,     // Threshold for scroll intent detection (higher = harder to trigger)
         fastScrollSensitivity: 40, // Threshold for fast scroll jump (triggers jump to start/end)
+    },
+
+    // ============================================================================
+    // BRAIN MAPPING & COLORS
+    // ============================================================================
+    brainMapping: {
+        // Colors (Light accents/tones)
+        colors: {
+            projects: 0x4fc3f7,   // Light Blue
+            experience: 0xffb74d, // Light Orange
+            skills: 0x81c784,     // Light Green
+            awards: 0xba68c8,     // Light Purple
+            default: 0xffffff     // White (for whole brain / default)
+        },
+
+        // Mapping Mesh Names to Sections
+        // part 6 - Projects
+        // part 4 - Experience
+        // part 2 - Skills
+        // part 5 - Awards
+        sections: {
+            'Brain_Part_06_BRAIN_TEXTURE_blinn2_0': 'section-projects',
+            'Brain_Part_04_BRAIN_TEXTURE_blinn2_0': 'section-experience',
+            'Brain_Part_02_BRAIN_TEXTURE_blinn2_0': 'section-skills',
+            'Brain_Part_05_BRAIN_TEXTURE_blinn2_0': 'section-awards'
+        }
     }
 };
