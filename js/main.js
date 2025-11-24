@@ -642,6 +642,257 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- PROJECT DATA & VIEW CONTROLLER ---
+    const projectData = [
+        {
+            id: 0,
+            title: "Minhas Rupsi Learning Platform",
+            subtitle: "Full Stack Learning Platform + RAG AI Chatbot",
+            description: "Built a full-stack learning platform for Computer Science students with a Flask backend and custom APIs. Implemented a retrieval-augmented generation (RAG) chatbot that indexes lecture PDFs and notes to answer student queries with context.",
+            bullets: [
+                "RAG chatbot reducing student response time by 60%+",
+                "Integrated vector embeddings and optimised retrieval logic",
+                "Supports both web and mobile interfaces",
+                "Secure user authentication and progress tracking"
+            ],
+            tags: ["Flask", "Python", "RAG", "Vector DB", "LLM API", "HTML/CSS/JS", "Android"]
+        },
+        {
+            id: 1,
+            title: "89th Parallel LMS",
+            subtitle: "Multi-Subject AI Learning Management System",
+            description: "Designed a multi-subject RAG architecture where each subject (Physics, Math, Chemistry) has its own knowledge base and embeddings. Backend dynamically routes queries to the correct subject-specific knowledge base based on user selection.",
+            bullets: [
+                "Multi-knowledge-base retrieval with subject-aware switching",
+                "Accessible from both a web interface and a mobile app",
+                "Helps students query exam-style questions and theory",
+                "Scalable architecture for adding new subjects"
+            ],
+            tags: ["Python", "Flask", "RAG", "Vector Search", "A-Level Content", "Web", "Mobile"]
+        },
+        {
+            id: 2,
+            title: "Local LLM Ecosystem",
+            subtitle: "Android & Web Front-Ends for Local Open-Source LLMs",
+            description: "Runs quantised open-source LLM models locally on a Mac using LM Studio. Android app and web client send requests to the local inference server. Uses Cloudflare Tunnels to expose the local endpoint securely over the internet.",
+            bullets: [
+                "Secure remote access to local LLMs via Cloudflare tunnels",
+                "Implements streaming responses and batched requests",
+                "Optimised for low-latency on personal hardware",
+                "Custom UI for model selection and parameter tuning"
+            ],
+            tags: ["Android", "Flask", "LM Studio", "Cloudflare Tunnels", "Local LLM", "Streaming"]
+        },
+        {
+            id: 3,
+            title: "Conversational Clone",
+            subtitle: "Hybrid RAG + Gemini Personality Clone",
+            description: "Ingests a user's chat logs and documents into a hybrid retrieval index. Uses vector search (FAISS/Annoy) and BM25 over the same corpus. Combines results using Reciprocal Rank Fusion to capture both semantic and lexical signals.",
+            bullets: [
+                "Hybrid retrieval combining vector search and BM25 with RRF",
+                "Mimics user tone and style using Gemini fine-tuning",
+                "Handles multi-turn conversations with context memory",
+                "Scalable ingestion pipeline for new chat logs"
+            ],
+            tags: ["Flask", "Gemini", "FAISS/Annoy", "BM25", "RRF", "RAG"]
+        },
+        {
+            id: 4,
+            title: "Area-51",
+            subtitle: "3D Survival Browser Game",
+            description: "Built a browser-based 3D survival game using Three.js for rendering and CANNON.js for physics. Generated procedural terrain and obstacles for replayability. Implemented enemy AI that patrols and chases the player.",
+            bullets: [
+                "Three.js game with procedural terrain and enemy AI",
+                "Full day/night cycle and dynamic lighting",
+                "Resource gathering and health management systems",
+                "Physics-based movement and collision detection"
+            ],
+            tags: ["JavaScript", "Three.js", "CANNON.js", "Game Dev", "Procedural Terrain"]
+        },
+        {
+            id: 5,
+            title: "Zephyr-Odyssey",
+            subtitle: "Cinematic Physics-Driven Arcade Game",
+            description: "Collaborative project using Python and Pygame to build a fast-paced arcade game. Physics-based movement and collisions make gameplay feel weighty and responsive. Level design emphasises cinematic camera movement and pacing.",
+            bullets: [
+                "Physics-driven arcade game with cinematic camera movement",
+                "Custom physics engine for smooth collisions",
+                "Dynamic camera system tracking player momentum",
+                "High-contrast visual style with particle effects"
+            ],
+            tags: ["Python", "Pygame", "Game Dev", "Physics"]
+        }
+    ];
+
+    // Carousel Logic
+    const carouselTrack = document.querySelector('.carousel-track');
+    const carouselCards = document.querySelectorAll('.carousel-card');
+    const prevBtn = document.querySelector('.carousel-nav.prev');
+    const nextBtn = document.querySelector('.carousel-nav.next');
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    let currentIndex = 0;
+    let cardsPerView = 3;
+    const totalCards = carouselCards.length;
+
+    function updateCardsPerView() {
+        if (window.innerWidth <= 768) cardsPerView = 1;
+        else if (window.innerWidth <= 1024) cardsPerView = 2;
+        else cardsPerView = 3;
+    }
+
+    function updateCarousel() {
+        const maxIndex = Math.max(0, totalCards - cardsPerView);
+        // Clamp index
+        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+
+        // Calculate slide percentage
+        // Each card takes up 100% / cardsPerView width
+        // We slide by (100 / cardsPerView) * currentIndex
+        const slidePercentage = (100 / cardsPerView) * currentIndex;
+        carouselTrack.style.transform = `translateX(-${slidePercentage}%)`;
+
+        // Update Buttons
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= maxIndex;
+
+        // Update Dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+
+    // Event Listeners for Carousel
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const maxIndex = totalCards - cardsPerView;
+            if (currentIndex < maxIndex) {
+                currentIndex++;
+                updateCarousel();
+            }
+        });
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                const index = parseInt(e.target.dataset.slide);
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            // Debounce resize
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(() => {
+                updateCardsPerView();
+                updateCarousel();
+            }, 250);
+        });
+
+        // Initialize Carousel
+        updateCardsPerView();
+        updateCarousel();
+    }
+
+    // View Switching Logic (Gallery <-> Detail)
+    const galleryView = document.getElementById('projects-gallery-view');
+    const detailView = document.getElementById('project-detail-view');
+    const viewProjectBtns = document.querySelectorAll('.view-project-btn');
+    const backToGalleryBtn = document.querySelector('.back-to-gallery-btn');
+
+    // Detail Elements
+    const detailTitle = document.getElementById('detail-title');
+    const detailSubtitle = document.getElementById('detail-subtitle');
+    const detailDescription = document.getElementById('detail-description');
+    const detailBullets = document.getElementById('detail-bullets');
+    const detailTags = document.getElementById('detail-tags');
+
+    function openProjectDetail(projectId) {
+        const project = projectData.find(p => p.id === projectId);
+        if (!project) return;
+
+        // Populate Data
+        detailTitle.textContent = project.title;
+        detailSubtitle.textContent = project.subtitle;
+        detailDescription.textContent = project.description;
+
+        // Populate Bullets
+        detailBullets.innerHTML = project.bullets.map(b => `<li>${b}</li>`).join('');
+
+        // Populate Tags
+        detailTags.innerHTML = project.tags.map(t => `<span>${t}</span>`).join('');
+
+        // Switch View
+        galleryView.classList.remove('active');
+        galleryView.classList.add('hidden');
+
+        detailView.classList.remove('hidden');
+        setTimeout(() => {
+            detailView.classList.add('active');
+        }, 50); // Small delay for transition
+    }
+
+    function closeProjectDetail() {
+        detailView.classList.remove('active');
+        detailView.classList.add('hidden');
+
+        galleryView.classList.remove('hidden');
+        setTimeout(() => {
+            galleryView.classList.add('active');
+        }, 50);
+    }
+
+    // Attach Click Handlers
+    viewProjectBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.target.closest('.carousel-card');
+            const projectId = parseInt(card.dataset.projectId);
+            openProjectDetail(projectId);
+        });
+    });
+
+    if (backToGalleryBtn) {
+        backToGalleryBtn.addEventListener('click', closeProjectDetail);
+    }
+
+    // --- MASTER-DETAIL CONTROLLER (Experience Section) ---
+    const masterDetailContainer = document.querySelector('.master-detail-container');
+
+    if (masterDetailContainer) {
+        const timelineItems = Array.from(masterDetailContainer.querySelectorAll('.timeline-item'));
+        const detailContents = Array.from(masterDetailContainer.querySelectorAll('.detail-content'));
+
+        // Function to show specific detail
+        function showDetail(index) {
+            // Update timeline items
+            timelineItems.forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            // Update detail contents
+            detailContents.forEach((content, i) => {
+                content.classList.toggle('hidden', i !== index);
+            });
+        }
+
+        // Click handlers for timeline items
+        timelineItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                showDetail(index);
+            });
+        });
+
+        // Initialize with first item selected
+        showDetail(0);
+    }
+
 
     // Listen for brain click events to hide connector
     // Since brain clicks trigger scroll, we want to clean up immediately
