@@ -468,8 +468,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let pingColor = '#00ffff'; // Default cyan
             if (sectionId === 'section-projects') pingColor = `#${config.brainMapping.colors.projects.toString(16).padStart(6, '0')}`;
             else if (sectionId === 'section-experience') pingColor = `#${config.brainMapping.colors.experience.toString(16).padStart(6, '0')}`;
-            else if (sectionId === 'section-skills') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
-            else if (sectionId === 'section-awards') pingColor = `#${config.brainMapping.colors.awards.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-skills-labs') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-profile') pingColor = `#${config.brainMapping.colors.profile.toString(16).padStart(6, '0')}`;
 
             menuItem.style.setProperty('--ping-color', pingColor);
 
@@ -501,8 +501,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let pingColor = '#00ffff'; // Default cyan
             if (sectionId === 'section-projects') pingColor = `#${config.brainMapping.colors.projects.toString(16).padStart(6, '0')}`;
             else if (sectionId === 'section-experience') pingColor = `#${config.brainMapping.colors.experience.toString(16).padStart(6, '0')}`;
-            else if (sectionId === 'section-skills') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
-            else if (sectionId === 'section-awards') pingColor = `#${config.brainMapping.colors.awards.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-skills-labs') pingColor = `#${config.brainMapping.colors.skills.toString(16).padStart(6, '0')}`;
+            else if (sectionId === 'section-profile') pingColor = `#${config.brainMapping.colors.profile.toString(16).padStart(6, '0')}`;
 
             item.style.setProperty('--ping-color', pingColor);
 
@@ -570,6 +570,74 @@ document.addEventListener('DOMContentLoaded', () => {
             if (brainRegion) {
                 setBrainRegionHighlight(brainRegion, false);
                 hideConnector();
+            }
+        });
+    });
+
+    // --- NEW UI COMPONENT LOGIC ---
+
+    // 1. Expandable Cards (Projects & Experience)
+    document.querySelectorAll('.details-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent card click if any
+            const card = btn.closest('.card') || btn.closest('.timeline-item');
+            const details = card.querySelector('.card-details') || card.querySelector('.timeline-details');
+
+            if (card && details) {
+                const isExpanded = card.classList.contains('expanded');
+
+                // Toggle class
+                card.classList.toggle('expanded');
+
+                // Toggle button text
+                btn.textContent = isExpanded ? 'View Details' : 'Close Details';
+
+                // Animate height
+                if (!isExpanded) {
+                    details.style.maxHeight = details.scrollHeight + 'px';
+                } else {
+                    details.style.maxHeight = '0';
+                }
+            }
+        });
+    });
+
+    // 2. Tabs (Skills & Labs)
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active from all
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Add active to clicked
+            btn.classList.add('active');
+            const targetId = 'tab-' + btn.dataset.tab;
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+
+    // 3. Accordion (Profile)
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const item = header.parentElement;
+            const content = item.querySelector('.accordion-content');
+            const isActive = item.classList.contains('active');
+
+            // Close all others (optional - exclusive accordion)
+            // document.querySelectorAll('.accordion-item').forEach(i => {
+            //     i.classList.remove('active');
+            //     i.querySelector('.accordion-content').style.maxHeight = '0';
+            // });
+
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            } else {
+                item.classList.remove('active');
+                content.style.maxHeight = '0';
             }
         });
     });

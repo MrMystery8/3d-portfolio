@@ -53,24 +53,24 @@
             <div class="nav-header">INTERFACE MAP</div>
             <ul class="brain-nav-list">
                 <li class="brain-nav-item" data-section="section-projects"
-                    data-brain-region="Brain_Part_01_BRAIN_TEXTURE_blinn2_0">
+                    data-brain-region="Brain_Part_06_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">01</span>
                     <span class="nav-label">PROJECTS</span>
                 </li>
                 <li class="brain-nav-item" data-section="section-experience"
-                    data-brain-region="Brain_Part_02_BRAIN_TEXTURE_blinn2_0">
+                    data-brain-region="Brain_Part_04_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">02</span>
                     <span class="nav-label">EXPERIENCE</span>
                 </li>
-                <li class="brain-nav-item" data-section="section-skills"
-                    data-brain-region="Brain_Part_03_BRAIN_TEXTURE_blinn2_0">
+                <li class="brain-nav-item" data-section="section-skills-labs"
+                    data-brain-region="Brain_Part_02_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">03</span>
-                    <span class="nav-label">SKILLS</span>
+                    <span class="nav-label">SKILLS & LABS</span>
                 </li>
-                <li class="brain-nav-item" data-section="section-awards"
-                    data-brain-region="Brain_Part_04_BRAIN_TEXTURE_blinn2_0">
+                <li class="brain-nav-item" data-section="section-profile"
+                    data-brain-region="Brain_Part_05_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">04</span>
-                    <span class="nav-label">AWARDS</span>
+                    <span class="nav-label">PROFILE</span>
                 </li>
             </ul>
         </nav>
@@ -155,24 +155,154 @@
     <main id="content">
         <section id="section-projects" class="content-section">
             <div class="section-content">
-                <h2>01. Featured Projects</h2>
-                <p>Building AI-driven systems, from RAG platforms to 3D games.</p>
+                <h2>01. Projects</h2>
                 <div class="card-grid">
+                    <!-- Card 1 -->
                     <div class="card">
-                        <h3>Minhas Rupsi Platform</h3>
-                        <p>Full-stack RAG learning platform improving query response by >60%.</p>
+                        <div class="card-surface">
+                            <h3>Minhas Rupsi Learning Platform</h3>
+                            <p class="card-subtitle">Full Stack Learning Platform + RAG AI Chatbot</p>
+                            <ul class="card-bullets">
+                                <li>Flask-based learning platform with web and mobile front-ends.</li>
+                                <li>RAG chatbot over lecture notes, reducing student query response time by over 60%.
+                                </li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Built a full-stack learning platform for Computer Science students with a Flask backend
+                                and custom APIs.</p>
+                            <p>Implemented a retrieval-augmented generation (RAG) chatbot that indexes lecture PDFs and
+                                notes to answer student queries with context.</p>
+                            <p>Integrated vector embeddings and optimised retrieval logic to provide fast, accurate
+                                answers.</p>
+                            <p>Supports both web and mobile interfaces so students can access the assistant on multiple
+                                devices.</p>
+                            <div class="tech-tags">
+                                <span>Flask</span><span>Python</span><span>RAG</span><span>Vector DB</span><span>LLM
+                                    API</span><span>HTML/CSS/JS</span><span>Android</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Card 2 -->
                     <div class="card">
-                        <h3>Local LLM Ecosystem</h3>
-                        <p>Android/Web clients for local open-source LLMs via LM Studio.</p>
+                        <div class="card-surface">
+                            <h3>89th Parallel LMS</h3>
+                            <p class="card-subtitle">Multi-Subject AI Learning Management System</p>
+                            <ul class="card-bullets">
+                                <li>AI assistant for A-Level Physics, Mathematics and Chemistry.</li>
+                                <li>Multi-knowledge-base retrieval with subject-aware switching.</li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Designed a multi-subject RAG architecture where each subject (Physics, Math, Chemistry)
+                                has its own knowledge base and embeddings.</p>
+                            <p>Backend dynamically routes queries to the correct subject-specific knowledge base based
+                                on user selection.</p>
+                            <p>Accessible from both a web interface and a mobile app.</p>
+                            <p>Helps students query exam-style questions, worked examples and theory from curated notes.
+                            </p>
+                            <div class="tech-tags">
+                                <span>Python</span><span>Flask</span><span>RAG</span><span>Vector
+                                    Search</span><span>A-Level Content</span><span>Web</span><span>Mobile</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Card 3 -->
                     <div class="card">
-                        <h3>Area-51 Game</h3>
-                        <p>3D survival game with procedural terrain using Three.js.</p>
+                        <div class="card-surface">
+                            <h3>Local LLM Ecosystem</h3>
+                            <p class="card-subtitle">Android & Web Front-Ends for Local Open-Source LLMs</p>
+                            <ul class="card-bullets">
+                                <li>Android and web apps talking to locally hosted open-source LLMs via LM Studio.</li>
+                                <li>Secure remote access using Cloudflare tunnels.</li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Runs quantised open-source LLM models locally on a Mac using LM Studio.</p>
+                            <p>Android app and web client send requests to the local inference server.</p>
+                            <p>Uses Cloudflare Tunnels to expose the local endpoint securely over the internet for
+                                mobile access.</p>
+                            <p>Implements streaming responses and batched requests to improve perceived latency on
+                                low-power hardware.</p>
+                            <div class="tech-tags">
+                                <span>Android</span><span>Flask</span><span>LM Studio</span><span>Cloudflare
+                                    Tunnels</span><span>Local LLM</span><span>Streaming</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Card 4 -->
                     <div class="card">
-                        <h3>Conversational Clone</h3>
-                        <p>Hybrid RAG system replicating conversational styles.</p>
+                        <div class="card-surface">
+                            <h3>Conversational Clone</h3>
+                            <p class="card-subtitle">Hybrid RAG + Gemini Personality Clone</p>
+                            <ul class="card-bullets">
+                                <li>Flask app that emulates a user’s conversational style.</li>
+                                <li>Hybrid retrieval combining vector search and BM25 with Reciprocal Rank Fusion.</li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Ingests a user’s chat logs and documents into a hybrid retrieval index.</p>
+                            <p>Uses vector search (FAISS/Annoy) and BM25 over the same corpus.</p>
+                            <p>Combines results using Reciprocal Rank Fusion to capture both semantic and lexical
+                                signals.</p>
+                            <p>Sends retrieved context into Gemini to generate responses that mimic the user’s tone and
+                                style.</p>
+                            <div class="tech-tags">
+                                <span>Flask</span><span>Gemini</span><span>FAISS/Annoy</span><span>BM25</span><span>RRF</span><span>RAG</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="card">
+                        <div class="card-surface">
+                            <h3>Area-51</h3>
+                            <p class="card-subtitle">3D Survival Browser Game</p>
+                            <ul class="card-bullets">
+                                <li>Three.js + CANNON.js game with procedural terrain and enemy AI.</li>
+                                <li>Day/night cycle and physics-based interactions.</li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Built a browser-based 3D survival game using Three.js for rendering and CANNON.js for
+                                physics.</p>
+                            <p>Generated procedural terrain and obstacles for replayability.</p>
+                            <p>Implemented enemy AI that patrols and chases the player.</p>
+                            <p>Added a full day/night cycle and basic resource/health systems.</p>
+                            <div class="tech-tags">
+                                <span>JavaScript</span><span>Three.js</span><span>CANNON.js</span><span>Game
+                                    Dev</span><span>Procedural Terrain</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="card">
+                        <div class="card-surface">
+                            <h3>Zephyr-Odyssey</h3>
+                            <p class="card-subtitle">Cinematic Physics-Driven Arcade Game</p>
+                            <ul class="card-bullets">
+                                <li>Arcade-style action game built with Pygame.</li>
+                                <li>Physics-driven movement and cinematic feel.</li>
+                            </ul>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <p>Collaborative project using Python and Pygame to build a fast-paced arcade game.</p>
+                            <p>Physics-based movement and collisions to make gameplay feel weighty and responsive.</p>
+                            <p>Level design that emphasises cinematic camera movement and pacing.</p>
+                            <div class="tech-tags">
+                                <span>Python</span><span>Pygame</span><span>Game Dev</span><span>Physics</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,54 +310,330 @@
 
         <section id="section-experience" class="content-section">
             <div class="section-content">
-                <h2>02. Work Experience</h2>
-                <p>Professional roles in software engineering and research.</p>
+                <h2>02. Experience</h2>
                 <div class="card-grid">
+                    <!-- Entry 1 -->
                     <div class="card">
-                        <h3>Software Engineer Intern</h3>
-                        <p>ORCA Team (Aug 2025 - Present). Refactoring loan-origination workflows.</p>
+                        <div class="card-surface">
+                            <h3>Software Engineer Intern – ORCA Team, JurisTech</h3>
+                            <p class="card-subtitle">Aug 2025 – Present · Kuala Lumpur, Malaysia</p>
+                            <p class="card-summary">Working on loan-origination backends using Oracle PL/SQL and PHP.
+                            </p>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <ul class="expanded-bullets">
+                                <li>Refactored loan-origination workflows for the ORCA/RLOS ecosystem using Oracle
+                                    PL/SQL.</li>
+                                <li>Implemented credit scoring, income validation and anti-money-laundering (AML) rules
+                                    that reduce manual checks for sales teams.</li>
+                                <li>Wrote diagnostic SQL scripts to trace data issues and application behaviour across
+                                    multiple modules.</li>
+                                <li>Supported GitLab-based deployments and worked with senior engineers to debug UAT and
+                                    production issues.</li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <!-- Entry 2 -->
                     <div class="card">
-                        <h3>R&D Assistant</h3>
-                        <p>Developing proof-of-concept web prototypes (Nov 2024 - Present).</p>
+                        <div class="card-surface">
+                            <h3>R&D Assistant – Centre for Technology & Innovation, APU</h3>
+                            <p class="card-subtitle">Nov 2024 – Present · Kuala Lumpur, Malaysia</p>
+                            <p class="card-summary">Building and modernising internal web POCs for students and staff.
+                            </p>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <ul class="expanded-bullets">
+                                <li>Developed proof-of-concept web applications using HTML, CSS and JavaScript for
+                                    internal and student-facing platforms.</li>
+                                <li>Modernised legacy modules to be responsive and mobile-friendly.</li>
+                                <li>Improved page load performance and cross-browser compatibility.</li>
+                                <li>Collaborated with lecturers and researchers to prototype new features and tools.
+                                </li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <!-- Entry 3 -->
                     <div class="card">
-                        <h3>Teaching Assistant</h3>
-                        <p>Python with AI Basics. Guided students in building Gemini chatbots.</p>
+                        <div class="card-surface">
+                            <h3>Teaching Assistant – Python with AI Basics (Crash Course)</h3>
+                            <p class="card-subtitle">Jul 2025</p>
+                            <p class="card-summary">Helped run a 4-week crash course for 50+ students on Python and AI.
+                            </p>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <ul class="expanded-bullets">
+                                <li>Assisted in delivering a 4-week crash course covering Python basics and introduction
+                                    to AI.</li>
+                                <li>Helped students move from fundamental syntax to building simple chatbots powered by
+                                    Gemini through Google AI Studio.</li>
+                                <li>Provided one-to-one support during exercises and debugging sessions.</li>
+                                <li>Guided students on how to call AI APIs from their own Python scripts.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Entry 4 -->
+                    <div class="card">
+                        <div class="card-surface">
+                            <h3>Chief Information Officer – Nixor Creative Studios</h3>
+                            <p class="card-subtitle">Feb 2022 – Feb 2023 · Karachi, Pakistan</p>
+                            <p class="card-summary">Led IT operations and web infrastructure for a 50+ member student
+                                media team.</p>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <ul class="expanded-bullets">
+                                <li>Led the IT function for a student-run creative studio of over 50 volunteers.</li>
+                                <li>Maintained and improved the studio’s website infrastructure and digital tools.</li>
+                                <li>Directed the relaunch of the Sharkpress online journalism platform, improving
+                                    reliability and usability.</li>
+                                <li>Coordinated with media, photography and design teams to support event coverage and
+                                    publishing workflows.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Entry 5 -->
+                    <div class="card">
+                        <div class="card-surface">
+                            <h3>Physics Teaching Assistant – Nixor TA Program</h3>
+                            <p class="card-subtitle">Oct 2021 – Mar 2023 · Karachi, Pakistan</p>
+                            <p class="card-summary">Supported A-Level Physics students as a TA and Senior TA.</p>
+                            <button class="details-toggle">Details ▾</button>
+                        </div>
+                        <div class="card-details">
+                            <ul class="expanded-bullets">
+                                <li>Provided academic support for A-Level Physics students through the official TA
+                                    program.</li>
+                                <li>Answered student questions, checked practice work and guided problem-solving.</li>
+                                <li>Served as a Senior TA, helping manage junior TAs and coordinate with the Student
+                                    Academics Team.</li>
+                                <li>Maintained a consistent TA lounge presence (4+ hours per week) for drop-in support.
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="section-skills" class="content-section">
+        <section id="section-skills-labs" class="content-section">
             <div class="section-content">
-                <h2>03. Skills & Education</h2>
-                <p>Academic excellence and technical proficiency.</p>
-                <div class="card-grid">
-                    <div class="card">
+                <h2>03. Skills & Labs</h2>
+
+                <div class="tabs-container">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" data-tab="skills">Skills</button>
+                        <button class="tab-btn" data-tab="labs">Labs</button>
+                        <button class="tab-btn" data-tab="interests">Interests</button>
+                    </div>
+
+                    <div class="tab-content active" id="tab-skills">
+                        <div class="skills-group">
+                            <h4>Languages</h4>
+                            <div class="tech-tags">
+                                <span>Python</span><span>Java</span><span>C++</span><span>C#</span><span>JavaScript</span><span>PHP</span><span>SQL
+                                    / PL-SQL</span>
+                            </div>
+                        </div>
+                        <div class="skills-group">
+                            <h4>Web & Platforms</h4>
+                            <div class="tech-tags">
+                                <span>HTML</span><span>CSS</span><span>React</span><span>Flask</span><span>Django</span><span>Android
+                                    Studio</span><span>Joget DX / Joget 8 DX</span>
+                            </div>
+                        </div>
+                        <div class="skills-group">
+                            <h4>AI & Systems</h4>
+                            <div class="tech-tags">
+                                <span>RAG pipelines</span><span>Vector search</span><span>LLM
+                                    prompting</span><span>Local LLM inference</span><span>AI agent
+                                    development</span><span>Generative AI tools</span><span>Oracle
+                                    Database</span><span>Git</span><span>Cloudflare Tunnels</span>
+                            </div>
+                        </div>
+                        <div class="skills-group">
+                            <h4>Other Tools</h4>
+                            <div class="tech-tags">
+                                <span>R Studio</span><span>IDEs and hosting tools</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-labs">
+                        <div class="card-grid">
+                            <!-- Lab Card 1 -->
+                            <div class="card">
+                                <h3>Local LLM Sandbox</h3>
+                                <p>Experiments with quantised open-source models running locally and exposed to
+                                    mobile/web clients.</p>
+                                <div class="card-details">
+                                    <p>Backs the Local LLM Ecosystem project with various quantisation strategies and
+                                        prompt templates.</p>
+                                    <p>Used to benchmark different model sizes and quantisation levels on personal
+                                        hardware.</p>
+                                </div>
+                            </div>
+                            <!-- Lab Card 2 -->
+                            <div class="card">
+                                <h3>AI Art Creator – @ai.illusions</h3>
+                                <p>Instagram AI art page with 15,000+ followers.</p>
+                                <div class="card-details">
+                                    <p>Curates and generates AI artwork using multiple generative models.</p>
+                                    <p>Grew an online community of over 15K followers around AI-generated visual
+                                        content.</p>
+                                    <p>Experiments with prompts, styles and post-processing workflows.</p>
+                                </div>
+                            </div>
+                            <!-- Lab Card 3 -->
+                            <div class="card">
+                                <h3>Google Labs Trusted Tester</h3>
+                                <p>Early tester for experimental tools like Imagen 2, Whisk Animate and Veo 2.</p>
+                                <div class="card-details">
+                                    <p>Provided feedback on generative image and video tools.</p>
+                                    <p>Used test access to explore creative and educational use cases.</p>
+                                </div>
+                            </div>
+                            <!-- Lab Card 4 -->
+                            <div class="card">
+                                <h3>DMU Carbon Literacy & Summer School</h3>
+                                <p>Completed carbon literacy training and attended De Montfort University summer school
+                                    in the UK.</p>
+                                <div class="card-details">
+                                    <p>Learned about sustainability and climate-related decision-making.</p>
+                                    <p>Participated in international academic activities at DMU.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-interests">
+                        <div class="tech-tags large-tags">
+                            <span>AI & Technology</span>
+                            <span>AI Art & Design</span>
+                            <span>Web Development</span>
+                            <span>Robotics</span>
+                            <span>Football / Futsal</span>
+                            <span>Photography</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-profile" class="content-section">
+            <div class="section-content">
+                <h2>04. Profile</h2>
+
+                <div class="stats-strip">
+                    <div class="stat-item">
+                        <span class="stat-value">3.94</span>
+                        <span class="stat-label">CGPA (BSc CS AI)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">1500</span>
+                        <span class="stat-label">SAT (1600)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">9 A*</span>
+                        <span class="stat-label">O Levels</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">15K+</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                </div>
+
+                <div class="profile-columns">
+                    <div class="profile-col">
                         <h3>Education</h3>
-                        <p>BSc CS (AI) at APU (CGPA 3.94). Dual degree with De Montfort UK.</p>
+                        <div class="accordion">
+                            <div class="accordion-item">
+                                <button class="accordion-header">BSc (Hons) Computer Science (AI) – APU
+                                    (2023–2026)</button>
+                                <div class="accordion-content">
+                                    <p>CGPA: 3.94</p>
+                                    <p>Vice Chancellor’s List: 2024, 2025</p>
+                                    <p>Dual degree with De Montfort University (UK)</p>
+                                    <p>30% academic scholarship</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header">GCE A Levels – Nixor College</button>
+                                <div class="accordion-content">
+                                    <p>Further Mathematics – A</p>
+                                    <p>Mathematics – A*</p>
+                                    <p>Computer Science – A*</p>
+                                    <p>Physics – A*</p>
+                                    <p>Chemistry – A*</p>
+                                    <p>25% academic scholarship</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header">GCE O Levels – Alpha High School</button>
+                                <div class="accordion-content">
+                                    <p>9 A* and 1 A across 10 subjects</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header">SAT – 1500 / 1600</button>
+                                <div class="accordion-content">
+                                    <p>Math: 800 / 800</p>
+                                    <p>English: 700 / 800</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Tech Stack</h3>
-                        <p>Python, JS, HTML/CSS, SQL, AI Agents, Three.js.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section id="section-awards" class="content-section">
-            <div class="section-content">
-                <h2>04. Awards & Recognition</h2>
-                <p>Achievements in competitions and certifications.</p>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Certifications</h3>
-                        <p>Hugging Face AI Agents, Google Labs Trusted Tester.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Competitions</h3>
-                        <p>Scinnova V Runner Up, Euclid Distinction, World Scholar's Cup Gold.</p>
+                    <div class="profile-col">
+                        <h3>Achievements</h3>
+                        <div class="accordion">
+                            <div class="accordion-item">
+                                <button class="accordion-header">Academic & Scholarships</button>
+                                <div class="accordion-content">
+                                    <ul>
+                                        <li>Vice Chancellor’s List (Asia Pacific University): 2024, 2025</li>
+                                        <li>30% academic scholarship – Asia Pacific University</li>
+                                        <li>25% academic scholarship – Nixor College</li>
+                                        <li>SAT 1500/1600 (800 Math, 700 English)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header">Competitions & Awards</button>
+                                <div class="accordion-content">
+                                    <ul>
+                                        <li>Scinnova V – Grand Runners Up overall; Robotics module winner</li>
+                                        <li>Euclid Contest (CEMC, University of Waterloo) – Certificate of Distinction
+                                            (Top 25% worldwide)</li>
+                                        <li>Rubik’s 5.0 – winner of ‘Kaleidoscope’ and ‘A Fraction Ahead’ mathematics
+                                            modules</li>
+                                        <li>Quiz Masters 2.0 (Aga Khan Education Board) – 1st place</li>
+                                        <li>World Scholar’s Cup – 1 Gold and 2 Silver medals; qualified for global round
+                                        </li>
+                                        <li>Spark!Lab Invent It Challenge – Honorable Mention; International Ambassador
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header">Certifications & Programs</button>
+                                <div class="accordion-content">
+                                    <ul>
+                                        <li>AI Agents Fundamentals – Hugging Face</li>
+                                        <li>AI X-Perience Workshop – Rocheston (APU)</li>
+                                        <li>Carbon Literacy Training – De Montfort University (DMU), UK</li>
+                                        <li>De Montfort University Summer School – UK</li>
+                                        <li>Google Labs Trusted Tester for Imagen 2, Whisk Animate and Veo 2</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

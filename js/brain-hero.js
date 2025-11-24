@@ -439,8 +439,8 @@ export function updateActiveSectionHighlight(sectionId) {
                 // Determine color based on section ID
                 if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
                 else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
-                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
-                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
 
                 child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
                 child.material.color = new THREE.Color(highlightColor); // Set base color
@@ -510,8 +510,8 @@ export function highlightBrainRegion(brainRegionName, highlighted) {
                 let highlightColor = config.brainMapping.colors.default;
                 if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
                 else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
-                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
-                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
 
                 child.material.color = new THREE.Color(highlightColor); // Set base color
                 child.material.emissive = new THREE.Color(highlightColor);
@@ -844,8 +844,8 @@ function onMouseMove(event) {
             let highlightColor = config.brainMapping.colors.default;
             if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
             else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
-            else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
-            else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+            else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+            else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
 
             hoveredObject.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
             hoveredObject.material.color = new THREE.Color(highlightColor);
@@ -915,8 +915,8 @@ export function setBrainRegionHighlight(regionName, active) {
                 let highlightColor = config.brainMapping.colors.default;
                 if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
                 else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
-                else if (sectionId === 'section-skills') highlightColor = config.brainMapping.colors.skills;
-                else if (sectionId === 'section-awards') highlightColor = config.brainMapping.colors.awards;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
 
                 // Glow effect
                 child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);

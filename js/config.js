@@ -65,20 +65,20 @@ export const config = {
             projects: 0x4fc3f7,   // Light Blue
             experience: 0xffb74d, // Light Orange
             skills: 0x81c784,     // Light Green
-            awards: 0xba68c8,     // Light Purple
+            profile: 0xba68c8,    // Light Purple (was awards)
             default: 0xffffff     // White (for whole brain / default)
         },
 
-        // Mapping Mesh Names to Sections
+        // Mapping Mesh Names to Section IDs
         // part 6 - Projects
         // part 4 - Experience
-        // part 2 - Skills
-        // part 5 - Awards
+        // part 2 - Skills & Labs
+        // part 5 - Profile
         sections: {
             'Brain_Part_06_BRAIN_TEXTURE_blinn2_0': 'section-projects',
             'Brain_Part_04_BRAIN_TEXTURE_blinn2_0': 'section-experience',
-            'Brain_Part_02_BRAIN_TEXTURE_blinn2_0': 'section-skills',
-            'Brain_Part_05_BRAIN_TEXTURE_blinn2_0': 'section-awards'
+            'Brain_Part_02_BRAIN_TEXTURE_blinn2_0': 'section-skills-labs',
+            'Brain_Part_05_BRAIN_TEXTURE_blinn2_0': 'section-profile'
         }
     }
 };
