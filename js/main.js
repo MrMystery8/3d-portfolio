@@ -10,6 +10,99 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Set CSS variables from config
     document.documentElement.style.setProperty('--ping-duration', `${config.interaction.pingAnimationDuration}ms`);
+    document.documentElement.style.setProperty('--menu-top', `${config.ui.menuGap}vh`);
+
+    // Settings UI Logic (Moved to top)
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const closeSettingsBtn = document.getElementById('close-settings');
+
+    if (settingsBtn && settingsPanel && closeSettingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('hidden');
+        });
+
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.add('hidden');
+        });
+
+        // Sliders
+        const inputs = {
+            nodeCount: document.getElementById('node-count'),
+            connectionDistance: document.getElementById('conn-dist'),
+            signalCount: document.getElementById('sig-count'),
+            signalSpeed: document.getElementById('sig-speed'),
+            signalSize: document.getElementById('sig-size'),
+            networkOpacity: document.getElementById('net-opacity'),
+            signalOpacity: document.getElementById('sig-opacity'),
+            brainOpacity: document.getElementById('brain-opacity'),
+            brainSize: document.getElementById('brain-size'),
+            rotationSpeedX: document.getElementById('rot-x'),
+            rotationSpeedY: document.getElementById('rot-y'),
+            menuGap: document.getElementById('menu-gap')
+        };
+
+        const displays = {
+            nodeCount: document.getElementById('val-node-count'),
+            connectionDistance: document.getElementById('val-conn-dist'),
+            signalCount: document.getElementById('val-sig-count'),
+            signalSpeed: document.getElementById('val-sig-speed'),
+            signalSize: document.getElementById('val-sig-size'),
+            networkOpacity: document.getElementById('val-net-opacity'),
+            signalOpacity: document.getElementById('val-sig-opacity'),
+            brainOpacity: document.getElementById('val-brain-opacity'),
+            brainSize: document.getElementById('val-brain-size'),
+            rotationSpeedX: document.getElementById('val-rot-x'),
+            rotationSpeedY: document.getElementById('val-rot-y'),
+            menuGap: document.getElementById('val-menu-gap')
+        };
+
+        // Debounce helper
+        const debounce = (func, wait) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        };
+
+        // Create debounced updaters for heavy params
+        const debouncedUpdate = debounce((key, value) => {
+            console.log(`Debounced update for ${key}: ${value}`);
+            const params = {};
+            params[key] = parseFloat(value);
+            updateSimulationParams(params);
+        }, 300); // 300ms delay
+
+        // Attach listeners
+        Object.keys(inputs).forEach(key => {
+            const input = inputs[key];
+            if (input) {
+                const isHeavy = (key !== 'signalSpeed');
+
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value;
+
+                    // Update display immediately
+                    displays[key].textContent = value;
+
+                    if (key === 'menuGap') {
+                        document.documentElement.style.setProperty('--menu-top', value + 'vh');
+                        return;
+                    }
+
+                    if (isHeavy) {
+                        debouncedUpdate(key, value);
+                    } else {
+                        // Speed updates are cheap, do immediately
+                        const params = {};
+                        params[key] = parseFloat(value);
+                        updateSimulationParams(params);
+                    }
+                });
+            }
+        });
+    }
 
     // Check for mobile or reduced motion
     const isMobile = window.innerWidth < 768;
@@ -913,88 +1006,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Settings UI Logic
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsPanel = document.getElementById('settings-panel');
-    const closeSettingsBtn = document.getElementById('close-settings');
 
-    if (settingsBtn && settingsPanel && closeSettingsBtn) {
-        settingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.toggle('hidden');
-        });
-
-        closeSettingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.add('hidden');
-        });
-
-        // Sliders
-        const inputs = {
-            nodeCount: document.getElementById('node-count'),
-            connectionDistance: document.getElementById('conn-dist'),
-            signalCount: document.getElementById('sig-count'),
-            signalSpeed: document.getElementById('sig-speed'),
-            signalSize: document.getElementById('sig-size'),
-            networkOpacity: document.getElementById('net-opacity'),
-            signalOpacity: document.getElementById('sig-opacity'),
-            brainOpacity: document.getElementById('brain-opacity'),
-            brainSize: document.getElementById('brain-size'),
-            rotationSpeedX: document.getElementById('rot-x'),
-            rotationSpeedY: document.getElementById('rot-y')
-        };
-
-        const displays = {
-            nodeCount: document.getElementById('val-node-count'),
-            connectionDistance: document.getElementById('val-conn-dist'),
-            signalCount: document.getElementById('val-sig-count'),
-            signalSpeed: document.getElementById('val-sig-speed'),
-            signalSize: document.getElementById('val-sig-size'),
-            networkOpacity: document.getElementById('val-net-opacity'),
-            signalOpacity: document.getElementById('val-sig-opacity'),
-            brainOpacity: document.getElementById('val-brain-opacity'),
-            brainSize: document.getElementById('val-brain-size'),
-            rotationSpeedX: document.getElementById('val-rot-x'),
-            rotationSpeedY: document.getElementById('val-rot-y')
-        };
-
-        // Debounce helper
-        const debounce = (func, wait) => {
-            let timeout;
-            return (...args) => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func(...args), wait);
-            };
-        };
-
-        // Create debounced updaters for heavy params
-        const debouncedUpdate = debounce((key, value) => {
-            console.log(`Debounced update for ${key}: ${value}`);
-            const params = {};
-            params[key] = parseFloat(value);
-            updateSimulationParams(params);
-        }, 300); // 300ms delay
-
-        // Attach listeners
-        Object.keys(inputs).forEach(key => {
-            const input = inputs[key];
-            if (input) {
-                const isHeavy = (key !== 'signalSpeed');
-
-                input.addEventListener('input', (e) => {
-                    const value = e.target.value;
-
-                    // Update display immediately
-                    displays[key].textContent = value;
-
-                    if (isHeavy) {
-                        debouncedUpdate(key, value);
-                    } else {
-                        // Speed updates are cheap, do immediately
-                        const params = {};
-                        params[key] = parseFloat(value);
-                        updateSimulationParams(params);
-                    }
-                });
-            }
-        });
-    }
 });

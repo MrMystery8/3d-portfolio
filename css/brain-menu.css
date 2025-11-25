@@ -2,7 +2,7 @@
 
 #brain-nav-menu {
     position: fixed;
-    top: 20vh;
+    top: var(--menu-top, 25vh);
     /* Moved down below header */
     left: 50%;
     transform: translateX(-50%) translateY(0);
@@ -50,6 +50,8 @@
     padding: 5px 0;
     font-family: var(--font-main);
     letter-spacing: 1px;
+    white-space: nowrap;
+    /* Prevent wrapping */
 }
 
 .brain-nav-item:hover,
@@ -103,6 +105,32 @@
 }
 
 /* Responsive adjustments */
+@media (min-width: 1200px) {
+    .brain-nav-list {
+        gap: 5vw;
+        /* Dynamic gap based on viewport width */
+    }
+
+    #brain-nav-menu {
+        padding: 1vh 3vw;
+        /* Dynamic padding */
+    }
+}
+
+@media (min-width: 1600px) {
+    .brain-nav-list {
+        gap: 6vw;
+    }
+
+    .nav-label {
+        font-size: 1.3rem;
+    }
+
+    .nav-number {
+        font-size: 1rem;
+    }
+}
+
 @media (max-width: 1024px) {
     #brain-nav-menu {
         padding: 10px 20px;
