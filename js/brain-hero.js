@@ -700,7 +700,7 @@ function getNormalizedMouseCoordinates(clientX, clientY) {
 }
 
 function onClick(event) {
-    if (document.body.classList.contains('brain-mode-mini')) return;
+    // if (document.body.classList.contains('brain-mode-mini')) return; // Removed to allow raycast check
     if (event.clientX < currentViewport.x ||
         event.clientX > currentViewport.x + currentViewport.width ||
         event.clientY < currentViewport.y ||
@@ -726,6 +726,13 @@ function onClick(event) {
     const intersects = raycaster.intersectObjects(candidates, true);
 
     if (intersects.length > 0) {
+        // Mini Brain Click Handling
+        if (document.body.classList.contains('brain-mode-mini')) {
+            const event = new CustomEvent('mini-brain-clicked');
+            window.dispatchEvent(event);
+            return;
+        }
+
         const object = intersects[0].object;
         // console.log('Clicked Object:', object.name);
         const sectionId = brainSectionMap[object.name];
@@ -750,16 +757,41 @@ let isHoveringMiniBrain = false;
 
 function onMouseMove(event) {
     if (document.body.classList.contains('brain-mode-mini')) {
-        // Check if mouse is over the mini brain viewport
+        // Check if mouse is within viewport first (optimization)
         if (event.clientX >= currentViewport.x &&
             event.clientX <= currentViewport.x + currentViewport.width &&
             event.clientY >= currentViewport.y &&
             event.clientY <= currentViewport.y + currentViewport.height) {
 
-            if (!isHoveringMiniBrain) {
-                isHoveringMiniBrain = true;
-                document.body.style.cursor = 'pointer';
-                highlightAllBrainRegions(true);
+            // Perform Raycasting for Precise Hover
+            const coords = getNormalizedMouseCoordinates(event.clientX, event.clientY);
+            mouse.x = coords.x;
+            mouse.y = coords.y;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // Find intersections
+            const candidates = [];
+            brainGroup.traverse((object) => {
+                if (object.isMesh && object !== nodeParticles && object !== signalParticles && object !== connectionLines) {
+                    candidates.push(object);
+                }
+            });
+
+            const intersects = raycaster.intersectObjects(candidates, true);
+
+            if (intersects.length > 0) {
+                if (!isHoveringMiniBrain) {
+                    isHoveringMiniBrain = true;
+                    document.body.style.cursor = 'pointer';
+                    highlightAllBrainRegions(true);
+                }
+            } else {
+                if (isHoveringMiniBrain) {
+                    isHoveringMiniBrain = false;
+                    document.body.style.cursor = 'default';
+                    highlightAllBrainRegions(false);
+                }
             }
         } else {
             if (isHoveringMiniBrain) {

@@ -195,13 +195,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const startBrainCenterY = viewportHeight / 2;
 
         // MINI STATE: Brain center should be at top-right with margin
-        const margin = config.miniBrain.margin;
+        const posConfig = config.miniBrain.position;
         const minSize = config.miniBrain.minSize;
         const maxSize = config.miniBrain.maxSize;
         const endSize = Math.max(Math.min(maxSize, viewportWidth * 0.25), minSize);
 
-        const desiredBrainX = viewportWidth - margin - endSize / 2;
-        const desiredBrainY = margin + endSize / 2;
+        // Calculate X Position based on Anchor
+        let desiredBrainX;
+        if (posConfig.anchorX === 'left') {
+            desiredBrainX = (endSize / 2) + posConfig.offsetX;
+        } else {
+            // Default to right
+            desiredBrainX = viewportWidth - (endSize / 2) + posConfig.offsetX;
+        }
+
+        // Calculate Y Position based on Anchor
+        let desiredBrainY;
+        if (posConfig.anchorY === 'bottom') {
+            desiredBrainY = viewportHeight - (endSize / 2) + posConfig.offsetY;
+        } else {
+            // Default to top
+            desiredBrainY = (endSize / 2) + posConfig.offsetY;
+        }
 
         // Interpolate dimensions
         const currentW = startW + (endSize - startW) * t;
@@ -319,7 +334,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.addEventListener('wheel', (e) => {
-        e.preventDefault(); // STOP native scroll
+        // CRITICAL FIX: If overlay is open (no-scroll class), allow native scroll and ignore custom logic
+        if (document.body.classList.contains('no-scroll')) {
+            return;
+        }
+
+        e.preventDefault(); // STOP native scroll only if we are in main view
 
         // INTENT DETECTION (Smart Momentum Filter)
         // We track the absolute delta to detect acceleration (new gesture) vs deceleration (momentum)
@@ -735,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- PROJECT DATA & VIEW CONTROLLER ---
+    // --- PROJECT DATA & OVERLAY CONTROLLER ---
     const projectData = [
         {
             id: 0,
@@ -748,7 +768,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Supports both web and mobile interfaces",
                 "Secure user authentication and progress tracking"
             ],
-            tags: ["Flask", "Python", "RAG", "Vector DB", "LLM API", "HTML/CSS/JS", "Android"]
+            tags: ["Flask", "Python", "RAG", "Vector DB", "LLM API", "HTML/CSS/JS", "Android"],
+            features: [
+                "Real-time chat interface",
+                "Admin dashboard for content management",
+                "Student progress analytics",
+                "Automated PDF indexing pipeline"
+            ]
         },
         {
             id: 1,
@@ -761,7 +787,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Helps students query exam-style questions and theory",
                 "Scalable architecture for adding new subjects"
             ],
-            tags: ["Python", "Flask", "RAG", "Vector Search", "A-Level Content", "Web", "Mobile"]
+            tags: ["Python", "Flask", "RAG", "Vector Search", "A-Level Content", "Web", "Mobile"],
+            features: [
+                "Subject-specific knowledge silos",
+                "Context-aware query routing",
+                "Mobile-first design",
+                "Exam question bank integration"
+            ]
         },
         {
             id: 2,
@@ -774,7 +806,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Optimised for low-latency on personal hardware",
                 "Custom UI for model selection and parameter tuning"
             ],
-            tags: ["Android", "Flask", "LM Studio", "Cloudflare Tunnels", "Local LLM", "Streaming"]
+            tags: ["Android", "Flask", "LM Studio", "Cloudflare Tunnels", "Local LLM", "Streaming"],
+            features: [
+                "Zero-cost inference",
+                "Privacy-first architecture",
+                "Customizable system prompts",
+                "Low-latency streaming"
+            ]
         },
         {
             id: 3,
@@ -787,7 +825,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Handles multi-turn conversations with context memory",
                 "Scalable ingestion pipeline for new chat logs"
             ],
-            tags: ["Flask", "Gemini", "FAISS/Annoy", "BM25", "RRF", "RAG"]
+            tags: ["Flask", "Gemini", "FAISS/Annoy", "BM25", "RRF", "RAG"],
+            features: [
+                "Personality mimicry",
+                "Context-aware memory",
+                "Hybrid search ranking",
+                "Chat log ingestion pipeline"
+            ]
         },
         {
             id: 4,
@@ -800,160 +844,157 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Resource gathering and health management systems",
                 "Physics-based movement and collision detection"
             ],
-            tags: ["JavaScript", "Three.js", "CANNON.js", "Game Dev", "Procedural Terrain"]
+            tags: ["Three.js", "Cannon.js", "WebGL", "Game Dev", "Procedural Generation"],
+            features: [
+                "Procedural terrain generation",
+                "Day/night cycle",
+                "Enemy AI state machine",
+                "Inventory system"
+            ]
         },
         {
             id: 5,
             title: "Zephyr-Odyssey",
-            subtitle: "Cinematic Physics-Driven Arcade Game",
-            description: "Collaborative project using Python and Pygame to build a fast-paced arcade game. Physics-based movement and collisions make gameplay feel weighty and responsive. Level design emphasises cinematic camera movement and pacing.",
+            subtitle: "Physics Arcade Game",
+            description: "Developed a 2D physics arcade game using Pygame. Implemented custom physics for gravity, collision, and momentum. Designed multiple levels with increasing difficulty and unique mechanics.",
             bullets: [
-                "Physics-driven arcade game with cinematic camera movement",
-                "Custom physics engine for smooth collisions",
-                "Dynamic camera system tracking player momentum",
-                "High-contrast visual style with particle effects"
+                "Custom 2D physics engine implementation",
+                "Multiple levels with unique mechanics",
+                "High-score tracking and persistence",
+                "Smooth 60fps gameplay loop"
             ],
-            tags: ["Python", "Pygame", "Game Dev", "Physics"]
+            tags: ["Python", "Pygame", "Physics", "Game Dev", "2D Arcade"],
+            features: [
+                "Custom physics engine",
+                "Level editor tools",
+                "Particle effects system",
+                "Save/Load system"
+            ]
         }
     ];
 
-    // Carousel Logic
-    const carouselTrack = document.querySelector('.carousel-track');
-    const carouselCards = document.querySelectorAll('.carousel-card');
-    const prevBtn = document.querySelector('.carousel-nav.prev');
-    const nextBtn = document.querySelector('.carousel-nav.next');
-    const dots = document.querySelectorAll('.carousel-dot');
+    // --- OVERLAY LOGIC ---
+    const projectOverlay = document.getElementById('project-overlay');
+    const overlayCloseBtn = document.getElementById('overlay-close-btn');
+    const overlayList = document.getElementById('overlay-project-list');
 
-    let currentIndex = 0;
-    let cardsPerView = 3;
-    const totalCards = carouselCards.length;
+    // DOM Elements to populate
+    const domTitle = document.getElementById('overlay-project-title');
+    const domType = document.getElementById('overlay-project-type');
+    const domDesc = document.getElementById('overlay-description');
+    const domBullets = document.getElementById('overlay-bullets');
+    const domTags = document.getElementById('overlay-tags');
+    const domFeatures = document.getElementById('overlay-features');
 
-    function updateCardsPerView() {
-        if (window.innerWidth <= 768) cardsPerView = 1;
-        else if (window.innerWidth <= 1024) cardsPerView = 2;
-        else cardsPerView = 3;
+    let currentProjectId = 0;
+
+    function openOverlay(projectId = 0) {
+        currentProjectId = projectId;
+        renderOverlayContent(projectId);
+        renderSidebar(projectId);
+
+        // Show Overlay
+        projectOverlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('no-scroll');
+
+        // Trap focus (simple version)
+        overlayCloseBtn.focus();
     }
 
-    function updateCarousel() {
-        const maxIndex = Math.max(0, totalCards - cardsPerView);
-        // Clamp index
-        currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+    function closeOverlay() {
+        projectOverlay.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('no-scroll');
 
-        // Calculate slide percentage
-        // Each card takes up 100% / cardsPerView width
-        // We slide by (100 / cardsPerView) * currentIndex
-        const slidePercentage = (100 / cardsPerView) * currentIndex;
-        carouselTrack.style.transform = `translateX(-${slidePercentage}%)`;
-
-        // Update Buttons
-        prevBtn.disabled = currentIndex === 0;
-        nextBtn.disabled = currentIndex >= maxIndex;
-
-        // Update Dots
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === currentIndex);
-        });
+        // Return focus to launcher button
+        const launcherBtn = document.getElementById('open-gallery-btn');
+        if (launcherBtn) launcherBtn.focus();
     }
 
-    // Event Listeners for Carousel
-    if (prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-            }
-        });
+    function renderOverlayContent(id) {
+        const project = projectData.find(p => p.id === parseInt(id)) || projectData[0];
 
-        nextBtn.addEventListener('click', () => {
-            const maxIndex = totalCards - cardsPerView;
-            if (currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarousel();
-            }
-        });
+        // Animate content change (simple fade)
+        const contentWrapper = document.querySelector('.overlay-content');
+        contentWrapper.style.opacity = '0';
 
-        dots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                const index = parseInt(e.target.dataset.slide);
-                currentIndex = index;
-                updateCarousel();
+        setTimeout(() => {
+            domTitle.textContent = project.title;
+            domType.textContent = project.subtitle;
+            domDesc.textContent = project.description;
+
+            // Bullets
+            domBullets.innerHTML = project.bullets.map(b => `<li>${b}</li>`).join('');
+
+            // Tags
+            domTags.innerHTML = project.tags.map(t => `<span>${t}</span>`).join('');
+
+            // Features (Optional)
+            if (project.features && project.features.length > 0) {
+                domFeatures.innerHTML = project.features.map(f => `<li>${f}</li>`).join('');
+                domFeatures.parentElement.style.display = 'block';
+            } else {
+                domFeatures.parentElement.style.display = 'none';
+            }
+
+            // Scroll content to top
+            contentWrapper.scrollTop = 0;
+            contentWrapper.style.opacity = '1';
+
+        }, 200);
+    }
+
+    function renderSidebar(activeId) {
+        overlayList.innerHTML = projectData.map(p => {
+            // Generate 1-2 badges (take first 2 tags)
+            const badges = p.tags.slice(0, 2).map(t => `<span class="sidebar-badge">${t}</span>`).join('');
+
+            return `
+            <li class="sidebar-item ${p.id === parseInt(activeId) ? 'active' : ''}" data-id="${p.id}">
+                <span class="sidebar-item-title">${p.title}</span>
+                <div class="sidebar-badges">${badges}</div>
+            </li>
+            `;
+        }).join('');
+
+        // Re-attach listeners
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const newId = item.dataset.id;
+                renderOverlayContent(newId);
+
+                // Update active state in sidebar
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
             });
         });
-
-        window.addEventListener('resize', () => {
-            // Debounce resize
-            clearTimeout(window.resizeTimer);
-            window.resizeTimer = setTimeout(() => {
-                updateCardsPerView();
-                updateCarousel();
-            }, 250);
-        });
-
-        // Initialize Carousel
-        updateCardsPerView();
-        updateCarousel();
     }
 
-    // View Switching Logic (Gallery <-> Detail)
-    const galleryView = document.getElementById('projects-gallery-view');
-    const detailView = document.getElementById('project-detail-view');
-    const viewProjectBtns = document.querySelectorAll('.view-project-btn');
-    const backToGalleryBtn = document.querySelector('.back-to-gallery-btn');
-
-    // Detail Elements
-    const detailTitle = document.getElementById('detail-title');
-    const detailSubtitle = document.getElementById('detail-subtitle');
-    const detailDescription = document.getElementById('detail-description');
-    const detailBullets = document.getElementById('detail-bullets');
-    const detailTags = document.getElementById('detail-tags');
-
-    function openProjectDetail(projectId) {
-        const project = projectData.find(p => p.id === projectId);
-        if (!project) return;
-
-        // Populate Data
-        detailTitle.textContent = project.title;
-        detailSubtitle.textContent = project.subtitle;
-        detailDescription.textContent = project.description;
-
-        // Populate Bullets
-        detailBullets.innerHTML = project.bullets.map(b => `<li>${b}</li>`).join('');
-
-        // Populate Tags
-        detailTags.innerHTML = project.tags.map(t => `<span>${t}</span>`).join('');
-
-        // Switch View
-        galleryView.classList.remove('active');
-        galleryView.classList.add('hidden');
-
-        detailView.classList.remove('hidden');
-        setTimeout(() => {
-            detailView.classList.add('active');
-        }, 50); // Small delay for transition
-    }
-
-    function closeProjectDetail() {
-        detailView.classList.remove('active');
-        detailView.classList.add('hidden');
-
-        galleryView.classList.remove('hidden');
-        setTimeout(() => {
-            galleryView.classList.add('active');
-        }, 50);
-    }
-
-    // Attach Click Handlers
-    viewProjectBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const card = e.target.closest('.carousel-card');
-            const projectId = parseInt(card.dataset.projectId);
-            openProjectDetail(projectId);
+    // Event Listeners for Launcher
+    document.querySelectorAll('.launcher-tile').forEach(tile => {
+        tile.addEventListener('click', () => {
+            const id = tile.dataset.projectId;
+            openOverlay(id);
         });
     });
 
-    if (backToGalleryBtn) {
-        backToGalleryBtn.addEventListener('click', closeProjectDetail);
+    const openGalleryBtn = document.getElementById('open-gallery-btn');
+    if (openGalleryBtn) {
+        openGalleryBtn.addEventListener('click', () => {
+            openOverlay(0); // Default to first project
+        });
     }
+
+    // Event Listeners for Overlay
+    if (overlayCloseBtn) {
+        overlayCloseBtn.addEventListener('click', closeOverlay);
+    }
+
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && projectOverlay.getAttribute('aria-hidden') === 'false') {
+            closeOverlay();
+        }
+    });
 
     // --- MASTER-DETAIL CONTROLLER (Experience Section) ---
     const masterDetailContainer = document.querySelector('.master-detail-container');
@@ -1000,6 +1041,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // - This scroll triggers the reverse transformation (mini → hero state)
     // The distinction between drag and click is handled in brain-hero.js
     document.getElementById('brain-hero-container').addEventListener('click', (e) => {
+        // 1. Check if Overlay is open
+        const projectOverlay = document.getElementById('project-overlay');
+        if (projectOverlay && projectOverlay.getAttribute('aria-hidden') === 'false') {
+            closeOverlay();
+            return;
+        }
+    });
+
+    // Listen for precise mini-brain clicks (dispatched from brain-hero.js via raycasting)
+    window.addEventListener('mini-brain-clicked', () => {
+        // Default Mini-Brain Behavior (Scroll to Top)
         if (document.body.classList.contains('brain-mode-mini')) {
             // Return to hero section, triggering reverse transformation
             window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -159,129 +159,42 @@
 
     <main id="content">
         <section id="section-projects" class="content-section">
-            <div class="section-content">
-                <!-- VIEW 1: PROJECT GALLERY (Overview) -->
-                <div id="projects-gallery-view" class="view-container active">
+            <div class="section-content launcher-layout">
+                <!-- Zone 1: Top Bar -->
+                <div class="launcher-header">
                     <h2>01. Projects</h2>
+                    <p class="launcher-tagline">A few systems I’m proud to have shipped.</p>
+                </div>
 
-                    <!-- Carousel Wrapper -->
-                    <div class="carousel-wrapper">
-                        <button class="carousel-nav prev" aria-label="Previous project">‹</button>
-
-                        <div class="carousel-container">
-                            <div class="carousel-track">
-                                <!-- Card 1 -->
-                                <div class="card carousel-card" data-project-id="0">
-                                    <div class="card-surface">
-                                        <h3>Minhas Rupsi Learning Platform</h3>
-                                        <p class="card-subtitle">Full Stack + RAG AI</p>
-                                        <div class="card-mini-tags">
-                                            <span>Flask</span><span>RAG</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-
-                                <!-- Card 2 -->
-                                <div class="card carousel-card" data-project-id="1">
-                                    <div class="card-surface">
-                                        <h3>89th Parallel LMS</h3>
-                                        <p class="card-subtitle">Multi-Subject AI System</p>
-                                        <div class="card-mini-tags">
-                                            <span>Python</span><span>Vector Search</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-
-                                <!-- Card 3 -->
-                                <div class="card carousel-card" data-project-id="2">
-                                    <div class="card-surface">
-                                        <h3>Local LLM Ecosystem</h3>
-                                        <p class="card-subtitle">Local AI Inference</p>
-                                        <div class="card-mini-tags">
-                                            <span>Android</span><span>Local LLM</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-
-                                <!-- Card 4 -->
-                                <div class="card carousel-card" data-project-id="3">
-                                    <div class="card-surface">
-                                        <h3>Conversational Clone</h3>
-                                        <p class="card-subtitle">Personality AI Clone</p>
-                                        <div class="card-mini-tags">
-                                            <span>Gemini</span><span>RAG</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-
-                                <!-- Card 5 -->
-                                <div class="card carousel-card" data-project-id="4">
-                                    <div class="card-surface">
-                                        <h3>Area-51</h3>
-                                        <p class="card-subtitle">3D Survival Game</p>
-                                        <div class="card-mini-tags">
-                                            <span>Three.js</span><span>Game Dev</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-
-                                <!-- Card 6 -->
-                                <div class="card carousel-card" data-project-id="5">
-                                    <div class="card-surface">
-                                        <h3>Zephyr-Odyssey</h3>
-                                        <p class="card-subtitle">Physics Arcade Game</p>
-                                        <div class="card-mini-tags">
-                                            <span>Pygame</span><span>Physics</span>
-                                        </div>
-                                        <button class="view-project-btn">View Project</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="carousel-nav next" aria-label="Next project">›</button>
-
-                        <!-- Carousel Dots -->
-                        <div class="carousel-dots">
-                            <button class="carousel-dot active" data-slide="0"></button>
-                            <button class="carousel-dot" data-slide="1"></button>
-                            <button class="carousel-dot" data-slide="2"></button>
-                            <button class="carousel-dot" data-slide="3"></button>
-                            <button class="carousel-dot" data-slide="4"></button>
-                            <button class="carousel-dot" data-slide="5"></button>
-                        </div>
+                <!-- Zone 2: Launcher Tiles -->
+                <div class="launcher-grid">
+                    <!-- Tiles will be injected or hardcoded here. Let's hardcode the top 4 for the launcher. -->
+                    <div class="launcher-tile" data-project-id="0">
+                        <h3 class="tile-title">Minhas Rupsi</h3>
+                        <p class="tile-desc">Full Stack Learning Platform</p>
+                        <div class="tile-tags"><span>Flask</span><span>RAG</span></div>
+                    </div>
+                    <div class="launcher-tile" data-project-id="1">
+                        <h3 class="tile-title">89th Parallel</h3>
+                        <p class="tile-desc">Multi-Subject AI LMS</p>
+                        <div class="tile-tags"><span>Python</span><span>Vector Search</span></div>
+                    </div>
+                    <div class="launcher-tile" data-project-id="2">
+                        <h3 class="tile-title">Local LLM Eco</h3>
+                        <p class="tile-desc">Local AI Inference System</p>
+                        <div class="tile-tags"><span>Android</span><span>Local LLM</span></div>
+                    </div>
+                    <div class="launcher-tile" data-project-id="3">
+                        <h3 class="tile-title">Conversational Clone</h3>
+                        <p class="tile-desc">Personality AI Clone</p>
+                        <div class="tile-tags"><span>Gemini</span><span>RAG</span></div>
                     </div>
                 </div>
 
-                <!-- VIEW 2: PROJECT DETAIL (Full Screen Overlay) -->
-                <div id="project-detail-view" class="view-container hidden">
-                    <button class="back-to-gallery-btn">← Back to Projects</button>
-
-                    <div class="detail-content-wrapper">
-                        <!-- Dynamic Content Injected Here via JS -->
-                        <h2 id="detail-title">Project Title</h2>
-                        <p id="detail-subtitle" class="detail-subtitle">Project Subtitle</p>
-
-                        <div class="detail-body">
-                            <div class="detail-text">
-                                <p id="detail-description">Description goes here...</p>
-                                <ul id="detail-bullets" class="detail-list">
-                                    <!-- Bullets -->
-                                </ul>
-                            </div>
-                            <div class="detail-tech">
-                                <h4>Technologies</h4>
-                                <div id="detail-tags" class="tech-tags">
-                                    <!-- Tags -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Zone 3: Actions -->
+                <div class="launcher-actions">
+                    <button id="open-gallery-btn" class="primary-btn">Open Project Gallery</button>
+                    <p class="action-hint">Click a project to view details in full-screen.</p>
                 </div>
             </div>
         </section>
@@ -677,6 +590,70 @@
             </div>
         </section>
     </main>
+
+    <!-- GLOBAL PROJECT OVERLAY -->
+    <!-- GLOBAL PROJECT OVERLAY -->
+    <div id="project-overlay" class="overlay-container" aria-hidden="true">
+        <!-- Global Gallery Header -->
+        <div class="gallery-header">
+            <div class="gallery-branding">
+                <span class="gallery-icon">❖</span>
+                <h3>NEURAL ARCHIVES // PROJECT DATABASE</h3>
+            </div>
+            <button id="overlay-close-btn">
+                <span class="btn-text">CLOSE INTERFACE</span>
+                <span class="btn-icon">✕</span>
+            </button>
+        </div>
+
+        <div class="overlay-body">
+            <!-- Sidebar Navigation -->
+            <div class="overlay-sidebar">
+                <div class="sidebar-header">AVAILABLE RECORDS</div>
+                <ul id="overlay-project-list">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="overlay-content">
+                <div class="content-wrapper">
+                    <!-- Project Header (Dynamic) -->
+                    <div class="project-header">
+                        <h2 id="overlay-project-title">Project Title</h2>
+                        <span id="overlay-project-type">Project Category</span>
+                        <div id="overlay-tags" class="tags-container">
+                            <!-- Tags populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="project-body-grid">
+                        <div class="project-main-col">
+                            <div class="project-overview">
+                                <p id="overlay-description" class="lead-text">Description goes here...</p>
+                            </div>
+
+                            <div class="detail-block">
+                                <h4>Key Highlights</h4>
+                                <ul id="overlay-bullets" class="feature-list">
+                                    <!-- Bullets populated by JS -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="project-side-col">
+                            <div class="detail-block">
+                                <h4>Technical Specs</h4>
+                                <ul id="overlay-features" class="simple-list">
+                                    <!-- Features populated by JS -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>

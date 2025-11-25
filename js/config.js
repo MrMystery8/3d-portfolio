@@ -31,7 +31,7 @@ export const config = {
 
         // The Pivot Group handles the brain's position on screen while keeping rotation centered.
         // Adjust x/y to move the brain around the screen.
-        brainPivotPosition: { x: 0.0, y: -1.5, z: 0 },
+        brainPivotPosition: { x: 0.0, y: -1.7, z: 0 },
 
         initialRotationY: 0.4,     // Initial Y rotation in radians
     },
@@ -40,9 +40,15 @@ export const config = {
     // MINI BRAIN TRANSFORMATION (Scroll Behavior)
     // ============================================================================
     miniBrain: {
-        margin: -70,                 // Margin from top-right corner in mini mode
-        minSize: 150,              // Minimum pixel size of the mini brain
-        maxSize: 300,              // Maximum pixel size of the mini brain
+        // Position Configuration (Anchors & Offsets)
+        position: {
+            anchorX: 'right', // 'left' or 'right'
+            anchorY: 'top',   // 'top' or 'bottom'
+            offsetX: 10,     // Horizontal offset from anchor (px)
+            offsetY: -110      // Vertical offset from anchor (px) - Positive goes DOWN from top, UP from bottom
+        },
+        minSize: 250,              // Minimum pixel size of the mini brain
+        maxSize: 400,              // Maximum pixel size of the mini brain
         targetProgressThreshold: 0.85, // Scroll progress (0-1) to switch to mini mode
     },
 
@@ -60,7 +66,7 @@ export const config = {
     // UI SETTINGS
     // ============================================================================
     ui: {
-        menuGap: 25, // Vertical gap for menu (vh)
+        menuGap: 23, // Vertical gap for menu (vh)
     },
 
     // ============================================================================
