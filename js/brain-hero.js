@@ -680,6 +680,14 @@ let previousMousePosition = { x: 0, y: 0 };
 let rotationVelocity = { x: 0, y: 0 };
 const friction = 0.95;
 
+// Rotation Transition State
+let userRotationX = 0; // Tracks the manual rotation applied by user
+let transitionProgress = 0; // 0 = Hero (User Rotation), 1 = Mini (0 Rotation)
+
+export function setBrainTransitionProgress(progress) {
+    transitionProgress = Math.max(0, Math.min(progress, 1));
+}
+
 function onMouseDown(event) {
     isDragging = true;
     previousMousePosition = { x: event.clientX, y: event.clientY };
@@ -813,7 +821,9 @@ function onMouseMove(event) {
         // Rotate the pivot
         const rotationSpeed = 0.005;
         brainPivot.rotation.y += deltaMove.x * rotationSpeed;
-        brainPivot.rotation.x += deltaMove.y * rotationSpeed;
+
+        // Update User Rotation X (instead of direct pivot rotation)
+        userRotationX += deltaMove.y * rotationSpeed;
 
         // Update velocity for inertia
         rotationVelocity = {
@@ -1019,19 +1029,26 @@ function animate() {
     const delta = 0.016; // Approx 60fps
 
     // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
+    // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
     if (brainPivot) {
         brainPivot.rotation.y += simulationParams.rotationSpeedY * delta;
-        brainPivot.rotation.x += simulationParams.rotationSpeedX * delta;
+        // brainPivot.rotation.x += simulationParams.rotationSpeedX * delta; // Disable auto X rotation for now to avoid conflict
 
         // Apply inertia when not dragging
         if (!isDragging) {
             brainPivot.rotation.y += rotationVelocity.x;
-            brainPivot.rotation.x += rotationVelocity.y;
+            userRotationX += rotationVelocity.y; // Apply inertia to user rotation
 
             // Apply friction
             rotationVelocity.x *= friction;
             rotationVelocity.y *= friction;
         }
+
+        // Apply Transition Logic for X Rotation
+        // Interpolate between userRotationX (Hero) and 0 (Mini)
+        // We use a smooth ease-out for the transition
+        const targetX = 0;
+        brainPivot.rotation.x = userRotationX * (1 - transitionProgress) + targetX * transitionProgress;
     }
 
     // 2. Update Signals

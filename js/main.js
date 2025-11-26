@@ -1,4 +1,4 @@
-import { initBrain, onScrollToSection, resetToHero, updateBrainViewport, updateSimulationParams, highlightBrainRegion, updateActiveSectionHighlight, setBrainRegionHighlight, getBrainRegionScreenPosition } from './brain-hero.js';
+import { initBrain, onScrollToSection, resetToHero, updateBrainViewport, updateSimulationParams, highlightBrainRegion, updateActiveSectionHighlight, setBrainRegionHighlight, getBrainRegionScreenPosition, setBrainTransitionProgress } from './brain-hero.js';
 import { config } from './config.js';
 import { initBackground } from './background.js';
 import { initTextEffects } from './text-effects.js';
@@ -108,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth < 768;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (!isMobile && !prefersReducedMotion) {    // Initialize Three.js scene
-        initBrain();
+    if (!isMobile && !prefersReducedMotion) {
+        // Initialization moved to end of file
     } else {
         // Fallback...
         const container = document.getElementById('brain-hero-container');
@@ -184,6 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Use currentProgress for all calculations
         const t = currentProgress;
+
+        // Update Brain Rotation Transition
+        setBrainTransitionProgress(t);
 
         const viewportHeight = window.innerHeight;
         const viewportWidth = window.innerWidth;
@@ -315,13 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentProgress = targetProgress;
     });
 
-    // Start loop
-    updateTargetProgress();
-    animateBrain();
 
-    // Start loop
-    updateTargetProgress();
-    animateBrain();
 
     // --- STRICT SECTION SCROLLING (Wheel Hijack) ---
     let isAnimating = false;
@@ -406,12 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Animate
         isAnimating = true;
         const targetSection = targets[targetIndex];
-        const targetTop = scrollY + targetSection.getBoundingClientRect().top;
 
-        window.scrollTo({
-            top: targetTop,
-            behavior: 'smooth'
-        });
+        scrollToElement(targetSection);
 
         // Lock scroll for a duration to prevent rapid skipping
         // Native smooth scroll duration is variable, but ~800ms is usually safe
@@ -631,7 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const section = document.getElementById(sectionId);
                 if (section) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    scrollToElement(section);
                 }
 
                 // Cleanup animations and hide connector
@@ -716,8 +709,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Tabs (Skills & Labs)
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    // 2. Tabs (Skills & Labs)
+    const tabBtns = document.querySelectorAll('.sl-tab-btn');
+    const tabContents = document.querySelectorAll('.sl-tab-pane');
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -733,16 +727,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Accordion (Profile)
-    document.querySelectorAll('.accordion-header').forEach(header => {
+    document.querySelectorAll('.acc-header').forEach(header => {
         header.addEventListener('click', () => {
             const item = header.parentElement;
-            const content = item.querySelector('.accordion-content');
+            const content = item.querySelector('.acc-body');
             const isActive = item.classList.contains('active');
 
             // Close all others (optional - exclusive accordion)
-            // document.querySelectorAll('.accordion-item').forEach(i => {
+            // document.querySelectorAll('.acc-item').forEach(i => {
             //     i.classList.remove('active');
-            //     i.querySelector('.accordion-content').style.maxHeight = '0';
+            //     i.querySelector('.acc-body').style.maxHeight = '0';
             // });
 
             if (!isActive) {
@@ -759,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectData = [
         {
             id: 0,
-            title: "Minhas Rupsi Learning Platform",
+            title: "Minhas Rupsi LMS",
             subtitle: "Full Stack Learning Platform + RAG AI Chatbot",
             description: "Built a full-stack learning platform for Computer Science students with a Flask backend and custom APIs. Implemented a retrieval-augmented generation (RAG) chatbot that indexes lecture PDFs and notes to answer student queries with context.",
             bullets: [
@@ -870,6 +864,99 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Particle effects system",
                 "Save/Load system"
             ]
+        }
+    ];
+
+    const experienceData = [
+        {
+            id: 0,
+            role: "Software Engineer Intern",
+            org: "ORCA Team, JurisTech",
+            date: "Aug 2025 – Present",
+            location: "Kuala Lumpur, Malaysia",
+            tags: ["Industry", "Fintech", "Oracle", "PHP"],
+            did: [
+                "Refactored loan-origination workflows in the ORCA/RLOS ecosystem using Oracle PL/SQL and PHP.",
+                "Implemented credit scoring, income validation and anti-money-laundering (AML) rules for multiple product flows.",
+                "Wrote diagnostic SQL to investigate queue behaviour, audit trails and data mismatches."
+            ],
+            impact: [
+                "Reduced manual checks by automating validation rules at earlier stages in the origination pipeline.",
+                "Helped identify and patch edge-case bugs in UAT and production environments."
+            ],
+            tech: ["Oracle PL/SQL", "PHP", "Joget/Lens-based front-ends", "GitLab", "TOAD/SQL Developer"]
+        },
+        {
+            id: 1,
+            role: "R&D Assistant",
+            org: "Centre for Technology & Innovation, APU",
+            date: "Nov 2024 – Present",
+            location: "Kuala Lumpur, Malaysia",
+            tags: ["Research", "Web", "Prototyping"],
+            did: [
+                "Built proof-of-concept web applications using HTML, CSS and JavaScript for internal and student-facing use.",
+                "Modernised legacy pages to be responsive and mobile-friendly.",
+                "Collaborated with lecturers and researchers to prototype new tools and UI flows."
+            ],
+            impact: [
+                "Improved usability and performance of internal tools used by students and staff.",
+                "Helped accelerate experimentation cycles by quickly turning ideas into usable prototypes."
+            ],
+            tech: ["HTML", "CSS", "JavaScript", "Figma/Canva", "Git"]
+        },
+        {
+            id: 2,
+            role: "Teaching Assistant",
+            org: "Python with AI Basics (Minhas Rupsi)",
+            date: "Jul 2025",
+            location: "Remote / Hybrid",
+            tags: ["Teaching", "Python", "AI"],
+            did: [
+                "Supported a 4-week crash course covering Python fundamentals and introduction to AI.",
+                "Helped students move from basic syntax to building simple chatbots with Gemini and Google AI Studio.",
+                "Assisted with debugging code, explaining concepts and handling Q&A in live sessions."
+            ],
+            impact: [
+                "Helped over 50 students successfully complete exercises and deploy their first AI-powered scripts.",
+                "Reduced bottlenecks for the main instructor by handling common questions and code issues."
+            ],
+            tech: ["Python", "Google AI Studio", "Gemini APIs", "VS Code"]
+        },
+        {
+            id: 3,
+            role: "Chief Information Officer",
+            org: "Nixor Creative Studios",
+            date: "Feb 2022 – Feb 2023",
+            location: "Karachi, Pakistan",
+            tags: ["Leadership", "Operations", "Web"],
+            did: [
+                "Led IT operations and tooling for a 50+ member student creative/media organisation.",
+                "Maintained and improved website infrastructure and digital tools used for event coverage and content publishing.",
+                "Directed the relaunch of the Sharkpress online journalism platform."
+            ],
+            impact: [
+                "Improved the reliability of the studio’s web presence during high-traffic events.",
+                "Streamlined workflows between media, photography and content teams."
+            ],
+            tech: ["Web hosting", "CMS/admin tools", "Collaboration platforms", "Basic DevOps"]
+        },
+        {
+            id: 4,
+            role: "Physics Teaching Assistant",
+            org: "Nixor TA Program",
+            date: "Oct 2021 – Mar 2023",
+            location: "Karachi, Pakistan",
+            tags: ["Teaching", "Physics", "Mentoring"],
+            did: [
+                "Provided academic support for A-Level Physics students through the official TA program.",
+                "Answered questions, reviewed practice work and guided exam-style problem solving.",
+                "Served as a Senior TA, helping coordinate junior TAs and liaise with the Student Academics Team."
+            ],
+            impact: [
+                "Helped multiple cohorts of students prepare for A-Level Physics exams.",
+                "Increased availability of one-to-one academic support outside formal class time."
+            ],
+            tech: ["A-Level Physics material", "Teaching aids", "Online communication platforms"]
         }
     ];
 
@@ -996,36 +1083,106 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- MASTER-DETAIL CONTROLLER (Experience Section) ---
-    const masterDetailContainer = document.querySelector('.master-detail-container');
+    // --- EXPERIENCE OVERLAY CONTROLLER ---
+    const expOverlay = document.getElementById('experience-overlay');
+    const expCloseBtn = document.getElementById('exp-overlay-close-btn');
+    const expList = document.getElementById('exp-overlay-list');
 
-    if (masterDetailContainer) {
-        const timelineItems = Array.from(masterDetailContainer.querySelectorAll('.timeline-item'));
-        const detailContents = Array.from(masterDetailContainer.querySelectorAll('.detail-content'));
+    // DOM Elements
+    const expRole = document.getElementById('exp-overlay-role');
+    const expOrg = document.getElementById('exp-overlay-org');
+    const expDate = document.getElementById('exp-overlay-date');
+    const expLoc = document.getElementById('exp-overlay-loc');
+    const expTags = document.getElementById('exp-overlay-tags');
+    const expDid = document.getElementById('exp-overlay-did');
+    const expImpact = document.getElementById('exp-overlay-impact');
+    const expTech = document.getElementById('exp-overlay-tech');
 
-        // Function to show specific detail
-        function showDetail(index) {
-            // Update timeline items
-            timelineItems.forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
+    function openExpOverlay(expId = 0) {
+        renderExpContent(expId);
+        renderExpSidebar(expId);
+        expOverlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('no-scroll');
+        expCloseBtn.focus();
+    }
 
-            // Update detail contents
-            detailContents.forEach((content, i) => {
-                content.classList.toggle('hidden', i !== index);
-            });
-        }
+    function closeExpOverlay() {
+        expOverlay.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('no-scroll');
+        const launcherBtn = document.getElementById('open-experience-btn');
+        if (launcherBtn) launcherBtn.focus();
+    }
 
-        // Click handlers for timeline items
-        timelineItems.forEach((item, index) => {
+    function renderExpContent(id) {
+        const exp = experienceData.find(e => e.id === parseInt(id)) || experienceData[0];
+        const contentWrapper = expOverlay.querySelector('.overlay-content');
+
+        contentWrapper.style.opacity = '0';
+
+        setTimeout(() => {
+            expRole.textContent = exp.role;
+            expOrg.textContent = exp.org;
+            expDate.textContent = exp.date;
+            expLoc.textContent = exp.location;
+
+            // Tags
+            expTags.innerHTML = exp.tags.map(t => `<span>${t}</span>`).join('');
+
+            // Lists
+            expDid.innerHTML = exp.did.map(item => `<li>${item}</li>`).join('');
+            expImpact.innerHTML = exp.impact.map(item => `<li>${item}</li>`).join('');
+            expTech.innerHTML = exp.tech.map(t => `<span>${t}</span>`).join('');
+
+            contentWrapper.scrollTop = 0;
+            contentWrapper.style.opacity = '1';
+        }, 200);
+    }
+
+    function renderExpSidebar(activeId) {
+        expList.innerHTML = experienceData.map(e => {
+            return `
+            <li class="sidebar-item ${e.id === parseInt(activeId) ? 'active' : ''}" data-id="${e.id}">
+                <span class="sidebar-item-title">${e.role}</span>
+                <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 4px;">${e.org}</div>
+            </li>
+            `;
+        }).join('');
+
+        expList.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
-                showDetail(index);
+                const newId = item.dataset.id;
+                renderExpContent(newId);
+                expList.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
             });
         });
-
-        // Initialize with first item selected
-        showDetail(0);
     }
+
+    // Event Listeners
+    document.querySelectorAll('.v-item').forEach(tile => {
+        tile.addEventListener('click', () => {
+            const id = tile.dataset.experienceId;
+            openExpOverlay(id);
+        });
+    });
+
+    const openExpBtn = document.getElementById('open-experience-btn');
+    if (openExpBtn) {
+        openExpBtn.addEventListener('click', () => {
+            openExpOverlay(0);
+        });
+    }
+
+    if (expCloseBtn) {
+        expCloseBtn.addEventListener('click', closeExpOverlay);
+    }
+
+    // ESC Key for Experience Overlay
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expOverlay.getAttribute('aria-hidden') === 'false') {
+            closeExpOverlay();
+        }
+    });
 
 
     // Listen for brain click events to hide connector
@@ -1043,8 +1200,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('brain-hero-container').addEventListener('click', (e) => {
         // 1. Check if Overlay is open
         const projectOverlay = document.getElementById('project-overlay');
+        const expOverlay = document.getElementById('experience-overlay');
+
         if (projectOverlay && projectOverlay.getAttribute('aria-hidden') === 'false') {
             closeOverlay();
+            return;
+        }
+
+        if (expOverlay && expOverlay.getAttribute('aria-hidden') === 'false') {
+            closeExpOverlay(); // We need to make sure closeExpOverlay is accessible here or duplicate logic
             return;
         }
     });
@@ -1059,4 +1223,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // 4. Profile Overlay Logic
+    const profileOverlay = document.getElementById('profile-overlay');
+    const profileCloseBtn = document.getElementById('profile-overlay-close-btn');
+    const profileOpenBtn = document.getElementById('btn-open-profile');
+    const profileCards = document.querySelectorAll('.pl-card');
+
+    function openProfileOverlay(targetSectionId) {
+        profileOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden'; // Disable global scroll
+
+        if (targetSectionId) {
+            const targetEl = document.getElementById(targetSectionId);
+            if (targetEl) {
+                setTimeout(() => {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+    }
+
+    function closeProfileOverlay() {
+        profileOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = ''; // Restore global scroll
+    }
+
+    if (profileOpenBtn) {
+        profileOpenBtn.addEventListener('click', () => {
+            openProfileOverlay('profile-education'); // Default to top
+        });
+    }
+
+    if (profileCloseBtn) {
+        profileCloseBtn.addEventListener('click', closeProfileOverlay);
+    }
+
+    profileCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const target = card.dataset.profileTarget;
+            let sectionId = 'profile-education';
+            if (target === 'achievements') sectionId = 'profile-achievements';
+            if (target === 'certs') sectionId = 'profile-certs';
+            openProfileOverlay(sectionId);
+        });
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeProfileOverlay();
+            // Also close other overlays if open
+            document.getElementById('project-overlay').setAttribute('aria-hidden', 'true');
+            document.getElementById('experience-overlay').setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Initialize Brain (Moved here to ensure all functions are defined)
+    if (!isMobile && !prefersReducedMotion) {
+        initBrain();
+        animateBrain();
+    }
+
 });
+
+// Helper for consistent scrolling
+function scrollToElement(element) {
+    // Use offsetTop to get the layout position, ignoring transforms
+    let targetTop = 0;
+    let el = element;
+    while (el) {
+        targetTop += el.offsetTop;
+        el = el.offsetParent;
+    }
+
+    window.scrollTo({
+        top: targetTop,
+        behavior: 'smooth'
+    });
+}

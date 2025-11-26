@@ -163,14 +163,14 @@
                 <!-- Zone 1: Top Bar -->
                 <div class="launcher-header">
                     <h2>01. Projects</h2>
-                    <p class="launcher-tagline">A few systems I’m proud to have shipped.</p>
+
                 </div>
 
                 <!-- Zone 2: Launcher Tiles -->
                 <div class="launcher-grid">
                     <!-- Tiles will be injected or hardcoded here. Let's hardcode the top 4 for the launcher. -->
                     <div class="launcher-tile" data-project-id="0">
-                        <h3 class="tile-title">Minhas Rupsi</h3>
+                        <h3 class="tile-title">Minhas LMS</h3>
                         <p class="tile-desc">Full Stack Learning Platform</p>
                         <div class="tile-tags"><span>Flask</span><span>RAG</span></div>
                     </div>
@@ -200,396 +200,435 @@
         </section>
 
         <section id="section-experience" class="content-section">
-            <div class="section-content">
-                <h2>02. Experience</h2>
+            <div class="section-content launcher-layout">
+                <!-- Zone 1: Top Bar (Header Band) -->
+                <div class="launcher-header">
+                    <h2>02. Experience</h2>
+                    <p class="launcher-tagline">Snapshots of where I’ve actually worked.</p>
+                </div>
 
-                <!-- Master-Detail Container -->
-                <div class="master-detail-container">
-                    <!-- Timeline Master (Left/Top) -->
-                    <div class="timeline-master">
-                        <div class="timeline-item active" data-experience="0">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-brief">
-                                <h4>Software Engineer Intern</h4>
-                                <p class="timeline-company">ORCA Team, JurisTech</p>
-                                <p class="timeline-date">Aug 2025 – Present</p>
-                            </div>
+                <!-- Zone 2: Middle Band (Vertical Timeline) -->
+                <div class="experience-timeline-vertical">
+                    <div class="v-line"></div>
+
+                    <!-- Item 1 (Left) -->
+                    <div class="v-item left" data-experience-id="0">
+                        <div class="v-card">
+                            <span class="v-role">SWE Intern @ JurisTech</span>
+                            <span class="v-date">Aug 2025–Present</span>
                         </div>
+                        <div class="v-node"></div>
+                    </div>
 
-                        <div class="timeline-item" data-experience="1">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-brief">
-                                <h4>R&D Assistant</h4>
-                                <p class="timeline-company">APU</p>
-                                <p class="timeline-date">Nov 2024 – Present</p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item" data-experience="2">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-brief">
-                                <h4>Teaching Assistant</h4>
-                                <p class="timeline-company">Python AI Course</p>
-                                <p class="timeline-date">Jul 2025</p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item" data-experience="3">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-brief">
-                                <h4>Chief Information Officer</h4>
-                                <p class="timeline-company">Nixor Creative Studios</p>
-                                <p class="timeline-date">Feb 2022 – Feb 2023</p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item" data-experience="4">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-brief">
-                                <h4>Physics TA</h4>
-                                <p class="timeline-company">Nixor TA Program</p>
-                                <p class="timeline-date">Oct 2021 – Mar 2023</p>
-                            </div>
+                    <!-- Item 2 (Right) -->
+                    <div class="v-item right" data-experience-id="1">
+                        <div class="v-node"></div>
+                        <div class="v-card">
+                            <span class="v-role">R&D Asst @ CTI (APU)</span>
+                            <span class="v-date">Nov 2024–Present</span>
                         </div>
                     </div>
 
-                    <!-- Detail Panel (Right/Bottom) -->
-                    <div class="detail-panel">
-                        <div class="detail-content" data-detail="0">
-                            <h3>Software Engineer Intern – ORCA Team, JurisTech</h3>
-                            <p class="detail-subtitle">Aug 2025 – Present · Kuala Lumpur, Malaysia</p>
-                            <p class="detail-summary">Working on loan-origination backends using Oracle PL/SQL
-                                and PHP.
-                            </p>
-                            <ul class="detail-list">
-                                <li>Refactored loan-origination workflows for the ORCA/RLOS ecosystem using
-                                    Oracle
-                                    PL/SQL.</li>
-                                <li>Implemented credit scoring, income validation and anti-money-laundering
-                                    (AML) rules
-                                    that reduce manual checks for sales teams.</li>
-                                <li>Wrote diagnostic SQL scripts to trace data issues and application behaviour
-                                    across
-                                    multiple modules.</li>
-                                <li>Supported GitLab-based deployments and worked with senior engineers to debug
-                                    UAT and
-                                    production issues.</li>
-                            </ul>
+                    <!-- Item 3 (Left) -->
+                    <div class="v-item left" data-experience-id="2">
+                        <div class="v-card">
+                            <span class="v-role">TA @ Python w/ AI</span>
+                            <span class="v-date">Jul 2025</span>
                         </div>
+                        <div class="v-node"></div>
+                    </div>
 
-                        <div class="detail-content hidden" data-detail="1">
-                            <h3>R&D Assistant – Centre for Technology & Innovation, APU</h3>
-                            <p class="detail-subtitle">Nov 2024 – Present · Kuala Lumpur, Malaysia</p>
-                            <p class="detail-summary">Building and modernising internal web POCs for students
-                                and staff.
-                            </p>
-                            <ul class="detail-list">
-                                <li>Developed proof-of-concept web applications using HTML, CSS and JavaScript
-                                    for
-                                    internal and student-facing platforms.</li>
-                                <li>Modernised legacy modules to be responsive and mobile-friendly.</li>
-                                <li>Improved page load performance and cross-browser compatibility.</li>
-                                <li>Collaborated with lecturers and researchers to prototype new features and
-                                    tools.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-content hidden" data-detail="2">
-                            <h3>Teaching Assistant – Python with AI Basics (Crash Course)</h3>
-                            <p class="detail-subtitle">Jul 2025</p>
-                            <p class="detail-summary">Helped run a 4-week crash course for 50+ students on
-                                Python and
-                                AI.</p>
-                            <ul class="detail-list">
-                                <li>Assisted in delivering a 4-week crash course covering Python basics and
-                                    introduction
-                                    to AI.</li>
-                                <li>Helped students move from fundamental syntax to building simple chatbots
-                                    powered by
-                                    Gemini through Google AI Studio.</li>
-                                <li>Provided one-to-one support during exercises and debugging sessions.</li>
-                                <li>Guided students on how to call AI APIs from their own Python scripts.</li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-content hidden" data-detail="3">
-                            <h3>Chief Information Officer – Nixor Creative Studios</h3>
-                            <p class="detail-subtitle">Feb 2022 – Feb 2023 · Karachi, Pakistan</p>
-                            <p class="detail-summary">Led IT operations and web infrastructure for a 50+ member
-                                student
-                                media team.</p>
-                            <ul class="detail-list">
-                                <li>Led the IT function for a student-run creative studio of over 50 volunteers.
-                                </li>
-                                <li>Maintained and improved the studio's website infrastructure and digital
-                                    tools.</li>
-                                <li>Directed the relaunch of the Sharkpress online journalism platform,
-                                    improving
-                                    reliability and usability.</li>
-                                <li>Coordinated with media, photography and design teams to support event
-                                    coverage and
-                                    publishing workflows.</li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-content hidden" data-detail="4">
-                            <h3>Physics Teaching Assistant – Nixor TA Program</h3>
-                            <p class="detail-subtitle">Oct 2021 – Mar 2023 · Karachi, Pakistan</p>
-                            <p class="detail-summary">Supported A-Level Physics students as a TA and Senior TA.
-                            </p>
-                            <ul class="detail-list">
-                                <li>Provided academic support for A-Level Physics students through the official
-                                    TA
-                                    program.</li>
-                                <li>Answered student questions, checked practice work and guided
-                                    problem-solving.</li>
-                                <li>Served as a Senior TA, helping manage junior TAs and coordinate with the
-                                    Student
-                                    Academics Team.</li>
-                                <li>Maintained a consistent TA lounge presence (4+ hours per week) for drop-in
-                                    support.
-                                </li>
-                            </ul>
+                    <!-- Item 4 (Right) -->
+                    <div class="v-item right" data-experience-id="3">
+                        <div class="v-node"></div>
+                        <div class="v-card">
+                            <span class="v-role">CIO @ Nixor Studios</span>
+                            <span class="v-date">Feb 2022–Feb 2023</span>
                         </div>
                     </div>
+
+                    <!-- Item 5 (Left) -->
+                    <div class="v-item left" data-experience-id="4">
+                        <div class="v-card">
+                            <span class="v-role">Physics TA @ Nixor</span>
+                            <span class="v-date">Oct 2021–Mar 2023</span>
+                        </div>
+                        <div class="v-node"></div>
+                    </div>
+                </div>
+
+                <!-- Zone 3: Bottom Band (CTA) -->
+                <div class="launcher-actions">
+                    <button id="open-experience-btn" class="primary-btn">Open Experience Timeline</button>
+                    <p class="action-hint">View full roles, responsibilities and impact in a dedicated view.</p>
                 </div>
             </div>
         </section>
 
         <section id="section-skills-labs" class="content-section">
-            <div class="section-content">
-                <h2>03. Skills & Labs</h2>
+            <div class="section-content skills-labs-layout">
+                <!-- Zone 1: Header Band -->
+                <div class="sl-header">
+                    <h2>03. Skills & Labs</h2>
+                    <p class="sl-subheading">What I actually use, build and experiment with.</p>
+                </div>
 
-                <div class="section-scroll-wrapper">
-                    <div class="tabs-container">
-                        <div class="tabs-nav">
-                            <button class="tab-btn active" data-tab="skills">Skills</button>
-                            <button class="tab-btn" data-tab="labs">Labs</button>
-                            <button class="tab-btn" data-tab="interests">Interests</button>
-                        </div>
+                <!-- Zone 2: Tabs + Content Band -->
+                <div class="sl-content-band">
+                    <!-- Tab Row -->
+                    <div class="sl-tabs-nav">
+                        <button class="sl-tab-btn active" data-tab="skills">Skills</button>
+                        <button class="sl-tab-btn" data-tab="labs">Labs</button>
+                        <button class="sl-tab-btn" data-tab="interests">Interests</button>
+                    </div>
 
-                        <div class="tab-content active" id="tab-skills">
-                            <div class="skills-group">
-                                <h4>Languages</h4>
-                                <div class="tech-tags">
-                                    <span>Python</span><span>Java</span><span>C++</span><span>C#</span><span>JavaScript</span><span>PHP</span><span>SQL
-                                        / PL-SQL</span>
-                                </div>
-                            </div>
-                            <div class="skills-group">
-                                <h4>Web & Platforms</h4>
-                                <div class="tech-tags">
-                                    <span>HTML</span><span>CSS</span><span>React</span><span>Flask</span><span>Django</span><span>Android
-                                        Studio</span><span>Joget DX / Joget 8 DX</span>
-                                </div>
-                            </div>
-                            <div class="skills-group">
-                                <h4>AI & Systems</h4>
-                                <div class="tech-tags">
-                                    <span>RAG pipelines</span><span>Vector search</span><span>LLM
-                                        prompting</span><span>Local LLM inference</span><span>AI agent
-                                        development</span><span>Generative AI tools</span><span>Oracle
-                                        Database</span><span>Git</span><span>Cloudflare Tunnels</span>
-                                </div>
-                            </div>
-                            <div class="skills-group">
-                                <h4>Other Tools</h4>
-                                <div class="tech-tags">
-                                    <span>R Studio</span><span>IDEs and hosting tools</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-content" id="tab-labs">
-                            <div class="card-grid">
-                                <!-- Lab Card 1 -->
-                                <div class="card">
-                                    <h3>Local LLM Sandbox</h3>
-                                    <p>Experiments with quantised open-source models running locally and exposed
-                                        to
-                                        mobile/web clients.</p>
-                                    <div class="card-details">
-                                        <p>Backs the Local LLM Ecosystem project with various quantisation
-                                            strategies
-                                            and
-                                            prompt templates.</p>
-                                        <p>Used to benchmark different model sizes and quantisation levels on
-                                            personal
-                                            hardware.</p>
+                    <!-- Tab Content Area -->
+                    <div class="sl-tab-content-wrapper">
+                        <!-- SKILLS TAB -->
+                        <div class="sl-tab-pane active" id="tab-skills">
+                            <div class="sl-grid-2x2">
+                                <!-- Group 1 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <span class="header-icon">⚡</span>
+                                        <h4>Languages</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>Python</span><span>Java</span><span>C++</span><span>C#</span>
+                                        <span>JavaScript</span><span>PHP</span><span>SQL</span>
                                     </div>
                                 </div>
-                                <!-- Lab Card 2 -->
-                                <div class="card">
-                                    <h3>AI Art Creator – @ai.illusions</h3>
-                                    <p>Instagram AI art page with 15,000+ followers.</p>
-                                    <div class="card-details">
-                                        <p>Curates and generates AI artwork using multiple generative models.
-                                        </p>
-                                        <p>Grew an online community of over 15K followers around AI-generated
-                                            visual
-                                            content.</p>
-                                        <p>Experiments with prompts, styles and post-processing workflows.</p>
+                                <!-- Group 2 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <span class="header-icon">🌐</span>
+                                        <h4>Web & Platforms</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>HTML</span><span>CSS</span><span>React</span><span>Flask</span>
+                                        <span>Django</span><span>Android Studio</span><span>Joget DX</span>
                                     </div>
                                 </div>
-                                <!-- Lab Card 3 -->
-                                <div class="card">
-                                    <h3>Google Labs Trusted Tester</h3>
-                                    <p>Early tester for experimental tools like Imagen 2, Whisk Animate and Veo
-                                        2.</p>
-                                    <div class="card-details">
-                                        <p>Provided feedback on generative image and video tools.</p>
-                                        <p>Used test access to explore creative and educational use cases.</p>
+                                <!-- Group 3 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <span class="header-icon">🧠</span>
+                                        <h4>AI & Systems</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>RAG pipelines</span><span>Vector search</span><span>LLM prompting</span>
+                                        <span>Local LLM inference</span><span>AI agents</span><span>Gen AI tools</span>
+                                        <span>Oracle DB</span><span>Git</span>
                                     </div>
                                 </div>
-                                <!-- Lab Card 4 -->
-                                <div class="card">
-                                    <h3>DMU Carbon Literacy & Summer School</h3>
-                                    <p>Completed carbon literacy training and attended De Montfort University
-                                        summer
-                                        school
-                                        in the UK.</p>
-                                    <div class="card-details">
-                                        <p>Learned about sustainability and climate-related decision-making.</p>
-                                        <p>Participated in international academic activities at DMU.</p>
+                                <!-- Group 4 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <span class="header-icon">🛠️</span>
+                                        <h4>Other Tools</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>R Studio</span><span>IDEs & Deployment</span><span>Cloudflare</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="tab-content" id="tab-interests">
-                            <div class="tech-tags large-tags">
-                                <span>AI & Technology</span>
-                                <span>AI Art & Design</span>
-                                <span>Web Development</span>
-                                <span>Robotics</span>
-                                <span>Football / Futsal</span>
-                                <span>Photography</span>
+                        <!-- LABS TAB -->
+                        <div class="sl-tab-pane" id="tab-labs">
+                            <div class="sl-grid-2x2">
+                                <!-- Lab 1 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>Local LLM Sandbox</h3>
+                                        <span class="lab-tag">AI / Local</span>
+                                    </div>
+                                    <p class="lab-desc">Experiments with quantised open-source models running locally
+                                        and exposed to mobile/web clients.</p>
+                                </div>
+                                <!-- Lab 2 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>AI Art Creator</h3>
+                                        <span class="lab-tag">Art / GenAI</span>
+                                    </div>
+                                    <p class="lab-desc">Instagram AI art page (@ai.illusions) with 15,000+ followers
+                                        curating generative art.</p>
+                                </div>
+                                <!-- Lab 3 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>Google Labs Tester</h3>
+                                        <span class="lab-tag">Beta / Research</span>
+                                    </div>
+                                    <p class="lab-desc">Early testing of Imagen 2, Whisk Animate and Veo 2 for creative
+                                        workflows.</p>
+                                </div>
+                                <!-- Lab 4 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>DMU Carbon Literacy</h3>
+                                        <span class="lab-tag">Sustainability</span>
+                                    </div>
+                                    <p class="lab-desc">Carbon literacy training and DMU summer school (UK) focused on
+                                        climate impact.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INTERESTS TAB -->
+                        <div class="sl-tab-pane" id="tab-interests">
+                            <div class="interests-wrapper">
+                                <div class="sl-card interests-panel">
+                                    <div class="card-header centered">
+                                        <span class="header-icon">✨</span>
+                                        <h4>Personal Interests</h4>
+                                    </div>
+                                    <div class="interests-cluster">
+                                        <span>AI & Technology</span>
+                                        <span>AI Art & Design</span>
+                                        <span>Web Development</span>
+                                        <span>Robotics</span>
+                                        <span>Football / Futsal</span>
+                                        <span>Photography</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Zone 3: Footer Band -->
+                <div class="sl-footer">
+                    <p>Tap skills, labs or interests above to explore different facets — details live in the other
+                        sections and overlays.</p>
                 </div>
             </div>
         </section>
 
         <section id="section-profile" class="content-section">
-            <div class="section-content">
-                <h2>04. Profile</h2>
+            <div class="section-content profile-launcher-layout">
+                <!-- Band 1: Header -->
+                <div class="pl-header">
+                    <h2>04. Profile</h2>
+                    <p class="pl-subheading">Academic track, scores and recognitions in one snapshot.</p>
+                </div>
 
-                <div class="stats-strip">
-                    <div class="stat-item">
-                        <span class="stat-value">3.94</span>
-                        <span class="stat-label">CGPA (BSc CS AI)</span>
+                <!-- Band 2: Stats (Highlight Strip) -->
+                <div class="pl-stats-band">
+                    <div class="pl-stat-tile">
+                        <span class="pl-stat-val">3.94</span>
+                        <span class="pl-stat-lbl">CGPA · BSc CS (AI), APU</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-value">1500</span>
-                        <span class="stat-label">SAT (1600)</span>
+                    <div class="pl-stat-tile">
+                        <span class="pl-stat-val">1500</span>
+                        <span class="pl-stat-lbl">SAT · 800 Math, 700 English</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-value">9 A*</span>
-                        <span class="stat-label">O Levels</span>
+                    <div class="pl-stat-tile">
+                        <span class="pl-stat-val">9 A*</span>
+                        <span class="pl-stat-lbl">GCE O Levels</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-value">15K+</span>
-                        <span class="stat-label">Followers</span>
+                    <div class="pl-stat-tile">
+                        <span class="pl-stat-val">15K+</span>
+                        <span class="pl-stat-lbl">Followers on @ai.illusions</span>
                     </div>
                 </div>
 
-                <div class="profile-columns">
-                    <div class="profile-col">
-                        <h3>Education</h3>
-                        <div class="accordion">
-                            <div class="accordion-item">
-                                <button class="accordion-header">BSc (Hons) Computer Science (AI) – APU
-                                    (2023–2026)</button>
-                                <div class="accordion-content">
-                                    <p>CGPA: 3.94</p>
-                                    <p>Vice Chancellor’s List: 2024, 2025</p>
-                                    <p>Dual degree with De Montfort University (UK)</p>
-                                    <p>30% academic scholarship</p>
-                                </div>
+                <!-- Band 3: Summary Cards (Launcher) -->
+                <div class="pl-cards-band">
+                    <!-- Card 1: Education -->
+                    <div class="pl-card" data-profile-target="education">
+                        <div class="pl-card-header">
+                            <span class="pl-icon">🎓</span>
+                            <h4>Education</h4>
+                        </div>
+                        <ul class="pl-bullets">
+                            <li>BSc (Hons) Computer Science (AI), APU – CGPA 3.94</li>
+                            <li>GCE A Levels – Nixor College (A* Math, CS, Phy, Chem)</li>
+                            <li>GCE O Levels – Alpha High School (9 A*, 1 A)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 2: Achievements -->
+                    <div class="pl-card" data-profile-target="achievements">
+                        <div class="pl-card-header">
+                            <span class="pl-icon">🏆</span>
+                            <h4>Achievements</h4>
+                        </div>
+                        <ul class="pl-bullets">
+                            <li>Vice Chancellor’s List (APU) · 2024, 2025</li>
+                            <li>Scinnova V – Grand Runners Up; Robotics winner</li>
+                            <li>Euclid Contest – Distinction (Top 25%)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Card 3: Certifications -->
+                    <div class="pl-card" data-profile-target="certs">
+                        <div class="pl-card-header">
+                            <span class="pl-icon">📜</span>
+                            <h4>Certifications</h4>
+                        </div>
+                        <ul class="pl-bullets">
+                            <li>AI Agents Fundamentals – Hugging Face</li>
+                            <li>AI X-Perience Workshop – Rocheston (APU)</li>
+                            <li>Carbon Literacy & Summer School – DMU (UK)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Band 4: CTA -->
+                <div class="pl-cta-band">
+                    <button id="btn-open-profile" class="pl-cta-btn">Open Full Academic Profile</button>
+                    <p class="pl-cta-hint">View full education history, achievements and certifications in a dedicated
+                        view.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PROFILE OVERLAY (Detailed View) -->
+    <div id="profile-overlay" class="overlay-container" aria-hidden="true">
+        <div class="gallery-header">
+            <div class="gallery-branding">
+                <span class="gallery-icon">❖</span>
+                <h3>ACADEMIC DOSSIER</h3>
+            </div>
+            <button id="profile-overlay-close-btn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">CLOSE</span>
+            </button>
+        </div>
+
+        <div class="overlay-body profile-overlay-body">
+            <div class="profile-overlay-content">
+                <!-- Education Section -->
+                <div id="profile-education" class="profile-section-block">
+                    <h3 class="profile-section-title">Education History</h3>
+                    <div class="accordion-wrapper">
+                        <div class="acc-item active">
+                            <div class="acc-header">
+                                <span class="acc-title">BSc (Hons) Computer Science (AI)</span>
+                                <span class="acc-date">2023–2026</span>
                             </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">GCE A Levels – Nixor College</button>
-                                <div class="accordion-content">
-                                    <p>Further Mathematics – A</p>
-                                    <p>Mathematics – A*</p>
-                                    <p>Computer Science – A*</p>
-                                    <p>Physics – A*</p>
-                                    <p>Chemistry – A*</p>
-                                    <p>25% academic scholarship</p>
-                                </div>
+                            <div class="acc-body" style="max-height: 500px;">
+                                <p><strong>Asia Pacific University (APU) & De Montfort University (UK)</strong></p>
+                                <ul class="acc-list">
+                                    <li>CGPA: 3.94 (Current)</li>
+                                    <li>Vice Chancellor’s List: 2024, 2025</li>
+                                    <li>30% Academic Scholarship</li>
+                                    <li>Dual Degree Programme</li>
+                                </ul>
                             </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">GCE O Levels – Alpha High School</button>
-                                <div class="accordion-content">
-                                    <p>9 A* and 1 A across 10 subjects</p>
-                                </div>
+                        </div>
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">GCE A Levels</span>
+                                <span class="acc-date">Nixor College</span>
                             </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">SAT – 1500 / 1600</button>
-                                <div class="accordion-content">
-                                    <p>Math: 800 / 800</p>
-                                    <p>English: 700 / 800</p>
-                                </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li>Further Mathematics – A</li>
+                                    <li>Mathematics – A*</li>
+                                    <li>Computer Science – A*</li>
+                                    <li>Physics – A*</li>
+                                    <li>Chemistry – A*</li>
+                                    <li>25% Academic Scholarship</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">GCE O Levels</span>
+                                <span class="acc-date">Alpha High School</span>
+                            </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li>9 A* and 1 A across 10 subjects</li>
+                                    <li>Distinction in Computer Science</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">SAT Standardized Test</span>
+                                <span class="acc-date">Score: 1500</span>
+                            </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li>Total: 1500 / 1600</li>
+                                    <li>Math: 800 / 800 (Perfect Score)</li>
+                                    <li>English: 700 / 800</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="profile-col">
-                        <h3>Achievements</h3>
-                        <div class="accordion">
-                            <div class="accordion-item">
-                                <button class="accordion-header">Academic & Scholarships</button>
-                                <div class="accordion-content">
-                                    <ul>
-                                        <li>Vice Chancellor’s List (Asia Pacific University): 2024, 2025</li>
-                                        <li>30% academic scholarship – Asia Pacific University</li>
-                                        <li>25% academic scholarship – Nixor College</li>
-                                        <li>SAT 1500/1600 (800 Math, 700 English)</li>
-                                    </ul>
-                                </div>
+                <!-- Achievements Section -->
+                <div id="profile-achievements" class="profile-section-block">
+                    <h3 class="profile-section-title">Achievements & Awards</h3>
+                    <div class="accordion-wrapper">
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">Competitions</span>
+                                <span class="acc-icon">🏆</span>
                             </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">Competitions & Awards</button>
-                                <div class="accordion-content">
-                                    <ul>
-                                        <li>Scinnova V – Grand Runners Up overall; Robotics module winner</li>
-                                        <li>Euclid Contest (CEMC, University of Waterloo) – Certificate of
-                                            Distinction
-                                            (Top 25% worldwide)</li>
-                                        <li>Rubik’s 5.0 – winner of ‘Kaleidoscope’ and ‘A Fraction Ahead’
-                                            mathematics
-                                            modules</li>
-                                        <li>Quiz Masters 2.0 (Aga Khan Education Board) – 1st place</li>
-                                        <li>World Scholar’s Cup – 1 Gold and 2 Silver medals; qualified for
-                                            global round
-                                        </li>
-                                        <li>Spark!Lab Invent It Challenge – Honorable Mention; International
-                                            Ambassador
-                                        </li>
-                                    </ul>
-                                </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li><strong>Scinnova V:</strong> Grand Runners Up overall; Robotics module winner
+                                    </li>
+                                    <li><strong>Euclid Contest (Waterloo):</strong> Certificate of Distinction (Top 25%
+                                        worldwide)</li>
+                                    <li><strong>Rubik’s 5.0:</strong> Winner of ‘Kaleidoscope’ and ‘A Fraction Ahead’
+                                        math modules</li>
+                                    <li><strong>Quiz Masters 2.0:</strong> 1st place (Aga Khan Education Board)</li>
+                                    <li><strong>World Scholar’s Cup:</strong> 1 Gold and 2 Silver medals; qualified for
+                                        global round</li>
+                                    <li><strong>Spark!Lab Invent It Challenge:</strong> Honorable Mention; International
+                                        Ambassador</li>
+                                </ul>
                             </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">Certifications & Programs</button>
-                                <div class="accordion-content">
-                                    <ul>
-                                        <li>AI Agents Fundamentals – Hugging Face</li>
-                                        <li>AI X-Perience Workshop – Rocheston (APU)</li>
-                                        <li>Carbon Literacy Training – De Montfort University (DMU), UK</li>
-                                        <li>De Montfort University Summer School – UK</li>
-                                        <li>Google Labs Trusted Tester for Imagen 2, Whisk Animate and Veo 2
-                                        </li>
-                                    </ul>
-                                </div>
+                        </div>
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">Academic Honors</span>
+                                <span class="acc-icon">🎖️</span>
+                            </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li>Vice Chancellor’s List (APU): 2024, 2025</li>
+                                    <li>30% Merit Scholarship (APU)</li>
+                                    <li>25% Merit Scholarship (Nixor College)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications Section -->
+                <div id="profile-certs" class="profile-section-block">
+                    <h3 class="profile-section-title">Certifications & Programs</h3>
+                    <div class="accordion-wrapper">
+                        <div class="acc-item">
+                            <div class="acc-header">
+                                <span class="acc-title">Professional Certifications</span>
+                                <span class="acc-icon">📜</span>
+                            </div>
+                            <div class="acc-body">
+                                <ul class="acc-list">
+                                    <li><strong>AI Agents Fundamentals:</strong> Hugging Face</li>
+                                    <li><strong>AI X-Perience Workshop:</strong> Rocheston (APU)</li>
+                                    <li><strong>Carbon Literacy Training:</strong> De Montfort University (UK)</li>
+                                    <li><strong>DMU Summer School:</strong> UK Exchange Programme</li>
+                                    <li><strong>Google Labs Trusted Tester:</strong> Imagen 2, Whisk Animate, Veo 2</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <!-- GLOBAL PROJECT OVERLAY -->
     <!-- GLOBAL PROJECT OVERLAY -->
@@ -598,18 +637,17 @@
         <div class="gallery-header">
             <div class="gallery-branding">
                 <span class="gallery-icon">❖</span>
-                <h3>NEURAL ARCHIVES // PROJECT DATABASE</h3>
+                <h3>PROJECT DATABASE</h3>
             </div>
             <button id="overlay-close-btn">
-                <span class="btn-text">CLOSE INTERFACE</span>
                 <span class="btn-icon">✕</span>
+                <span class="btn-text">CLOSE</span>
             </button>
         </div>
 
         <div class="overlay-body">
             <!-- Sidebar Navigation -->
             <div class="overlay-sidebar">
-                <div class="sidebar-header">AVAILABLE RECORDS</div>
                 <ul id="overlay-project-list">
                     <!-- Populated by JS -->
                 </ul>
@@ -620,8 +658,8 @@
                 <div class="content-wrapper">
                     <!-- Project Header (Dynamic) -->
                     <div class="project-header">
-                        <h2 id="overlay-project-title">Project Title</h2>
                         <span id="overlay-project-type">Project Category</span>
+                        <h2 id="overlay-project-title">Project Title</h2>
                         <div id="overlay-tags" class="tags-container">
                             <!-- Tags populated by JS -->
                         </div>
@@ -634,7 +672,6 @@
                             </div>
 
                             <div class="detail-block">
-                                <h4>Key Highlights</h4>
                                 <ul id="overlay-bullets" class="feature-list">
                                     <!-- Bullets populated by JS -->
                                 </ul>
@@ -642,11 +679,84 @@
                         </div>
 
                         <div class="project-side-col">
-                            <div class="detail-block">
-                                <h4>Technical Specs</h4>
+                            <div class="detail-block metadata-block">
+                                <h4>System Metadata</h4>
                                 <ul id="overlay-features" class="simple-list">
                                     <!-- Features populated by JS -->
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPERIENCE TIMELINE OVERLAY -->
+    <div id="experience-overlay" class="overlay-container" aria-hidden="true">
+        <!-- Header -->
+        <div class="gallery-header">
+            <div class="gallery-branding">
+                <span class="gallery-icon">❖</span>
+                <h3>EXPERIENCE TIMELINE</h3>
+            </div>
+            <button id="exp-overlay-close-btn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">CLOSE</span>
+            </button>
+        </div>
+
+        <div class="overlay-body">
+            <!-- Sidebar Navigation (Role Index) -->
+            <div class="overlay-sidebar">
+                <ul id="exp-overlay-list">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="overlay-content">
+                <div class="content-wrapper">
+                    <!-- Role Header (Dynamic) -->
+                    <div class="project-header">
+                        <span id="exp-overlay-org">Organisation</span>
+                        <h2 id="exp-overlay-role">Role Title</h2>
+                        <div class="exp-meta-row">
+                            <span id="exp-overlay-date">Date Range</span>
+                            <span class="separator">|</span>
+                            <span id="exp-overlay-loc">Location</span>
+                        </div>
+                        <div id="exp-overlay-tags" class="tags-container">
+                            <!-- Tags populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="project-body-grid">
+                        <div class="project-main-col">
+                            <!-- What I did -->
+                            <div class="detail-block">
+                                <h4>What I did</h4>
+                                <ul id="exp-overlay-did" class="feature-list">
+                                    <!-- Bullets -->
+                                </ul>
+                            </div>
+
+                            <!-- Impact -->
+                            <div class="detail-block">
+                                <h4>Impact</h4>
+                                <ul id="exp-overlay-impact" class="feature-list">
+                                    <!-- Bullets -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="project-side-col">
+                            <!-- Tech & Tools -->
+                            <div class="detail-block metadata-block">
+                                <h4>Tech & Tools</h4>
+                                <div id="exp-overlay-tech" class="tech-tags-cloud">
+                                    <!-- Tags/Chips -->
+                                </div>
                             </div>
                         </div>
                     </div>

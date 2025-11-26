@@ -44,7 +44,7 @@ export const config = {
         position: {
             anchorX: 'right', // 'left' or 'right'
             anchorY: 'top',   // 'top' or 'bottom'
-            offsetX: 10,     // Horizontal offset from anchor (px)
+            offsetX: 30,     // Horizontal offset from anchor (px)
             offsetY: -110      // Vertical offset from anchor (px) - Positive goes DOWN from top, UP from bottom
         },
         minSize: 250,              // Minimum pixel size of the mini brain
