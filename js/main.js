@@ -1194,6 +1194,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Experience Cards (Snake Layout)
+    document.querySelectorAll('.snake-item').forEach(tile => {
+        tile.addEventListener('click', () => {
+            const id = tile.dataset.experienceId;
+            if (id !== undefined) {
+                openOverlay(id, 'experience');
+            }
+        });
+    });
+
     // Event Listeners for Overlay
     if (overlayCloseBtn) {
         overlayCloseBtn.addEventListener('click', closeOverlay);
