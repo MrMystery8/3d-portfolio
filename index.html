@@ -236,11 +236,10 @@
                 <!-- Zone 1: Top Bar (Header Band) -->
                 <div class="launcher-header">
                     <h2>02. Experience</h2>
-                    <p class="launcher-tagline">Snapshots of where I’ve actually worked.</p>
                 </div>
 
-                <!-- Zone 2: Middle Band (Vertical Timeline) -->
-                <div class="experience-timeline-vertical">
+                <!-- Zone 2: Middle Band (Vertical Timeline - Mobile Only) -->
+                <div class="experience-timeline-vertical mobile-only">
                     <div class="v-line"></div>
 
                     <!-- Item 1 (Left) -->
@@ -286,6 +285,65 @@
                             <span class="v-date">Oct 2021–Mar 2023</span>
                         </div>
                         <div class="v-node"></div>
+                    </div>
+                </div>
+
+                <!-- Zone 2: Middle Band (Snake Layout - Desktop Only) -->
+                <div class="experience-snake-container desktop-only">
+                    <svg class="snake-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+                        <path class="snake-path"
+                            d="M 0 200 A 100 100 0 0 0 200 200 A 100 100 0 0 1 400 200 A 100 100 0 0 0 600 200 A 100 100 0 0 1 800 200 A 100 100 0 0 0 1000 200"
+                            fill="none" stroke="#00ffff" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+
+                    <!-- Item 1 (Top - Arc Over) -->
+                    <div class="snake-item" style="left: 10%; top: 50%;" data-experience-id="0">
+                        <div class="snake-node">01</div>
+                        <div class="snake-card top">
+                            <span class="snake-role">SWE Intern</span>
+                            <span class="snake-org">JurisTech</span>
+                            <span class="snake-date">Aug 2025–Present</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 (Bottom - Arc Under) -->
+                    <div class="snake-item" style="left: 30%; top: 50%;" data-experience-id="1">
+                        <div class="snake-node">02</div>
+                        <div class="snake-card bottom">
+                            <span class="snake-role">R&D Asst</span>
+                            <span class="snake-org">CTI (APU)</span>
+                            <span class="snake-date">Nov 2024–Present</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 (Top - Arc Over) -->
+                    <div class="snake-item" style="left: 50%; top: 50%;" data-experience-id="2">
+                        <div class="snake-node">03</div>
+                        <div class="snake-card top">
+                            <span class="snake-role">TA @ Python w/ AI</span>
+                            <span class="snake-org">Minhas Rupsi</span>
+                            <span class="snake-date">Jul 2025</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 (Bottom - Arc Under) -->
+                    <div class="snake-item" style="left: 70%; top: 50%;" data-experience-id="3">
+                        <div class="snake-node">04</div>
+                        <div class="snake-card bottom">
+                            <span class="snake-role">CIO</span>
+                            <span class="snake-org">Nixor Studios</span>
+                            <span class="snake-date">Feb 2022–Feb 2023</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Top - Arc Over) -->
+                    <div class="snake-item" style="left: 90%; top: 50%;" data-experience-id="4">
+                        <div class="snake-node">05</div>
+                        <div class="snake-card top">
+                            <span class="snake-role">Physics TA</span>
+                            <span class="snake-org">Nixor College</span>
+                            <span class="snake-date">Oct 2021–Mar 2023</span>
+                        </div>
                     </div>
                 </div>
 
