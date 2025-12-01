@@ -5,6 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybernetic Brain Portfolio</title>
+    <style>
+        /* Prevent initial flash before external CSS loads */
+        html,
+        body {
+            margin: 0;
+            background: #050915;
+        }
+
+        #bg-canvas,
+        #brain-hero-container,
+        #brain-hero-container canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            background: transparent;
+        }
+    </style>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/brain-menu.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -169,33 +188,46 @@
                 <!-- Zone 2: Launcher Tiles -->
                 <div class="launcher-grid">
                     <!-- Tiles will be injected or hardcoded here. Let's hardcode the top 4 for the launcher. -->
-                    <div class="launcher-tile" data-project-id="0">
-                        <h3 class="tile-title">Minhas LMS</h3>
-                        <p class="tile-desc">Full Stack Learning Platform</p>
-                        <div class="tile-tags"><span>Flask</span><span>RAG</span></div>
+                    <div class="sl-card project-card" data-project-id="0">
+                        <div class="card-header">
+                            <h4>Minhas LMS</h4>
+                        </div>
+                        <p class="project-desc">Full Stack Learning Platform</p>
+                        <div class="skill-chips">
+                            <span>Flask</span><span>RAG AI</span><span>Full Stack</span>
+                        </div>
                     </div>
-                    <div class="launcher-tile" data-project-id="1">
-                        <h3 class="tile-title">89th Parallel</h3>
-                        <p class="tile-desc">Multi-Subject AI LMS</p>
-                        <div class="tile-tags"><span>Python</span><span>Vector Search</span></div>
+                    <div class="sl-card project-card" data-project-id="1">
+                        <div class="card-header">
+                            <h4>89th Parallel</h4>
+                        </div>
+                        <p class="project-desc">Multi-Subject AI LMS</p>
+                        <div class="skill-chips">
+                            <span>Python</span><span>Vector DB</span><span>Education</span>
+                        </div>
                     </div>
-                    <div class="launcher-tile" data-project-id="2">
-                        <h3 class="tile-title">Local LLM Eco</h3>
-                        <p class="tile-desc">Local AI Inference System</p>
-                        <div class="tile-tags"><span>Android</span><span>Local LLM</span></div>
+                    <div class="sl-card project-card" data-project-id="2">
+                        <div class="card-header">
+                            <h4>Local LLM Eco</h4>
+                        </div>
+                        <p class="project-desc">Local AI Inference System</p>
+                        <div class="skill-chips">
+                            <span>Android</span><span>Local LLM</span><span>Privacy</span>
+                        </div>
                     </div>
-                    <div class="launcher-tile" data-project-id="3">
-                        <h3 class="tile-title">Conversational Clone</h3>
-                        <p class="tile-desc">Personality AI Clone</p>
-                        <div class="tile-tags"><span>Gemini</span><span>RAG</span></div>
+                    <div class="sl-card project-card" data-project-id="3">
+                        <div class="card-header">
+                            <h4>Conversational Clone</h4>
+                        </div>
+                        <p class="project-desc">Personality AI Clone</p>
+                        <div class="skill-chips">
+                            <span>Gemini</span><span>RAG</span><span>NLP</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Zone 3: Actions -->
-                <div class="launcher-actions">
-                    <button id="open-gallery-btn" class="primary-btn">Open Project Gallery</button>
-                    <p class="action-hint">Click a project to view details in full-screen.</p>
-                </div>
+                <p class="action-hint">Click any project card to view details.</p>
             </div>
         </section>
 
@@ -258,19 +290,16 @@
                 </div>
 
                 <!-- Zone 3: Bottom Band (CTA) -->
-                <div class="launcher-actions">
-                    <button id="open-experience-btn" class="primary-btn">Open Experience Timeline</button>
-                    <p class="action-hint">View full roles, responsibilities and impact in a dedicated view.</p>
-                </div>
+                <p class="action-hint">Click any role to view full responsibilities and impact.</p>
             </div>
         </section>
 
         <section id="section-skills-labs" class="content-section">
             <div class="section-content skills-labs-layout">
                 <!-- Zone 1: Header Band -->
-                <div class="sl-header">
+                <div class="launcher-header">
                     <h2>03. Skills & Labs</h2>
-                    <p class="sl-subheading">What I actually use, build and experiment with.</p>
+                    <p class="launcher-tagline">What I actually use, build and experiment with.</p>
                 </div>
 
                 <!-- Zone 2: Tabs + Content Band -->
@@ -290,7 +319,6 @@
                                 <!-- Group 1 -->
                                 <div class="sl-card skill-panel">
                                     <div class="card-header">
-                                        <span class="header-icon">⚡</span>
                                         <h4>Languages</h4>
                                     </div>
                                     <div class="skill-chips">
@@ -301,7 +329,6 @@
                                 <!-- Group 2 -->
                                 <div class="sl-card skill-panel">
                                     <div class="card-header">
-                                        <span class="header-icon">🌐</span>
                                         <h4>Web & Platforms</h4>
                                     </div>
                                     <div class="skill-chips">
@@ -312,23 +339,21 @@
                                 <!-- Group 3 -->
                                 <div class="sl-card skill-panel">
                                     <div class="card-header">
-                                        <span class="header-icon">🧠</span>
                                         <h4>AI & Systems</h4>
                                     </div>
                                     <div class="skill-chips">
                                         <span>RAG pipelines</span><span>Vector search</span><span>LLM prompting</span>
                                         <span>Local LLM inference</span><span>AI agents</span><span>Gen AI tools</span>
-                                        <span>Oracle DB</span><span>Git</span>
                                     </div>
                                 </div>
                                 <!-- Group 4 -->
                                 <div class="sl-card skill-panel">
                                     <div class="card-header">
-                                        <span class="header-icon">🛠️</span>
                                         <h4>Other Tools</h4>
                                     </div>
                                     <div class="skill-chips">
                                         <span>R Studio</span><span>IDEs & Deployment</span><span>Cloudflare</span>
+                                        <span>Oracle DB</span><span>Git</span>
                                     </div>
                                 </div>
                             </div>
@@ -381,7 +406,6 @@
                             <div class="interests-wrapper">
                                 <div class="sl-card interests-panel">
                                     <div class="card-header centered">
-                                        <span class="header-icon">✨</span>
                                         <h4>Personal Interests</h4>
                                     </div>
                                     <div class="interests-cluster">
@@ -400,235 +424,71 @@
 
                 <!-- Zone 3: Footer Band -->
                 <div class="sl-footer">
-                    <p>Tap skills, labs or interests above to explore different facets — details live in the other
-                        sections and overlays.</p>
+                    <p>Tap items above to explore details in other sections.</p>
                 </div>
             </div>
         </section>
 
         <section id="section-profile" class="content-section">
-            <div class="section-content profile-launcher-layout">
+            <div class="section-content launcher-layout">
                 <!-- Band 1: Header -->
-                <div class="pl-header">
+                <div class="launcher-header">
                     <h2>04. Profile</h2>
-                    <p class="pl-subheading">Academic track, scores and recognitions in one snapshot.</p>
+                    <p class="launcher-tagline">Academic track, scores and recognitions in one snapshot.</p>
                 </div>
 
-                <!-- Band 2: Stats (Highlight Strip) -->
-                <div class="pl-stats-band">
-                    <div class="pl-stat-tile">
-                        <span class="pl-stat-val">3.94</span>
-                        <span class="pl-stat-lbl">CGPA · BSc CS (AI), APU</span>
-                    </div>
-                    <div class="pl-stat-tile">
-                        <span class="pl-stat-val">1500</span>
-                        <span class="pl-stat-lbl">SAT · 800 Math, 700 English</span>
-                    </div>
-                    <div class="pl-stat-tile">
-                        <span class="pl-stat-val">9 A*</span>
-                        <span class="pl-stat-lbl">GCE O Levels</span>
-                    </div>
-                    <div class="pl-stat-tile">
-                        <span class="pl-stat-val">15K+</span>
-                        <span class="pl-stat-lbl">Followers on @ai.illusions</span>
-                    </div>
-                </div>
-
-                <!-- Band 3: Summary Cards (Launcher) -->
-                <div class="pl-cards-band">
-                    <!-- Card 1: Education -->
-                    <div class="pl-card" data-profile-target="education">
-                        <div class="pl-card-header">
-                            <span class="pl-icon">🎓</span>
-                            <h4>Education</h4>
+                <!-- Standardized Profile Grid -->
+                <div class="launcher-grid">
+                    <!-- Card 1: University -->
+                    <div class="sl-card project-card" data-profile-target="education">
+                        <div class="card-header">
+                            <h4>University</h4>
                         </div>
-                        <ul class="pl-bullets">
-                            <li>BSc (Hons) Computer Science (AI), APU – CGPA 3.94</li>
-                            <li>GCE A Levels – Nixor College (A* Math, CS, Phy, Chem)</li>
-                            <li>GCE O Levels – Alpha High School (9 A*, 1 A)</li>
-                        </ul>
+                        <p class="project-desc">BSc Computer Science (AI)</p>
+                        <div class="skill-chips">
+                            <span>CGPA 3.94</span><span>Dean's List</span><span>Scholarship</span>
+                        </div>
                     </div>
 
-                    <!-- Card 2: Achievements -->
-                    <div class="pl-card" data-profile-target="achievements">
-                        <div class="pl-card-header">
-                            <span class="pl-icon">🏆</span>
+                    <!-- Card 2: Pre-University -->
+                    <div class="sl-card project-card" data-profile-target="education">
+                        <div class="card-header">
+                            <h4>Pre-University</h4>
+                        </div>
+                        <p class="project-desc">A-Levels & O-Levels</p>
+                        <div class="skill-chips">
+                            <span>SAT 1500</span><span>4 A* (A-Lvl)</span><span>9 A* (O-Lvl)</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Achievements -->
+                    <div class="sl-card project-card" data-profile-target="achievements">
+                        <div class="card-header">
                             <h4>Achievements</h4>
                         </div>
-                        <ul class="pl-bullets">
-                            <li>Vice Chancellor’s List (APU) · 2024, 2025</li>
-                            <li>Scinnova V – Grand Runners Up; Robotics winner</li>
-                            <li>Euclid Contest – Distinction (Top 25%)</li>
-                        </ul>
+                        <p class="project-desc">Global Competitions</p>
+                        <div class="skill-chips">
+                            <span>Scinnova V</span><span>Euclid Math</span><span>Scholar's Cup</span>
+                        </div>
                     </div>
 
-                    <!-- Card 3: Certifications -->
-                    <div class="pl-card" data-profile-target="certs">
-                        <div class="pl-card-header">
-                            <span class="pl-icon">📜</span>
+                    <!-- Card 4: Certifications -->
+                    <div class="sl-card project-card" data-profile-target="certs">
+                        <div class="card-header">
                             <h4>Certifications</h4>
                         </div>
-                        <ul class="pl-bullets">
-                            <li>AI Agents Fundamentals – Hugging Face</li>
-                            <li>AI X-Perience Workshop – Rocheston (APU)</li>
-                            <li>Carbon Literacy & Summer School – DMU (UK)</li>
-                        </ul>
+                        <p class="project-desc">Professional Skills</p>
+                        <div class="skill-chips">
+                            <span>AI Agents</span><span>Sustainability</span><span>Google Labs</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Band 4: CTA -->
-                <div class="pl-cta-band">
-                    <button id="btn-open-profile" class="pl-cta-btn">Open Full Academic Profile</button>
-                    <p class="pl-cta-hint">View full education history, achievements and certifications in a dedicated
-                        view.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- PROFILE OVERLAY (Detailed View) -->
-    <div id="profile-overlay" class="overlay-container" aria-hidden="true">
-        <div class="gallery-header">
-            <div class="gallery-branding">
-                <span class="gallery-icon">❖</span>
-                <h3>ACADEMIC DOSSIER</h3>
-            </div>
-            <button id="profile-overlay-close-btn">
-                <span class="btn-icon">✕</span>
-                <span class="btn-text">CLOSE</span>
-            </button>
-        </div>
 
-        <div class="overlay-body profile-overlay-body">
-            <div class="profile-overlay-content">
-                <!-- Education Section -->
-                <div id="profile-education" class="profile-section-block">
-                    <h3 class="profile-section-title">Education History</h3>
-                    <div class="accordion-wrapper">
-                        <div class="acc-item active">
-                            <div class="acc-header">
-                                <span class="acc-title">BSc (Hons) Computer Science (AI)</span>
-                                <span class="acc-date">2023–2026</span>
-                            </div>
-                            <div class="acc-body" style="max-height: 500px;">
-                                <p><strong>Asia Pacific University (APU) & De Montfort University (UK)</strong></p>
-                                <ul class="acc-list">
-                                    <li>CGPA: 3.94 (Current)</li>
-                                    <li>Vice Chancellor’s List: 2024, 2025</li>
-                                    <li>30% Academic Scholarship</li>
-                                    <li>Dual Degree Programme</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">GCE A Levels</span>
-                                <span class="acc-date">Nixor College</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li>Further Mathematics – A</li>
-                                    <li>Mathematics – A*</li>
-                                    <li>Computer Science – A*</li>
-                                    <li>Physics – A*</li>
-                                    <li>Chemistry – A*</li>
-                                    <li>25% Academic Scholarship</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">GCE O Levels</span>
-                                <span class="acc-date">Alpha High School</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li>9 A* and 1 A across 10 subjects</li>
-                                    <li>Distinction in Computer Science</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">SAT Standardized Test</span>
-                                <span class="acc-date">Score: 1500</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li>Total: 1500 / 1600</li>
-                                    <li>Math: 800 / 800 (Perfect Score)</li>
-                                    <li>English: 700 / 800</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Achievements Section -->
-                <div id="profile-achievements" class="profile-section-block">
-                    <h3 class="profile-section-title">Achievements & Awards</h3>
-                    <div class="accordion-wrapper">
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">Competitions</span>
-                                <span class="acc-icon">🏆</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li><strong>Scinnova V:</strong> Grand Runners Up overall; Robotics module winner
-                                    </li>
-                                    <li><strong>Euclid Contest (Waterloo):</strong> Certificate of Distinction (Top 25%
-                                        worldwide)</li>
-                                    <li><strong>Rubik’s 5.0:</strong> Winner of ‘Kaleidoscope’ and ‘A Fraction Ahead’
-                                        math modules</li>
-                                    <li><strong>Quiz Masters 2.0:</strong> 1st place (Aga Khan Education Board)</li>
-                                    <li><strong>World Scholar’s Cup:</strong> 1 Gold and 2 Silver medals; qualified for
-                                        global round</li>
-                                    <li><strong>Spark!Lab Invent It Challenge:</strong> Honorable Mention; International
-                                        Ambassador</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">Academic Honors</span>
-                                <span class="acc-icon">🎖️</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li>Vice Chancellor’s List (APU): 2024, 2025</li>
-                                    <li>30% Merit Scholarship (APU)</li>
-                                    <li>25% Merit Scholarship (Nixor College)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Certifications Section -->
-                <div id="profile-certs" class="profile-section-block">
-                    <h3 class="profile-section-title">Certifications & Programs</h3>
-                    <div class="accordion-wrapper">
-                        <div class="acc-item">
-                            <div class="acc-header">
-                                <span class="acc-title">Professional Certifications</span>
-                                <span class="acc-icon">📜</span>
-                            </div>
-                            <div class="acc-body">
-                                <ul class="acc-list">
-                                    <li><strong>AI Agents Fundamentals:</strong> Hugging Face</li>
-                                    <li><strong>AI X-Perience Workshop:</strong> Rocheston (APU)</li>
-                                    <li><strong>Carbon Literacy Training:</strong> De Montfort University (UK)</li>
-                                    <li><strong>DMU Summer School:</strong> UK Exchange Programme</li>
-                                    <li><strong>Google Labs Trusted Tester:</strong> Imagen 2, Whisk Animate, Veo 2</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- GLOBAL PROJECT OVERLAY -->
     <!-- GLOBAL PROJECT OVERLAY -->
@@ -660,30 +520,47 @@
                     <div class="project-header">
                         <span id="overlay-project-type">Project Category</span>
                         <h2 id="overlay-project-title">Project Title</h2>
+
+                        <!-- Optional Meta Row for Experience (Date | Location) -->
+                        <div id="overlay-meta-row" class="exp-meta-row" style="display: none;">
+                            <span id="overlay-date">Date Range</span>
+                            <span class="separator">|</span>
+                            <span id="overlay-loc">Location</span>
+                        </div>
+
                         <div id="overlay-tags" class="tags-container">
                             <!-- Tags populated by JS -->
                         </div>
                     </div>
 
-                    <div class="project-body-grid">
-                        <div class="project-main-col">
-                            <div class="project-overview">
-                                <p id="overlay-description" class="lead-text">Description goes here...</p>
-                            </div>
+                    <!-- Unified Body Layout -->
+                    <div class="unified-body-layout">
+                        <!-- Top Row: Overview -->
+                        <div class="overview-row">
+                            <p id="overlay-description" class="lead-text">Description goes here...</p>
+                        </div>
 
-                            <div class="detail-block">
-                                <ul id="overlay-bullets" class="feature-list">
+                        <!-- Bottom Row: Split Features & Metadata -->
+                        <div class="details-split-row">
+                            <div class="detail-col left">
+                                <h4>Key Features</h4>
+                                <ul id="overlay-bullets" class="unified-list">
                                     <!-- Bullets populated by JS -->
                                 </ul>
                             </div>
-                        </div>
 
-                        <div class="project-side-col">
-                            <div class="detail-block metadata-block">
-                                <h4>System Metadata</h4>
-                                <ul id="overlay-features" class="simple-list">
+                            <div class="detail-divider"></div>
+
+                            <div class="detail-col right">
+                                <h4 id="overlay-features-title">System Metadata</h4>
+                                <ul id="overlay-features" class="unified-list">
                                     <!-- Features populated by JS -->
                                 </ul>
+                                <!-- Optional Tech Stack for Experience -->
+                                <div id="overlay-tech-stack-wrapper" style="display: none; margin-top: 20px;">
+                                    <h4>Tech Stack</h4>
+                                    <div id="overlay-tech-stack" class="tech-tags-cloud"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -693,77 +570,7 @@
     </div>
 
     <!-- EXPERIENCE TIMELINE OVERLAY -->
-    <div id="experience-overlay" class="overlay-container" aria-hidden="true">
-        <!-- Header -->
-        <div class="gallery-header">
-            <div class="gallery-branding">
-                <span class="gallery-icon">❖</span>
-                <h3>EXPERIENCE TIMELINE</h3>
-            </div>
-            <button id="exp-overlay-close-btn">
-                <span class="btn-icon">✕</span>
-                <span class="btn-text">CLOSE</span>
-            </button>
-        </div>
 
-        <div class="overlay-body">
-            <!-- Sidebar Navigation (Role Index) -->
-            <div class="overlay-sidebar">
-                <ul id="exp-overlay-list">
-                    <!-- Populated by JS -->
-                </ul>
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="overlay-content">
-                <div class="content-wrapper">
-                    <!-- Role Header (Dynamic) -->
-                    <div class="project-header">
-                        <span id="exp-overlay-org">Organisation</span>
-                        <h2 id="exp-overlay-role">Role Title</h2>
-                        <div class="exp-meta-row">
-                            <span id="exp-overlay-date">Date Range</span>
-                            <span class="separator">|</span>
-                            <span id="exp-overlay-loc">Location</span>
-                        </div>
-                        <div id="exp-overlay-tags" class="tags-container">
-                            <!-- Tags populated by JS -->
-                        </div>
-                    </div>
-
-                    <div class="project-body-grid">
-                        <div class="project-main-col">
-                            <!-- What I did -->
-                            <div class="detail-block">
-                                <h4>What I did</h4>
-                                <ul id="exp-overlay-did" class="feature-list">
-                                    <!-- Bullets -->
-                                </ul>
-                            </div>
-
-                            <!-- Impact -->
-                            <div class="detail-block">
-                                <h4>Impact</h4>
-                                <ul id="exp-overlay-impact" class="feature-list">
-                                    <!-- Bullets -->
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="project-side-col">
-                            <!-- Tech & Tools -->
-                            <div class="detail-block metadata-block">
-                                <h4>Tech & Tools</h4>
-                                <div id="exp-overlay-tech" class="tech-tags-cloud">
-                                    <!-- Tags/Chips -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>

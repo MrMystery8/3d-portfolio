@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.display = 'flex';
         container.style.alignItems = 'center';
         container.style.justifyContent = 'center';
+        container.classList.add('ready');
+        container.classList.remove('loading');
     }
 
     // ============================================================================
@@ -975,52 +977,125 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentProjectId = 0;
 
-    function openOverlay(projectId = 0) {
-        currentProjectId = projectId;
-        renderOverlayContent(projectId);
-        renderSidebar(projectId);
-
-        // Show Overlay
-        projectOverlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('no-scroll');
-
-        // Trap focus (simple version)
-        overlayCloseBtn.focus();
-    }
+    // Duplicate openOverlay removed. Using the unified one below.
 
     function closeOverlay() {
         projectOverlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('no-scroll');
+        document.body.style.overflow = ''; // Reset inline style
 
         // Return focus to launcher button
         const launcherBtn = document.getElementById('open-gallery-btn');
         if (launcherBtn) launcherBtn.focus();
+
+        // Restore Brain Visibility
+        const brainContainer = document.getElementById('brain-hero-container');
+        if (brainContainer) {
+            brainContainer.style.visibility = 'visible';
+            brainContainer.style.opacity = '1';
+        }
     }
 
-    function renderOverlayContent(id) {
-        const project = projectData.find(p => p.id === parseInt(id)) || projectData[0];
+    function renderOverlayContent(id, type = 'project') {
+        let dataItem;
+        if (type === 'experience') {
+            dataItem = experienceData.find(e => e.id === parseInt(id)) || experienceData[0];
+        } else if (type === 'profile') {
+            dataItem = profileData.find(p => p.id === id) || profileData[0];
+        } else {
+            dataItem = projectData.find(p => p.id === parseInt(id)) || projectData[0];
+        }
 
         // Animate content change (simple fade)
         const contentWrapper = document.querySelector('.overlay-content');
         contentWrapper.style.opacity = '0';
 
         setTimeout(() => {
-            domTitle.textContent = project.title;
-            domType.textContent = project.subtitle;
-            domDesc.textContent = project.description;
+            // Map Data Fields
+            if (type === 'experience') {
+                domTitle.textContent = dataItem.role;
+                domType.textContent = dataItem.org;
+                domDesc.style.display = 'none'; // Hide description for experience if not needed, or map to summary
 
-            // Bullets
-            domBullets.innerHTML = project.bullets.map(b => `<li>${b}</li>`).join('');
+                // Show Date/Loc
+                document.getElementById('overlay-meta-row').style.display = 'flex';
+                document.getElementById('overlay-date').textContent = dataItem.date;
+                document.getElementById('overlay-loc').textContent = dataItem.location;
 
-            // Tags
-            domTags.innerHTML = project.tags.map(t => `<span>${t}</span>`).join('');
+                // Lists
+                domBullets.innerHTML = dataItem.did.map(item => `<li>${item}</li>`).join('');
+                document.getElementById('overlay-features-title').textContent = "Key Impact";
+                domFeatures.innerHTML = dataItem.impact.map(item => `<li>${item}</li>`).join('');
+                domFeatures.parentElement.style.display = 'flex';
 
-            // Features (Optional)
-            if (project.features && project.features.length > 0) {
-                domFeatures.innerHTML = project.features.map(f => `<li>${f}</li>`).join('');
-                domFeatures.parentElement.style.display = 'block';
+                // Tech Stack
+                document.getElementById('overlay-tech-stack-wrapper').style.display = 'block';
+                document.getElementById('overlay-tech-stack').innerHTML = dataItem.tech.map(t => `<span>${t}</span>`).join('');
+
+                // Tags (Top Right)
+                domTags.innerHTML = dataItem.tags.map(t => `<span>${t}</span>`).join('');
+
+            } else if (type === 'profile') {
+                domTitle.textContent = dataItem.title;
+                domType.textContent = dataItem.subtitle;
+                domDesc.style.display = 'none';
+
+                // Hide Date/Loc
+                document.getElementById('overlay-meta-row').style.display = 'none';
+
+                // Lists (Left Col - Content Items)
+                // We map the complex content array to a list of items
+                domBullets.innerHTML = dataItem.content.map(item => `
+                    <li style="margin-bottom: 15px;">
+                        <strong style="color: #fff; font-size: 1rem;">${item.title}</strong>
+                        <div style="font-size: 0.85rem; color: var(--accent-color); margin-top: 2px;">${item.date}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 4px;">${item.org}</div>
+                        ${item.details && item.details.length > 0 ?
+                        `<ul style="margin-top: 8px; padding-left: 15px; list-style: circle; font-size: 0.85rem; opacity: 0.7;">
+                                ${item.details.map(d => `<li>${d}</li>`).join('')}
+                            </ul>`
+                        : ''}
+                    </li>
+                `).join('');
+
+                // Features (Right Col - Stats)
+                document.getElementById('overlay-features-title').textContent = "Key Stats";
+                domFeatures.innerHTML = dataItem.stats.map(s => `<li>${s}</li>`).join('');
+                domFeatures.parentElement.style.display = 'flex';
+
+                // Hide Tech Stack
+                document.getElementById('overlay-tech-stack-wrapper').style.display = 'none';
+
+                // Tags (None for profile usually, or we can map icon)
+                domTags.innerHTML = '';
+
             } else {
-                domFeatures.parentElement.style.display = 'none';
+                // Project Mode
+                domTitle.textContent = dataItem.title;
+                domType.textContent = dataItem.subtitle;
+                domDesc.textContent = dataItem.description;
+                domDesc.style.display = 'block';
+
+                // Hide Date/Loc
+                document.getElementById('overlay-meta-row').style.display = 'none';
+
+                // Lists
+                domBullets.innerHTML = dataItem.bullets.map(b => `<li>${b}</li>`).join('');
+                document.getElementById('overlay-features-title').textContent = "System Metadata";
+
+                // Features
+                if (dataItem.features && dataItem.features.length > 0) {
+                    domFeatures.innerHTML = dataItem.features.map(f => `<li>${f}</li>`).join('');
+                    domFeatures.parentElement.style.display = 'flex';
+                } else {
+                    domFeatures.parentElement.style.display = 'none';
+                }
+
+                // Hide Tech Stack (Project uses Tags for this usually, or we can map it if needed)
+                document.getElementById('overlay-tech-stack-wrapper').style.display = 'none';
+
+                // Tags
+                domTags.innerHTML = dataItem.tags.map(t => `<span>${t}</span>`).join('');
             }
 
             // Scroll content to top
@@ -1030,46 +1105,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200);
     }
 
-    function renderSidebar(activeId) {
-        overlayList.innerHTML = projectData.map(p => {
-            // Generate 1-2 badges (take first 2 tags)
-            const badges = p.tags.slice(0, 2).map(t => `<span class="sidebar-badge">${t}</span>`).join('');
+    function renderSidebar(activeId, type = 'project') {
+        let data;
+        if (type === 'experience') data = experienceData;
+        else if (type === 'profile') data = profileData;
+        else data = projectData;
+
+        overlayList.innerHTML = data.map(item => {
+            // Generate badges
+            let badges = '';
+            if (item.tags) {
+                badges = item.tags.slice(0, 2).map(t => `<span class="sidebar-badge">${t}</span>`).join('');
+            }
+
+            const title = type === 'experience' ? item.role : item.title;
+            const subtitle = type === 'experience' ? item.org : '';
+            const id = item.id; // Profile IDs are strings, others are ints usually
 
             return `
-            <li class="sidebar-item ${p.id === parseInt(activeId) ? 'active' : ''}" data-id="${p.id}">
-                <span class="sidebar-item-title">${p.title}</span>
+            <li class="sidebar-item ${id == activeId ? 'active' : ''}" data-id="${id}">
+                <span class="sidebar-item-title">${title}</span>
+                ${subtitle ? `<div style="font-size: 0.75rem; opacity: 0.6;">${subtitle}</div>` : ''}
                 <div class="sidebar-badges">${badges}</div>
             </li>
             `;
         }).join('');
 
         // Re-attach listeners
-        document.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const newId = item.dataset.id;
-                renderOverlayContent(newId);
+        document.querySelectorAll('.sidebar-item').forEach(listItem => {
+            listItem.addEventListener('click', () => {
+                const newId = listItem.dataset.id;
+                renderOverlayContent(newId, type);
 
                 // Update active state in sidebar
                 document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
+                listItem.classList.add('active');
             });
         });
     }
 
+    function openOverlay(id, type = 'project') {
+        renderOverlayContent(id, type);
+        renderSidebar(id, type);
+
+        // Update Header Title based on type
+        const headerTitle = projectOverlay.querySelector('.gallery-branding h3');
+        if (type === 'experience') {
+            headerTitle.textContent = "EXPERIENCE TIMELINE";
+        } else if (type === 'profile') {
+            headerTitle.textContent = "ACADEMIC DOSSIER";
+        } else {
+            headerTitle.textContent = "PROJECT DATABASE";
+        }
+
+        projectOverlay.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('no-scroll'); // Block global scroll listener
+        document.body.style.overflow = 'hidden'; // Visual block
+
+        // Hide Brain to prevent interference
+        const brainContainer = document.getElementById('brain-hero-container');
+        if (brainContainer) {
+            brainContainer.style.visibility = 'hidden';
+            brainContainer.style.opacity = '0';
+        }
+
+        // Ensure close button works for both
+        if (overlayCloseBtn) overlayCloseBtn.focus();
+    }
+
     // Event Listeners for Launcher
-    document.querySelectorAll('.launcher-tile').forEach(tile => {
+    // Event Listeners for Launcher
+    document.querySelectorAll('.project-card').forEach(tile => {
         tile.addEventListener('click', () => {
             const id = tile.dataset.projectId;
-            openOverlay(id);
+            if (id) {
+                openOverlay(id, 'project');
+            }
         });
     });
 
-    const openGalleryBtn = document.getElementById('open-gallery-btn');
-    if (openGalleryBtn) {
-        openGalleryBtn.addEventListener('click', () => {
-            openOverlay(0); // Default to first project
+    // Experience Cards
+    document.querySelectorAll('.v-item').forEach(tile => {
+        tile.addEventListener('click', () => {
+            const id = tile.dataset.experienceId;
+            if (id !== undefined) {
+                openOverlay(id, 'experience');
+            }
         });
-    }
+    });
 
     // Event Listeners for Overlay
     if (overlayCloseBtn) {
@@ -1083,106 +1206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- EXPERIENCE OVERLAY CONTROLLER ---
-    const expOverlay = document.getElementById('experience-overlay');
-    const expCloseBtn = document.getElementById('exp-overlay-close-btn');
-    const expList = document.getElementById('exp-overlay-list');
-
-    // DOM Elements
-    const expRole = document.getElementById('exp-overlay-role');
-    const expOrg = document.getElementById('exp-overlay-org');
-    const expDate = document.getElementById('exp-overlay-date');
-    const expLoc = document.getElementById('exp-overlay-loc');
-    const expTags = document.getElementById('exp-overlay-tags');
-    const expDid = document.getElementById('exp-overlay-did');
-    const expImpact = document.getElementById('exp-overlay-impact');
-    const expTech = document.getElementById('exp-overlay-tech');
-
-    function openExpOverlay(expId = 0) {
-        renderExpContent(expId);
-        renderExpSidebar(expId);
-        expOverlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('no-scroll');
-        expCloseBtn.focus();
-    }
-
-    function closeExpOverlay() {
-        expOverlay.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('no-scroll');
-        const launcherBtn = document.getElementById('open-experience-btn');
-        if (launcherBtn) launcherBtn.focus();
-    }
-
-    function renderExpContent(id) {
-        const exp = experienceData.find(e => e.id === parseInt(id)) || experienceData[0];
-        const contentWrapper = expOverlay.querySelector('.overlay-content');
-
-        contentWrapper.style.opacity = '0';
-
-        setTimeout(() => {
-            expRole.textContent = exp.role;
-            expOrg.textContent = exp.org;
-            expDate.textContent = exp.date;
-            expLoc.textContent = exp.location;
-
-            // Tags
-            expTags.innerHTML = exp.tags.map(t => `<span>${t}</span>`).join('');
-
-            // Lists
-            expDid.innerHTML = exp.did.map(item => `<li>${item}</li>`).join('');
-            expImpact.innerHTML = exp.impact.map(item => `<li>${item}</li>`).join('');
-            expTech.innerHTML = exp.tech.map(t => `<span>${t}</span>`).join('');
-
-            contentWrapper.scrollTop = 0;
-            contentWrapper.style.opacity = '1';
-        }, 200);
-    }
-
-    function renderExpSidebar(activeId) {
-        expList.innerHTML = experienceData.map(e => {
-            return `
-            <li class="sidebar-item ${e.id === parseInt(activeId) ? 'active' : ''}" data-id="${e.id}">
-                <span class="sidebar-item-title">${e.role}</span>
-                <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 4px;">${e.org}</div>
-            </li>
-            `;
-        }).join('');
-
-        expList.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const newId = item.dataset.id;
-                renderExpContent(newId);
-                expList.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-            });
-        });
-    }
-
-    // Event Listeners
-    document.querySelectorAll('.v-item').forEach(tile => {
-        tile.addEventListener('click', () => {
-            const id = tile.dataset.experienceId;
-            openExpOverlay(id);
-        });
-    });
-
-    const openExpBtn = document.getElementById('open-experience-btn');
-    if (openExpBtn) {
-        openExpBtn.addEventListener('click', () => {
-            openExpOverlay(0);
-        });
-    }
-
-    if (expCloseBtn) {
-        expCloseBtn.addEventListener('click', closeExpOverlay);
-    }
-
-    // ESC Key for Experience Overlay
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && expOverlay.getAttribute('aria-hidden') === 'false') {
-            closeExpOverlay();
-        }
-    });
+    // --- EXPERIENCE OVERLAY CONTROLLER REMOVED (Unified) ---
 
 
     // Listen for brain click events to hide connector
@@ -1223,65 +1247,188 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // 4. Profile Overlay Logic
-    const profileOverlay = document.getElementById('profile-overlay');
-    const profileCloseBtn = document.getElementById('profile-overlay-close-btn');
-    const profileOpenBtn = document.getElementById('btn-open-profile');
-    const profileCards = document.querySelectorAll('.pl-card');
-
-    function openProfileOverlay(targetSectionId) {
-        profileOverlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden'; // Disable global scroll
-
-        if (targetSectionId) {
-            const targetEl = document.getElementById(targetSectionId);
-            if (targetEl) {
-                setTimeout(() => {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
+    // Profile Data
+    const profileData = [
+        {
+            id: "education",
+            title: "Education History",
+            subtitle: "Academic Track",
+            content: [
+                {
+                    title: "BSc (Hons) Computer Science (AI)",
+                    date: "2023–2026",
+                    org: "Asia Pacific University (APU) & De Montfort University (UK)",
+                    details: [
+                        "CGPA: 3.94 (Current)",
+                        "Vice Chancellor’s List: 2024, 2025",
+                        "30% Academic Scholarship",
+                        "Dual Degree Programme"
+                    ]
+                },
+                {
+                    title: "GCE A Levels",
+                    date: "Nixor College",
+                    org: "Further Math (A), Math (A*), CS (A*), Physics (A*), Chemistry (A*)",
+                    details: [
+                        "25% Academic Scholarship",
+                        "Senior Teaching Assistant (Physics)"
+                    ]
+                },
+                {
+                    title: "GCE O Levels",
+                    date: "Alpha High School",
+                    org: "9 A* and 1 A across 10 subjects",
+                    details: [
+                        "9 A* and 1 A across 10 subjects"
+                    ]
+                },
+                {
+                    title: "SAT Standardized Test",
+                    date: "Score: 1500",
+                    org: "College Board",
+                    details: [
+                        "Total: 1500 / 1600",
+                        "Math: 800 / 800 (Perfect Score)",
+                        "English: 700 / 800"
+                    ]
+                }
+            ],
+            stats: [
+                "CGPA: 3.94",
+                "SAT: 1500",
+                "9 A* (O-Levels)",
+                "4 A* (A-Levels)"
+            ]
+        },
+        {
+            id: "achievements",
+            title: "Achievements & Awards",
+            subtitle: "Competitions & Honors",
+            content: [
+                {
+                    title: "Scinnova V",
+                    date: "International",
+                    org: "Grand Runners Up overall; Robotics module winner",
+                    details: []
+                },
+                {
+                    title: "Euclid Contest (Waterloo)",
+                    date: "Mathematics",
+                    org: "Certificate of Distinction (Top 25% worldwide)",
+                    details: []
+                },
+                {
+                    title: "Rubik’s 5.0",
+                    date: "Mathematics",
+                    org: "Winner of ‘Kaleidoscope’ and ‘A Fraction Ahead’ math modules",
+                    details: []
+                },
+                {
+                    title: "Quiz Masters 2.0",
+                    date: "Trivia",
+                    org: "1st place (Aga Khan Education Board)",
+                    details: []
+                },
+                {
+                    title: "World Scholar’s Cup",
+                    date: "Debate/Writing",
+                    org: "1 Gold and 2 Silver medals; qualified for global round",
+                    details: []
+                },
+                {
+                    title: "Vice Chancellor’s List",
+                    date: "2024, 2025",
+                    org: "Awarded for maintaining CGPA > 3.7 at APU",
+                    details: []
+                }
+            ],
+            stats: [
+                "10+ Awards",
+                "International",
+                "Robotics Winner",
+                "Top 25% Math"
+            ]
+        },
+        {
+            id: "certs",
+            title: "Certifications",
+            subtitle: "Professional Development",
+            content: [
+                {
+                    title: "AI Agents Fundamentals",
+                    date: "Hugging Face",
+                    org: "Comprehensive course on building AI agents",
+                    details: []
+                },
+                {
+                    title: "AI X-Perience Workshop",
+                    date: "Rocheston (APU)",
+                    org: "Hands-on workshop with generative AI tools",
+                    details: []
+                },
+                {
+                    title: "Carbon Literacy Training",
+                    date: "De Montfort University",
+                    org: "Sustainability and climate impact certification",
+                    details: []
+                },
+                {
+                    title: "DMU Summer School",
+                    date: "UK Exchange",
+                    org: "Cultural and academic exchange programme",
+                    details: []
+                },
+                {
+                    title: "Google Labs Trusted Tester",
+                    date: "Beta Program",
+                    org: "Early access testing for Imagen 2, Whisk Animate, Veo 2",
+                    details: []
+                }
+            ],
+            stats: [
+                "AI Specialized",
+                "Sustainability",
+                "Beta Tester",
+                "International"
+            ]
         }
-    }
+    ];
 
-    function closeProfileOverlay() {
-        profileOverlay.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = ''; // Restore global scroll
-    }
+    const profileTiles = document.querySelectorAll('.sl-card[data-profile-target]');
+    profileTiles.forEach(tile => {
+        tile.addEventListener('click', () => {
+            const target = tile.dataset.profileTarget;
+            // Map target to ID
+            let id = 'education';
+            if (target === 'achievements') id = 'achievements';
+            if (target === 'certs') id = 'certs';
 
-    if (profileOpenBtn) {
-        profileOpenBtn.addEventListener('click', () => {
-            openProfileOverlay('profile-education'); // Default to top
-        });
-    }
-
-    if (profileCloseBtn) {
-        profileCloseBtn.addEventListener('click', closeProfileOverlay);
-    }
-
-    profileCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const target = card.dataset.profileTarget;
-            let sectionId = 'profile-education';
-            if (target === 'achievements') sectionId = 'profile-achievements';
-            if (target === 'certs') sectionId = 'profile-certs';
-            openProfileOverlay(sectionId);
+            openOverlay(id, 'profile');
         });
     });
 
     // Close on Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            closeProfileOverlay();
-            // Also close other overlays if open
-            document.getElementById('project-overlay').setAttribute('aria-hidden', 'true');
-            document.getElementById('experience-overlay').setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
+            if (projectOverlay.getAttribute('aria-hidden') === 'false') {
+                closeOverlay();
+            }
         }
     });
 
     // Initialize Brain (Moved here to ensure all functions are defined)
+    // Initialize Brain (Moved here to ensure all functions are defined)
     if (!isMobile && !prefersReducedMotion) {
         initBrain();
+
+        // Immediate state check on load
+        updateTargetProgress();
+        // If we are already scrolled down significantly, snap to that state immediately
+        // to avoid the "big brain" overlapping content on reload
+        if (targetProgress > 0.1) {
+            currentProgress = targetProgress;
+        }
+
         animateBrain();
     }
 

@@ -4,10 +4,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
 import { config } from './config.js';
 
+const clock = new THREE.Clock();
 let scene, camera, renderer, controls;
 let brainGroup, brainPivot;
 let raycaster, mouse;
 const container = document.getElementById('brain-hero-container');
+let hasRenderedFirstFrame = false;
+let isBrainReady = false;
+let animationStarted = false;
+let loadingPlaceholder = null;
 
 // Current active section for mini-brain highlighting
 let currentActiveSection = null;
@@ -38,6 +43,10 @@ const brainSectionMap = config.brainMapping.sections;
 let mouseDownPos = new THREE.Vector2();
 
 export function initBrain() {
+    if (container) {
+        container.classList.add('loading');
+    }
+
     // 1. Scene Setup
     scene = new THREE.Scene();
 
@@ -47,6 +56,7 @@ export function initBrain() {
 
     // 3. Renderer
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setScissorTest(true);
@@ -73,7 +83,11 @@ export function initBrain() {
     // controls.autoRotate = false; // We handle rotation manually now
     // controls.autoRotateSpeed = 0.5;
 
-    // 6. Load Model & Generate Network
+    // 6. Placeholder Visual (shows while GLTF loads)
+    loadingPlaceholder = createLoadingPlaceholder();
+    scene.add(loadingPlaceholder);
+
+    // 7. Load Model & Generate Network
     const loader = new GLTFLoader();
 
     loader.load('assets/brain_areas.glb', (gltf) => {
@@ -121,12 +135,13 @@ export function initBrain() {
         // 6b. Generate Neural Network
         generateNeuralNetwork(brainGroup);
 
-        animate();
+        isBrainReady = true;
+        disposeLoadingPlaceholder();
     }, undefined, (error) => {
         console.error('An error happened loading the brain model:', error);
     });
 
-    // 7. Raycaster
+    // 8. Raycaster
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();
 
@@ -154,6 +169,15 @@ export function initBrain() {
     });
 
     window.addEventListener('resize', onWindowResize, false);
+
+    startRenderLoop();
+}
+
+function startRenderLoop() {
+    if (animationStarted) return;
+    animationStarted = true;
+    clock.start();
+    animate();
 }
 
 function createOrbTexture() {
@@ -173,6 +197,56 @@ function createOrbTexture() {
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
+}
+
+function createLoadingPlaceholder() {
+    const group = new THREE.Group();
+    group.position.set(
+        config.scene.brainPivotPosition.x,
+        config.scene.brainPivotPosition.y,
+        config.scene.brainPivotPosition.z
+    );
+
+    const shellGeo = new THREE.IcosahedronGeometry(1.5, 3);
+    const shellMat = new THREE.MeshStandardMaterial({
+        color: 0x00ffff,
+        transparent: true,
+        opacity: 0.25,
+        emissive: 0x003333,
+        roughness: 0.35,
+        metalness: 0.1
+    });
+    const shell = new THREE.Mesh(shellGeo, shellMat);
+    group.add(shell);
+
+    const coreGeo = new THREE.IcosahedronGeometry(0.8, 1);
+    const coreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35
+    });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    group.add(core);
+
+    const initialScale = simulationParams.brainSize;
+    group.scale.set(initialScale, initialScale, initialScale);
+
+    return group;
+}
+
+function disposeLoadingPlaceholder() {
+    if (!loadingPlaceholder) return;
+
+    loadingPlaceholder.traverse((child) => {
+        if (child.isMesh) {
+            child.geometry.dispose();
+            child.material.dispose();
+        }
+    });
+
+    scene.remove(loadingPlaceholder);
+    loadingPlaceholder = null;
 }
 
 function generateNeuralNetwork(group) {
@@ -1026,7 +1100,12 @@ export function getBrainRegionScreenPosition(regionName) {
 function animate() {
     requestAnimationFrame(animate);
 
-    const delta = 0.016; // Approx 60fps
+    const delta = clock.getDelta();
+
+    if (loadingPlaceholder) {
+        loadingPlaceholder.rotation.y += 0.8 * delta;
+        loadingPlaceholder.rotation.x += 0.35 * delta;
+    }
 
     // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
     // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
@@ -1108,4 +1187,10 @@ function animate() {
     // controls.update(); // Removed manual controls
 
     renderer.render(scene, camera);
+
+    if (isBrainReady && !hasRenderedFirstFrame && container) {
+        hasRenderedFirstFrame = true;
+        container.classList.remove('loading');
+        container.classList.add('ready');
+    }
 }

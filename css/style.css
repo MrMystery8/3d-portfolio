@@ -60,6 +60,19 @@ body {
     /* GPU acceleration */
     will-change: clip-path;
     /* Optimize for clip-path animation */
+    transition: opacity 0.45s ease;
+}
+
+#brain-hero-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg-color);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+    z-index: 1;
+    pointer-events: none;
 }
 
 #brain-hero-container canvas {
@@ -70,6 +83,20 @@ body {
     height: 100%;
     pointer-events: auto;
     /* Re-enable events on the canvas itself (clipped by parent) */
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    background: transparent;
+}
+
+#brain-hero-container.ready canvas {
+    opacity: 1;
+    background: transparent;
+}
+
+#brain-hero-container.ready::before {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease, visibility 0s linear 0.45s;
 }
 
 /* Split Hero Text Styles */
@@ -132,7 +159,7 @@ body {
 }
 
 .separator {
-    color: var(--accent-color);
+    color: var(--text-color);
     margin: 0 10px;
     font-weight: 300;
     opacity: 0.6;
@@ -607,57 +634,10 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     width: 100%;
-    max-width: 700px;
+    max-width: 900px;
 }
 
-.launcher-tile {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--accent-dim);
-    padding: 25px;
-    border-radius: 12px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.launcher-tile:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--accent-color);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
-}
-
-.tile-title {
-    font-family: var(--font-main);
-    font-size: 1.4rem;
-    color: #fff;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.tile-desc {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 15px;
-}
-
-.tile-tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.tile-tags span {
-    font-size: 0.7rem;
-    color: var(--accent-color);
-    background: rgba(0, 255, 255, 0.1);
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 255, 255, 0.2);
-}
+/* Launcher Tile Styles Removed (Standardized to .sl-card) */
 
 /* Launcher Actions */
 .launcher-actions {
@@ -703,9 +683,6 @@ body {
         max-width: 350px;
     }
 
-    .launcher-tile {
-        padding: 15px;
-    }
 }
 
 
@@ -749,7 +726,7 @@ body {
 
 /* Body No Scroll Helper */
 body.no-scroll {
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 /* Global Gallery Header */
@@ -992,80 +969,86 @@ body.no-scroll {
 
 /* Project Body Grid */
 /* Project Body Grid */
-.project-body-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 80px;
+/* Unified Overlay Body Layout */
+.unified-body-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 40px;
 }
 
-.lead-text {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.9);
-    /* Increased contrast */
-    margin-bottom: 40px;
-    font-weight: 300;
-    max-width: 650px;
+.overview-row {
+    flex: 0 0 auto;
 }
 
-.detail-block h4 {
+.details-split-row {
+    display: flex;
+    flex: 1;
+    gap: 40px;
+    min-height: 0;
+    /* Allow scrolling within if absolutely needed, though we aim for no scroll */
+}
+
+.detail-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-col h4 {
     font-family: var(--font-main);
-    font-size: 0.85rem;
+    font-size: 1.1rem;
+    /* Bigger heading */
     color: var(--accent-color);
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    opacity: 0.8;
+    opacity: 0.9;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    padding-bottom: 10px;
 }
 
-.detail-block h4::after {
-    content: none;
+.detail-divider {
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    flex: 0 0 1px;
 }
 
-.feature-list {
+/* Unified List Style */
+.unified-list {
     list-style: none;
     padding: 0;
-    display: grid;
-    gap: 15px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
-.feature-list li {
+.unified-list li {
     position: relative;
     padding-left: 20px;
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.6;
+    line-height: 1.5;
     font-size: 0.95rem;
-    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding-bottom: 8px;
 }
 
-.feature-list li::before {
+.unified-list li:last-child {
+    border-bottom: none;
+}
+
+.unified-list li::before {
     content: '>';
     position: absolute;
     left: 0;
     color: var(--accent-color);
     font-family: var(--font-main);
     font-weight: bold;
-}
-
-.simple-list li {
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-    /* Key-Value look if needed */
-}
-
-.simple-list li::before {
-    content: none;
-}
-
-.metadata-block {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
+    font-size: 0.8rem;
+    top: 4px;
 }
 
 /* Scrollbar Styling */
@@ -1092,9 +1075,15 @@ body.no-scroll {
 
 /* Mobile Overlay */
 @media (max-width: 900px) {
-    .project-body-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
+    .details-split-row {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .detail-divider {
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
     }
 
     .content-wrapper {
@@ -1299,6 +1288,15 @@ body.no-scroll {
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 20px;
     line-height: 1.5;
+}
+
+.project-desc {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 15px;
+    line-height: 1.5;
+    text-align: left;
+    /* Enforce Left Align */
 }
 
 .detail-list {
@@ -1700,8 +1698,9 @@ body.no-scroll {
 
 /* The Card */
 .v-card {
-    width: 80%;
+    width: fit-content;
     /* Relative to the 50% half */
+    min-width: 200px;
     max-width: 350px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(0, 255, 255, 0.2);
@@ -1720,7 +1719,7 @@ body.no-scroll {
     /* Push to right side of left half */
     margin-right: 40px;
     /* Gap from center line */
-    text-align: right;
+    text-align: center;
 }
 
 .v-item.right .v-card {
@@ -1728,7 +1727,7 @@ body.no-scroll {
     /* Push to left side of right half */
     margin-left: 40px;
     /* Gap from center line */
-    text-align: left;
+    text-align: center;
 }
 
 /* The Node */
@@ -1797,36 +1796,9 @@ body.no-scroll {
     left: -40px;
 }
 
-/* --- EXPERIENCE OVERLAY REFINEMENTS --- */
+/* --- EXPERIENCE OVERLAY REFINEMENTS (Unified) --- */
 
-/* Header Hierarchy */
-#experience-overlay .project-header {
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 20px;
-}
-
-#experience-overlay .project-header h2 {
-    font-size: 2.5rem;
-    /* More contained than projects */
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
-    text-shadow: none;
-    /* Clean look */
-    line-height: 1.1;
-}
-
-#exp-overlay-org {
-    display: block;
-    font-size: 1.2rem;
-    color: var(--accent-color);
-    font-weight: 500;
-    margin-bottom: 15px;
-    letter-spacing: 1px;
-}
-
+/* Meta Row (Date | Location) */
 .exp-meta-row {
     display: flex;
     flex-wrap: wrap;
@@ -1835,6 +1807,7 @@ body.no-scroll {
     color: rgba(255, 255, 255, 0.6);
     font-family: var(--font-body);
     align-items: center;
+    margin-bottom: 15px;
 }
 
 .exp-meta-row span {
@@ -1843,39 +1816,18 @@ body.no-scroll {
     gap: 6px;
 }
 
-/* Add separators between meta items if needed, or keep clean gap */
 
-/* Body Typography */
-/* Body Typography */
-#experience-overlay .detail-block h4 {
+/* Tech Stack Wrapper */
+#overlay-tech-stack-wrapper h4 {
     font-family: var(--font-main);
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: var(--accent-color);
+    margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-weight: 700;
-
-    /* Left Accent Style */
-    border-bottom: none;
-    border-left: 3px solid var(--accent-color);
-    padding: 8px 0 8px 15px;
-    /* Vertical padding for background */
-    margin-bottom: 20px;
-    margin-top: 10px;
-
-    display: block;
-    width: 100%;
-    background: linear-gradient(90deg, rgba(0, 255, 255, 0.05), transparent);
-    border-radius: 0 4px 4px 0;
-}
-
-#experience-overlay .feature-list li {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 12px;
-    padding-left: 25px;
-    /* Space for bullet */
+    opacity: 0.9;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    padding-bottom: 10px;
 }
 
 #experience-overlay .feature-list li::before {
@@ -2081,37 +2033,12 @@ body.no-scroll {
     display: flex;
     flex-direction: column;
     padding: 0 20px;
+    margin-top: 100px;
+    /* Push down to align header */
 }
 
 /* --- Zone 1: Header Band (Top ~20%) --- */
-.sl-header {
-    flex: 0 0 20%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 25px;
-    text-align: center;
-}
-
-.sl-header h2 {
-    font-family: var(--font-main);
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 8px;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-}
-
-.sl-subheading {
-    font-size: 1rem;
-    color: var(--text-color);
-    opacity: 0.6;
-    font-weight: 300;
-    max-width: 600px;
-    margin: 0 auto;
-    letter-spacing: 1px;
-}
+/* Replaced by .launcher-header to match other sections */
 
 /* --- Zone 2: Content Band (Middle ~65%) --- */
 .sl-content-band {
@@ -2201,9 +2128,10 @@ body.no-scroll {
 .sl-grid-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 20px;
-    height: 100%;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    height: auto;
+    align-content: center;
     padding-top: 10px;
     /* Space for hover lift */
     padding-bottom: 5px;
@@ -2214,16 +2142,16 @@ body.no-scroll {
 .sl-card {
     background: rgba(10, 15, 30, 0.6);
     /* Darker, more solid */
-    border: 1px solid rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    padding: 25px;
+    padding: 15px;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
 }
 
 /* Cybernetic Corner Accents */
@@ -2242,10 +2170,10 @@ body.no-scroll {
 }
 
 .sl-card:hover {
-    background: rgba(15, 25, 45, 0.7);
+    background: rgba(15, 25, 45, 0.8);
     border-color: rgba(0, 255, 255, 0.3);
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
 }
 
 .sl-card:hover::before {
@@ -2258,10 +2186,13 @@ body.no-scroll {
 .lab-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    /* Enforce Left Align */
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 15px;
+    padding-bottom: 10px;
+    text-align: left;
 }
 
 .card-header.centered {
@@ -2316,6 +2247,8 @@ body.no-scroll {
     flex-wrap: wrap;
     gap: 10px;
     align-content: flex-start;
+    justify-content: flex-start;
+    /* Enforce Left Align */
 }
 
 .skill-chips span {
@@ -2496,94 +2429,6 @@ body.no-scroll {
     flex-direction: column;
 }
 
-/* Accordion Styling (System Lines) */
-.accordion-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    padding-right: 5px;
-    flex: 1;
-}
-
-.acc-item {
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.acc-item:hover {
-    border-color: rgba(0, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.04);
-}
-
-.acc-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.acc-title {
-    font-size: 0.95rem;
-    color: #fff;
-    font-weight: 500;
-}
-
-.acc-date,
-.acc-icon {
-    font-size: 0.8rem;
-    color: var(--accent-color);
-    opacity: 0.7;
-    font-family: 'Consolas', monospace;
-}
-
-.acc-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.acc-item.active .acc-body {
-    max-height: 200px;
-    /* Adjust as needed */
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.acc-body p {
-    padding: 15px 15px 5px;
-    margin: 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.acc-list {
-    list-style: none;
-    padding: 10px 15px 15px;
-    margin: 0;
-}
-
-.acc-list li {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 5px;
-    padding-left: 15px;
-    position: relative;
-}
-
-.acc-list li::before {
-    content: '>';
-    position: absolute;
-    left: 0;
-    color: var(--accent-color);
-    font-size: 0.8rem;
-}
-
 /* Responsive Profile */
 @media (max-width: 768px) {
     .profile-stats-hud {
@@ -2612,7 +2457,7 @@ body.no-scroll {
    PROFILE REVAMP (Style Guide Refinement)
    ========================================= */
 
-/* --- Zone 1: Header (Top ~20-25%) --- */
+/* --- Zone 1: Header (Top ~15%) --- */
 .profile-header {
     flex: 0 0 auto;
     padding-top: 40px;
@@ -2634,7 +2479,7 @@ body.no-scroll {
     margin: 0 auto;
 }
 
-/* --- Zone 2: Stats Band (Middle ~20-25%) --- */
+/* --- Zone 2: Stats Band (Middle ~25%) --- */
 .profile-stats {
     flex: 0 0 auto;
     display: flex;
@@ -2675,7 +2520,7 @@ body.no-scroll {
     opacity: 0.8;
 }
 
-/* --- Zone 3: Content Band (Bottom ~50-60%) --- */
+/* --- Zone 3: Content Band (Bottom ~60%) --- */
 .profile-content-band {
     flex: 1;
     display: grid;
@@ -2805,275 +2650,5 @@ body.no-scroll {
         /* Allow scroll on mobile if needed */
     }
 
-    .profile-stats {
-        gap: 15px;
-    }
 
-    .p-stat-card {
-        min-width: 45%;
-        padding: 10px;
-    }
-
-    .p-stat-val {
-        font-size: 1.4rem;
-    }
-}
-
-/* =========================================
-   PROFILE LAUNCHER (Fixed Dashboard)
-   ========================================= */
-
-.profile-launcher-layout {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-    padding: 0 5%;
-}
-
-/* Band 1: Header (Top ~15%) */
-.pl-header {
-    flex: 0 0 15%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-}
-
-.pl-header h2 {
-    font-size: 2rem;
-    margin: 0 0 5px 0;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-}
-
-.pl-subheading {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0;
-    font-weight: 300;
-}
-
-/* Band 2: Stats (Highlight Strip ~25%) */
-.pl-stats-band {
-    flex: 0 0 25%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 20px 0;
-}
-
-.pl-stat-tile {
-    flex: 1;
-    background: rgba(0, 255, 255, 0.02);
-    border: 1px solid rgba(0, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100%;
-    transition: all 0.3s ease;
-}
-
-.pl-stat-tile:hover {
-    background: rgba(0, 255, 255, 0.05);
-    border-color: rgba(0, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
-.pl-stat-val {
-    font-family: var(--font-main);
-    font-size: 1.8rem;
-    color: #fff;
-    text-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-    margin-bottom: 5px;
-}
-
-.pl-stat-lbl {
-    font-size: 0.75rem;
-    color: var(--accent-color);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    opacity: 0.8;
-    line-height: 1.3;
-}
-
-/* Band 3: Summary Cards (Launcher ~40%) */
-.pl-cards-band {
-    flex: 0 0 40%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 10px 0 20px;
-}
-
-.pl-card {
-    background: rgba(10, 10, 20, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-}
-
-.pl-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.pl-card:hover {
-    background: rgba(20, 20, 30, 0.8);
-    border-color: rgba(0, 255, 255, 0.3);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.pl-card:hover::before {
-    opacity: 1;
-}
-
-.pl-card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.pl-icon {
-    font-size: 1.2rem;
-}
-
-.pl-card h4 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #fff;
-    font-weight: 500;
-}
-
-.pl-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex: 1;
-}
-
-.pl-bullets li {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 8px;
-    padding-left: 12px;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.pl-bullets li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    color: var(--accent-color);
-}
-
-/* Band 4: CTA (Bottom ~15%) */
-.pl-cta-band {
-    flex: 0 0 15%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.pl-cta-btn {
-    background: rgba(0, 255, 255, 0.1);
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    padding: 10px 30px;
-    font-family: var(--font-main);
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-}
-
-.pl-cta-btn:hover {
-    background: var(--accent-color);
-    color: #000;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-}
-
-.pl-cta-hint {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 10px;
-}
-
-/* Profile Overlay Styles */
-.profile-overlay-body {
-    padding: 40px;
-    overflow-y: auto;
-    height: calc(100vh - 80px);
-    /* Minus header */
-}
-
-.profile-overlay-content {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.profile-section-block {
-    margin-bottom: 50px;
-    scroll-margin-top: 100px;
-    /* For smooth scrolling offset */
-}
-
-.profile-section-title {
-    font-size: 1.5rem;
-    color: var(--accent-color);
-    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-    padding-bottom: 10px;
-    margin-bottom: 25px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* Responsive Profile Launcher */
-@media (max-width: 768px) {
-    .pl-stats-band {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        flex: 0 0 auto;
-    }
-
-    .pl-cards-band {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        overflow-y: auto;
-        /* Allow internal scroll on mobile only if needed */
-    }
-
-    .pl-card {
-        min-height: auto;
-    }
 }
