@@ -5,11 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybernetic Brain Portfolio</title>
+    <style>
+        /* Prevent initial flash before external CSS loads */
+        html,
+        body {
+            margin: 0;
+            background: #050915;
+        }
+
+        #bg-canvas,
+        #brain-hero-container,
+        #brain-hero-container canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            background: transparent;
+        }
+    </style>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/brain-menu.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script type="importmap">
         {
             "imports": {
@@ -21,6 +42,7 @@
 </head>
 
 <body>
+    <canvas id="bg-canvas"></canvas>
     <header id="hero">
         <div id="brain-hero-container">
             <!-- Three.js canvas injected here -->
@@ -34,35 +56,40 @@
         </svg>
 
         <!-- Repositioned Hero Text (Top-Left) -->
-        <div id="hero-text">
-            <div class="brand-mark">AYAAN MINHAS</div>
+        <!-- Header Title (Top-Center) -->
+        <div id="hero-title">
             <h1>Neural Interface</h1>
-            <p class="subtitle">Interactive 3D Portfolio</p>
-            <p class="instruction">Drag to rotate · Click brain areas to navigate</p>
+            <p class="subtitle">Ayaan Minhas <span class="separator">|</span> Portfolio</p>
         </div>
 
-        <!-- Minimal Vertical Menu (Right) -->
+        <!-- Instructions (Bottom-Left) -->
+        <div id="hero-instructions">
+            <p class="instruction">Drag · Click brain areas</p>
+        </div>
+
+        <!-- Minimal Vertical Menu (Left) -->
         <nav id="brain-nav-menu">
+            <div class="nav-header">INTERFACE MAP</div>
             <ul class="brain-nav-list">
                 <li class="brain-nav-item" data-section="section-projects"
-                    data-brain-region="Brain_Part_01_BRAIN_TEXTURE_blinn2_0">
+                    data-brain-region="Brain_Part_06_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">01</span>
                     <span class="nav-label">PROJECTS</span>
                 </li>
                 <li class="brain-nav-item" data-section="section-experience"
-                    data-brain-region="Brain_Part_02_BRAIN_TEXTURE_blinn2_0">
+                    data-brain-region="Brain_Part_04_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">02</span>
                     <span class="nav-label">EXPERIENCE</span>
                 </li>
-                <li class="brain-nav-item" data-section="section-skills"
-                    data-brain-region="Brain_Part_03_BRAIN_TEXTURE_blinn2_0">
+                <li class="brain-nav-item" data-section="section-skills-labs"
+                    data-brain-region="Brain_Part_02_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">03</span>
                     <span class="nav-label">SKILLS</span>
                 </li>
-                <li class="brain-nav-item" data-section="section-awards"
-                    data-brain-region="Brain_Part_04_BRAIN_TEXTURE_blinn2_0">
+                <li class="brain-nav-item" data-section="section-profile"
+                    data-brain-region="Brain_Part_05_BRAIN_TEXTURE_blinn2_0">
                     <span class="nav-number">04</span>
-                    <span class="nav-label">AWARDS</span>
+                    <span class="nav-label">PROFILE</span>
                 </li>
             </ul>
         </nav>
@@ -89,6 +116,11 @@
         <div class="setting-group">
             <label for="node-count">Node Count: <span id="val-node-count">100</span></label>
             <input type="range" id="node-count" min="0" max="1000" step="10" value="100">
+        </div>
+
+        <div class="setting-group">
+            <label for="menu-gap">Menu Gap (vh): <span id="val-menu-gap">25</span></label>
+            <input type="range" id="menu-gap" min="10" max="40" step="1" value="25">
         </div>
 
         <div class="setting-group">
@@ -146,85 +178,399 @@
 
     <main id="content">
         <section id="section-projects" class="content-section">
-            <div class="section-content">
-                <h2>01. Featured Projects</h2>
-                <p>Building AI-driven systems, from RAG platforms to 3D games.</p>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Minhas Rupsi Platform</h3>
-                        <p>Full-stack RAG learning platform improving query response by >60%.</p>
+            <div class="section-content launcher-layout">
+                <!-- Zone 1: Top Bar -->
+                <div class="launcher-header">
+                    <h2>01. Projects</h2>
+
+                </div>
+
+                <!-- Zone 2: Launcher Tiles -->
+                <div class="launcher-grid">
+                    <!-- Tiles will be injected or hardcoded here. Let's hardcode the top 4 for the launcher. -->
+                    <div class="sl-card project-card" data-project-id="0">
+                        <div class="card-header">
+                            <h4>Minhas LMS</h4>
+                        </div>
+                        <p class="project-desc">Full Stack Learning Platform</p>
+                        <div class="skill-chips">
+                            <span>Flask</span><span>RAG AI</span><span>Full Stack</span>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Local LLM Ecosystem</h3>
-                        <p>Android/Web clients for local open-source LLMs via LM Studio.</p>
+                    <div class="sl-card project-card" data-project-id="1">
+                        <div class="card-header">
+                            <h4>89th Parallel</h4>
+                        </div>
+                        <p class="project-desc">Multi-Subject AI LMS</p>
+                        <div class="skill-chips">
+                            <span>Python</span><span>Vector DB</span><span>Education</span>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Area-51 Game</h3>
-                        <p>3D survival game with procedural terrain using Three.js.</p>
+                    <div class="sl-card project-card" data-project-id="2">
+                        <div class="card-header">
+                            <h4>Local LLM Eco</h4>
+                        </div>
+                        <p class="project-desc">Local AI Inference System</p>
+                        <div class="skill-chips">
+                            <span>Android</span><span>Local LLM</span><span>Privacy</span>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Conversational Clone</h3>
-                        <p>Hybrid RAG system replicating conversational styles.</p>
+                    <div class="sl-card project-card" data-project-id="3">
+                        <div class="card-header">
+                            <h4>Conversational Clone</h4>
+                        </div>
+                        <p class="project-desc">Personality AI Clone</p>
+                        <div class="skill-chips">
+                            <span>Gemini</span><span>RAG</span><span>NLP</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Zone 3: Actions -->
+                <p class="action-hint">Click any project card to view details.</p>
             </div>
         </section>
 
         <section id="section-experience" class="content-section">
-            <div class="section-content">
-                <h2>02. Work Experience</h2>
-                <p>Professional roles in software engineering and research.</p>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Software Engineer Intern</h3>
-                        <p>ORCA Team (Aug 2025 - Present). Refactoring loan-origination workflows.</p>
+            <div class="section-content launcher-layout">
+                <!-- Zone 1: Top Bar (Header Band) -->
+                <div class="launcher-header">
+                    <h2>02. Experience</h2>
+                    <p class="launcher-tagline">Snapshots of where I’ve actually worked.</p>
+                </div>
+
+                <!-- Zone 2: Middle Band (Vertical Timeline) -->
+                <div class="experience-timeline-vertical">
+                    <div class="v-line"></div>
+
+                    <!-- Item 1 (Left) -->
+                    <div class="v-item left" data-experience-id="0">
+                        <div class="v-card">
+                            <span class="v-role">SWE Intern @ JurisTech</span>
+                            <span class="v-date">Aug 2025–Present</span>
+                        </div>
+                        <div class="v-node"></div>
                     </div>
-                    <div class="card">
-                        <h3>R&D Assistant</h3>
-                        <p>Developing proof-of-concept web prototypes (Nov 2024 - Present).</p>
+
+                    <!-- Item 2 (Right) -->
+                    <div class="v-item right" data-experience-id="1">
+                        <div class="v-node"></div>
+                        <div class="v-card">
+                            <span class="v-role">R&D Asst @ CTI (APU)</span>
+                            <span class="v-date">Nov 2024–Present</span>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Teaching Assistant</h3>
-                        <p>Python with AI Basics. Guided students in building Gemini chatbots.</p>
+
+                    <!-- Item 3 (Left) -->
+                    <div class="v-item left" data-experience-id="2">
+                        <div class="v-card">
+                            <span class="v-role">TA @ Python w/ AI</span>
+                            <span class="v-date">Jul 2025</span>
+                        </div>
+                        <div class="v-node"></div>
                     </div>
+
+                    <!-- Item 4 (Right) -->
+                    <div class="v-item right" data-experience-id="3">
+                        <div class="v-node"></div>
+                        <div class="v-card">
+                            <span class="v-role">CIO @ Nixor Studios</span>
+                            <span class="v-date">Feb 2022–Feb 2023</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Left) -->
+                    <div class="v-item left" data-experience-id="4">
+                        <div class="v-card">
+                            <span class="v-role">Physics TA @ Nixor</span>
+                            <span class="v-date">Oct 2021–Mar 2023</span>
+                        </div>
+                        <div class="v-node"></div>
+                    </div>
+                </div>
+
+                <!-- Zone 3: Bottom Band (CTA) -->
+                <p class="action-hint">Click any role to view full responsibilities and impact.</p>
+            </div>
+        </section>
+
+        <section id="section-skills-labs" class="content-section">
+            <div class="section-content skills-labs-layout">
+                <!-- Zone 1: Header Band -->
+                <div class="launcher-header">
+                    <h2>03. Skills & Labs</h2>
+                    <p class="launcher-tagline">What I actually use, build and experiment with.</p>
+                </div>
+
+                <!-- Zone 2: Tabs + Content Band -->
+                <div class="sl-content-band">
+                    <!-- Tab Row -->
+                    <div class="sl-tabs-nav">
+                        <button class="sl-tab-btn active" data-tab="skills">Skills</button>
+                        <button class="sl-tab-btn" data-tab="labs">Labs</button>
+                        <button class="sl-tab-btn" data-tab="interests">Interests</button>
+                    </div>
+
+                    <!-- Tab Content Area -->
+                    <div class="sl-tab-content-wrapper">
+                        <!-- SKILLS TAB -->
+                        <div class="sl-tab-pane active" id="tab-skills">
+                            <div class="sl-grid-2x2">
+                                <!-- Group 1 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <h4>Languages</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>Python</span><span>Java</span><span>C++</span><span>C#</span>
+                                        <span>JavaScript</span><span>PHP</span><span>SQL</span>
+                                    </div>
+                                </div>
+                                <!-- Group 2 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <h4>Web & Platforms</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>HTML</span><span>CSS</span><span>React</span><span>Flask</span>
+                                        <span>Django</span><span>Android Studio</span><span>Joget DX</span>
+                                    </div>
+                                </div>
+                                <!-- Group 3 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <h4>AI & Systems</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>RAG pipelines</span><span>Vector search</span><span>LLM prompting</span>
+                                        <span>Local LLM inference</span><span>AI agents</span><span>Gen AI tools</span>
+                                    </div>
+                                </div>
+                                <!-- Group 4 -->
+                                <div class="sl-card skill-panel">
+                                    <div class="card-header">
+                                        <h4>Other Tools</h4>
+                                    </div>
+                                    <div class="skill-chips">
+                                        <span>R Studio</span><span>IDEs & Deployment</span><span>Cloudflare</span>
+                                        <span>Oracle DB</span><span>Git</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LABS TAB -->
+                        <div class="sl-tab-pane" id="tab-labs">
+                            <div class="sl-grid-2x2">
+                                <!-- Lab 1 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>Local LLM Sandbox</h3>
+                                        <span class="lab-tag">AI / Local</span>
+                                    </div>
+                                    <p class="lab-desc">Experiments with quantised open-source models running locally
+                                        and exposed to mobile/web clients.</p>
+                                </div>
+                                <!-- Lab 2 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>AI Art Creator</h3>
+                                        <span class="lab-tag">Art / GenAI</span>
+                                    </div>
+                                    <p class="lab-desc">Instagram AI art page (@ai.illusions) with 15,000+ followers
+                                        curating generative art.</p>
+                                </div>
+                                <!-- Lab 3 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>Google Labs Tester</h3>
+                                        <span class="lab-tag">Beta / Research</span>
+                                    </div>
+                                    <p class="lab-desc">Early testing of Imagen 2, Whisk Animate and Veo 2 for creative
+                                        workflows.</p>
+                                </div>
+                                <!-- Lab 4 -->
+                                <div class="sl-card lab-panel">
+                                    <div class="lab-header">
+                                        <h3>DMU Carbon Literacy</h3>
+                                        <span class="lab-tag">Sustainability</span>
+                                    </div>
+                                    <p class="lab-desc">Carbon literacy training and DMU summer school (UK) focused on
+                                        climate impact.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INTERESTS TAB -->
+                        <div class="sl-tab-pane" id="tab-interests">
+                            <div class="interests-wrapper">
+                                <div class="sl-card interests-panel">
+                                    <div class="card-header centered">
+                                        <h4>Personal Interests</h4>
+                                    </div>
+                                    <div class="interests-cluster">
+                                        <span>AI & Technology</span>
+                                        <span>AI Art & Design</span>
+                                        <span>Web Development</span>
+                                        <span>Robotics</span>
+                                        <span>Football / Futsal</span>
+                                        <span>Photography</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone 3: Footer Band -->
+                <div class="sl-footer">
+                    <p>Tap items above to explore details in other sections.</p>
                 </div>
             </div>
         </section>
 
-        <section id="section-skills" class="content-section">
-            <div class="section-content">
-                <h2>03. Skills & Education</h2>
-                <p>Academic excellence and technical proficiency.</p>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Education</h3>
-                        <p>BSc CS (AI) at APU (CGPA 3.94). Dual degree with De Montfort UK.</p>
-                    </div>
-                    <div class="card">
-                        <h3>Tech Stack</h3>
-                        <p>Python, JS, HTML/CSS, SQL, AI Agents, Three.js.</p>
-                    </div>
+        <section id="section-profile" class="content-section">
+            <div class="section-content launcher-layout">
+                <!-- Band 1: Header -->
+                <div class="launcher-header">
+                    <h2>04. Profile</h2>
+                    <p class="launcher-tagline">Academic track, scores and recognitions in one snapshot.</p>
                 </div>
-            </div>
-        </section>
 
-        <section id="section-awards" class="content-section">
-            <div class="section-content">
-                <h2>04. Awards & Recognition</h2>
-                <p>Achievements in competitions and certifications.</p>
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Certifications</h3>
-                        <p>Hugging Face AI Agents, Google Labs Trusted Tester.</p>
+                <!-- Standardized Profile Grid -->
+                <div class="launcher-grid">
+                    <!-- Card 1: University -->
+                    <div class="sl-card project-card" data-profile-target="education">
+                        <div class="card-header">
+                            <h4>University</h4>
+                        </div>
+                        <p class="project-desc">BSc Computer Science (AI)</p>
+                        <div class="skill-chips">
+                            <span>CGPA 3.94</span><span>Dean's List</span><span>Scholarship</span>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Competitions</h3>
-                        <p>Scinnova V Runner Up, Euclid Distinction, World Scholar's Cup Gold.</p>
+
+                    <!-- Card 2: Pre-University -->
+                    <div class="sl-card project-card" data-profile-target="education">
+                        <div class="card-header">
+                            <h4>Pre-University</h4>
+                        </div>
+                        <p class="project-desc">A-Levels & O-Levels</p>
+                        <div class="skill-chips">
+                            <span>SAT 1500</span><span>4 A* (A-Lvl)</span><span>9 A* (O-Lvl)</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Achievements -->
+                    <div class="sl-card project-card" data-profile-target="achievements">
+                        <div class="card-header">
+                            <h4>Achievements</h4>
+                        </div>
+                        <p class="project-desc">Global Competitions</p>
+                        <div class="skill-chips">
+                            <span>Scinnova V</span><span>Euclid Math</span><span>Scholar's Cup</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Certifications -->
+                    <div class="sl-card project-card" data-profile-target="certs">
+                        <div class="card-header">
+                            <h4>Certifications</h4>
+                        </div>
+                        <p class="project-desc">Professional Skills</p>
+                        <div class="skill-chips">
+                            <span>AI Agents</span><span>Sustainability</span><span>Google Labs</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+
+
+
+    <!-- GLOBAL PROJECT OVERLAY -->
+    <!-- GLOBAL PROJECT OVERLAY -->
+    <div id="project-overlay" class="overlay-container" aria-hidden="true">
+        <!-- Global Gallery Header -->
+        <div class="gallery-header">
+            <div class="gallery-branding">
+                <span class="gallery-icon">❖</span>
+                <h3>PROJECT DATABASE</h3>
+            </div>
+            <button id="overlay-close-btn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">CLOSE</span>
+            </button>
+        </div>
+
+        <div class="overlay-body">
+            <!-- Sidebar Navigation -->
+            <div class="overlay-sidebar">
+                <ul id="overlay-project-list">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="overlay-content">
+                <div class="content-wrapper">
+                    <!-- Project Header (Dynamic) -->
+                    <div class="project-header">
+                        <span id="overlay-project-type">Project Category</span>
+                        <h2 id="overlay-project-title">Project Title</h2>
+
+                        <!-- Optional Meta Row for Experience (Date | Location) -->
+                        <div id="overlay-meta-row" class="exp-meta-row" style="display: none;">
+                            <span id="overlay-date">Date Range</span>
+                            <span class="separator">|</span>
+                            <span id="overlay-loc">Location</span>
+                        </div>
+
+                        <div id="overlay-tags" class="tags-container">
+                            <!-- Tags populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Unified Body Layout -->
+                    <div class="unified-body-layout">
+                        <!-- Top Row: Overview -->
+                        <div class="overview-row">
+                            <p id="overlay-description" class="lead-text">Description goes here...</p>
+                        </div>
+
+                        <!-- Bottom Row: Split Features & Metadata -->
+                        <div class="details-split-row">
+                            <div class="detail-col left">
+                                <h4>Key Features</h4>
+                                <ul id="overlay-bullets" class="unified-list">
+                                    <!-- Bullets populated by JS -->
+                                </ul>
+                            </div>
+
+                            <div class="detail-divider"></div>
+
+                            <div class="detail-col right">
+                                <h4 id="overlay-features-title">System Metadata</h4>
+                                <ul id="overlay-features" class="unified-list">
+                                    <!-- Features populated by JS -->
+                                </ul>
+                                <!-- Optional Tech Stack for Experience -->
+                                <div id="overlay-tech-stack-wrapper" style="display: none; margin-top: 20px;">
+                                    <h4>Tech Stack</h4>
+                                    <div id="overlay-tech-stack" class="tech-tags-cloud"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPERIENCE TIMELINE OVERLAY -->
+
 
     <script type="module" src="js/main.js"></script>
 </body>

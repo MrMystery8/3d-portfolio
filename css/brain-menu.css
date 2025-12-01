@@ -1,22 +1,31 @@
-/* Brain Navigation Menu - Minimal Vertical Index (Option B) */
+/* Brain Navigation Menu - Centered Top (Option D) */
 
 #brain-nav-menu {
     position: fixed;
-    left: 60px;
+    top: var(--menu-top, 25vh);
+    /* Moved down below header */
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
     right: auto;
-    top: 55%;
-    /* Positioned visually under the top-left heading */
-    transform: translateY(-50%);
     z-index: 1000000;
     opacity: 1;
-    transition: opacity 0.5s ease;
+    /* transition removed for JS control */
     pointer-events: auto;
+
+    /* Prominence Styling */
+    background: rgba(5, 9, 21, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 10px 40px;
+    border-radius: 50px;
+    /* Pill shape */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Hide menu in mini-brain mode */
-body.brain-mode-mini #brain-nav-menu {
-    opacity: 0;
-    pointer-events: none;
+/* Hide menu in mini-brain mode - Handled by JS now */
+
+.nav-header {
+    display: none;
 }
 
 .brain-nav-list {
@@ -24,110 +33,117 @@ body.brain-mode-mini #brain-nav-menu {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 30px;
-    position: relative;
-    /* Removed glass card background/borders */
+    flex-direction: row;
+    gap: 50px;
+    /* Wider gap for prominence */
+    align-items: center;
     background: transparent;
-    box-shadow: none;
-    border: none;
-}
-
-/* Removed decorative pseudo-elements */
-.brain-nav-list::before,
-.brain-nav-list::after {
-    display: none;
 }
 
 .brain-nav-item {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    /* Left align */
-    gap: 20px;
     cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s ease;
     padding: 5px 0;
-    background: transparent;
-    border: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.6;
-    /* Default lower opacity */
+    font-family: var(--font-main);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    /* Prevent wrapping */
 }
 
 .brain-nav-item:hover,
 .brain-nav-item.active {
     opacity: 1;
-    transform: translateX(10px);
-    /* Move towards the right (brain) */
+    transform: scale(1.05);
+    /* Subtle scale up */
+}
+
+/* Underline indicator */
+.brain-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 100%;
+    height: 2px;
+    background: var(--accent-color);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.brain-nav-item:hover::after,
+.brain-nav-item.active::after {
+    transform: translateX(-50%) scaleX(1);
 }
 
 .nav-number {
-    font-family: 'Outfit', monospace;
-    font-size: 0.8rem;
-    font-weight: 400;
+    font-family: 'Courier New', monospace;
+    font-size: var(--text-xs);
+    font-weight: 700;
     color: var(--accent-color);
+    margin-right: 10px;
+    opacity: 0.8;
     letter-spacing: 1px;
-    transition: all 0.3s ease;
-    opacity: 0.7;
-}
-
-.brain-nav-item:hover .nav-number,
-.brain-nav-item.active .nav-number {
-    opacity: 1;
-    font-weight: 600;
 }
 
 .nav-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--text-color);
+    font-family: var(--font-main);
+    font-size: var(--text-body);
+    font-weight: 700;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
+    letter-spacing: 1.6px;
 }
 
 .brain-nav-item:hover .nav-label,
 .brain-nav-item.active .nav-label {
-    color: #fff;
-    letter-spacing: 3px;
-    font-weight: 600;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-}
-
-/* Active indicator - moved to LEFT for standard sidebar feel */
-.brain-nav-item::before {
-    content: '';
-    position: absolute;
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0%;
-    background: var(--accent-color);
-    transition: height 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 5px var(--accent-color);
-    border-radius: 2px;
-}
-
-.brain-nav-item:hover::before,
-.brain-nav-item.active::before {
-    height: 70%;
-    /* Not full height, looks more techy */
-    box-shadow: 0 0 10px var(--accent-color);
-}
-
-/* Remove the old right-side indicator */
-.brain-nav-item::after {
-    display: none;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
+@media (min-width: 1200px) {
+    .brain-nav-list {
+        gap: 5vw;
+        /* Dynamic gap based on viewport width */
+    }
+
     #brain-nav-menu {
-        left: 30px;
+        padding: 1vh 3vw;
+        /* Dynamic padding */
+    }
+}
+
+@media (min-width: 1600px) {
+    .brain-nav-list {
+        gap: 6vw;
+    }
+
+    .nav-label {
+        font-size: 1.3rem;
+    }
+
+    .nav-number {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    #brain-nav-menu {
+        padding: 10px 20px;
+        width: 90%;
+        /* Full width on smaller screens */
+        justify-content: center;
+        display: flex;
+    }
+
+    .brain-nav-list {
+        gap: 20px;
+        justify-content: space-between;
+        width: 100%;
     }
 }
 
@@ -138,21 +154,20 @@ body.brain-mode-mini #brain-nav-menu {
 }
 
 /* Animation for menu items on load */
-@keyframes fadeInSlide {
+@keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateX(-20px);
-        /* Slide from left */
+        transform: translateY(-20px);
     }
 
     to {
-        opacity: 0.6;
-        transform: translateX(0);
+        opacity: 0.7;
+        transform: translateY(0);
     }
 }
 
 .brain-nav-item {
-    animation: fadeInSlide 0.8s ease-out backwards;
+    animation: fadeInDown 0.8s ease-out backwards;
 }
 
 .brain-nav-item:nth-child(1) {

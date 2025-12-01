@@ -61,10 +61,10 @@ This project is built with **Vanilla HTML/CSS/JavaScript** and **Three.js**, foc
 -   **Bidirectional Animation**: Smooth, synchronized transformation in both directions - scroll down to shrink and glide to top-right, scroll up (or click mini brain) to expand and glide back to center.
 -   **Dual Behavior Modes**: Brain acts as main navigator in hero mode (click lobes to navigate sections) and as "back to nav" button in mini mode (click to return to top).
 -   **Electric Shader**: Dynamic, time-based shader effects for a "living" machine look.
--   **Responsive**: The 3D scene adjusts to window resizing, and the scroll logic handles different viewport sizes.
+-   **Responsive Design**: Optimized for various desktop screen sizes with dynamic scaling for the header and navigation menu. The 3D scene and UI elements adjust fluidly to window resizing.
 -   **Performance**: Uses `requestAnimationFrame` for smooth rendering and scroll handling.
 
 ## 🔮 Future Improvements
 
--   **Mobile Optimization**: Currently falls back to a simpler view; could implement a lightweight mobile 3D viewer.
+-   **Mobile Optimization**: Further refine the mobile experience, potentially implementing a lightweight mobile 3D viewer.
 -   **Section Highlighting**: Two-way binding where scrolling to a section lights up the corresponding brain part.

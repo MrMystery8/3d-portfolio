@@ -4,10 +4,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
 import { config } from './config.js';
 
+const clock = new THREE.Clock();
 let scene, camera, renderer, controls;
 let brainGroup, brainPivot;
 let raycaster, mouse;
 const container = document.getElementById('brain-hero-container');
+let hasRenderedFirstFrame = false;
+let isBrainReady = false;
+let animationStarted = false;
+let loadingPlaceholder = null;
 
 // Current active section for mini-brain highlighting
 let currentActiveSection = null;
@@ -31,20 +36,17 @@ let currentViewport = {
 };
 
 // Mapping from Mesh Names to Section IDs (for navigation on the shell)
-const brainSectionMap = {
-    'Brain_Part_01_BRAIN_TEXTURE_blinn2_0': 'section-projects',
-    'Brain_Part_02_BRAIN_TEXTURE_blinn2_0': 'section-experience',
-    'Brain_Part_03_BRAIN_TEXTURE_blinn2_0': 'section-skills',
-    'Brain_Part_04_BRAIN_TEXTURE_blinn2_0': 'section-awards',
-    // Aliases
-    'Brain_Part_05_BRAIN_TEXTURE_blinn2_0': 'section-projects',
-    'Brain_Part_06_BRAIN_TEXTURE_blinn2_0': 'section-experience',
-};
+// Mapping from Mesh Names to Section IDs (for navigation on the shell)
+const brainSectionMap = config.brainMapping.sections;
 
 // Track mouse down for drag detection
 let mouseDownPos = new THREE.Vector2();
 
 export function initBrain() {
+    if (container) {
+        container.classList.add('loading');
+    }
+
     // 1. Scene Setup
     scene = new THREE.Scene();
 
@@ -54,6 +56,7 @@ export function initBrain() {
 
     // 3. Renderer
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setScissorTest(true);
@@ -80,7 +83,11 @@ export function initBrain() {
     // controls.autoRotate = false; // We handle rotation manually now
     // controls.autoRotateSpeed = 0.5;
 
-    // 6. Load Model & Generate Network
+    // 6. Placeholder Visual (shows while GLTF loads)
+    loadingPlaceholder = createLoadingPlaceholder();
+    scene.add(loadingPlaceholder);
+
+    // 7. Load Model & Generate Network
     const loader = new GLTFLoader();
 
     loader.load('assets/brain_areas.glb', (gltf) => {
@@ -128,12 +135,13 @@ export function initBrain() {
         // 6b. Generate Neural Network
         generateNeuralNetwork(brainGroup);
 
-        animate();
+        isBrainReady = true;
+        disposeLoadingPlaceholder();
     }, undefined, (error) => {
         console.error('An error happened loading the brain model:', error);
     });
 
-    // 7. Raycaster
+    // 8. Raycaster
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();
 
@@ -161,6 +169,15 @@ export function initBrain() {
     });
 
     window.addEventListener('resize', onWindowResize, false);
+
+    startRenderLoop();
+}
+
+function startRenderLoop() {
+    if (animationStarted) return;
+    animationStarted = true;
+    clock.start();
+    animate();
 }
 
 function createOrbTexture() {
@@ -180,6 +197,56 @@ function createOrbTexture() {
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
+}
+
+function createLoadingPlaceholder() {
+    const group = new THREE.Group();
+    group.position.set(
+        config.scene.brainPivotPosition.x,
+        config.scene.brainPivotPosition.y,
+        config.scene.brainPivotPosition.z
+    );
+
+    const shellGeo = new THREE.IcosahedronGeometry(1.5, 3);
+    const shellMat = new THREE.MeshStandardMaterial({
+        color: 0x00ffff,
+        transparent: true,
+        opacity: 0.25,
+        emissive: 0x003333,
+        roughness: 0.35,
+        metalness: 0.1
+    });
+    const shell = new THREE.Mesh(shellGeo, shellMat);
+    group.add(shell);
+
+    const coreGeo = new THREE.IcosahedronGeometry(0.8, 1);
+    const coreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35
+    });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    group.add(core);
+
+    const initialScale = simulationParams.brainSize;
+    group.scale.set(initialScale, initialScale, initialScale);
+
+    return group;
+}
+
+function disposeLoadingPlaceholder() {
+    if (!loadingPlaceholder) return;
+
+    loadingPlaceholder.traverse((child) => {
+        if (child.isMesh) {
+            child.geometry.dispose();
+            child.material.dispose();
+        }
+    });
+
+    scene.remove(loadingPlaceholder);
+    loadingPlaceholder = null;
 }
 
 function generateNeuralNetwork(group) {
@@ -425,10 +492,14 @@ export function updateActiveSectionHighlight(sectionId) {
     brainGroup.traverse((child) => {
         if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
             child.material.opacity = simulationParams.brainOpacity;
+            child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             child.material.emissive = new THREE.Color(0x000000);
             child.material.emissiveIntensity = 0;
         }
     });
+
+    // Only highlight if we have a valid sectionId
+    if (!sectionId) return;
 
     // Now highlight only the active section
     brainGroup.traverse((child) => {
@@ -436,10 +507,19 @@ export function updateActiveSectionHighlight(sectionId) {
             const meshSectionId = brainSectionMap[child.name];
 
             if (meshSectionId === sectionId) {
-                // Highlight the active section
+                // Highlight the active section with its specific color
+                let highlightColor = config.brainMapping.colors.default;
+
+                // Determine color based on section ID
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
+
                 child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
-                child.material.emissive = new THREE.Color(0x00ffff);
-                child.material.emissiveIntensity = 0.3;
+                child.material.color = new THREE.Color(highlightColor); // Set base color
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4; // Increased intensity
             }
         }
     });
@@ -452,10 +532,31 @@ function resetAllBrainHighlights() {
     brainGroup.traverse((child) => {
         if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
             child.material.opacity = simulationParams.brainOpacity;
+            child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             child.material.emissive = new THREE.Color(0x000000);
             child.material.emissiveIntensity = 0;
         }
     });
+}
+
+// Highlight ALL brain regions (for mini-brain hover)
+function highlightAllBrainRegions(enable) {
+    if (!brainGroup) return;
+
+    if (enable) {
+        brainGroup.traverse((child) => {
+            if (child.isMesh && child !== nodeParticles && child !== signalParticles && child !== connectionLines) {
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.35, 0.8);
+                // Use default white color for whole brain highlight
+                child.material.color = new THREE.Color(config.brainMapping.colors.default);
+                child.material.emissive = new THREE.Color(config.brainMapping.colors.default);
+                child.material.emissiveIntensity = 0.3;
+            }
+        });
+    } else {
+        // Revert to active section state
+        updateActiveSectionHighlight(currentActiveSection);
+    }
 }
 
 // Highlight brain region based on menu hover
@@ -465,6 +566,9 @@ export function highlightBrainRegion(brainRegionName, highlighted) {
 
     brainGroup.traverse((child) => {
         if (child.isMesh && child.name === brainRegionName) {
+            // Only highlight if mapped
+            if (!brainSectionMap[child.name]) return;
+
             if (highlighted) {
                 // Smart Hover Logic
                 let hoverOpacity;
@@ -474,9 +578,25 @@ export function highlightBrainRegion(brainRegionName, highlighted) {
                     hoverOpacity = Math.max(simulationParams.brainOpacity - 0.3, 0.1);
                 }
                 child.material.opacity = hoverOpacity;
+
+                // Set emissive color based on section
+                const sectionId = brainSectionMap[child.name];
+                let highlightColor = config.brainMapping.colors.default;
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
+
+                child.material.color = new THREE.Color(highlightColor); // Set base color
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4; // Increased intensity
+
             } else {
                 // Reset to base state
                 child.material.opacity = simulationParams.brainOpacity;
+                child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
+                child.material.emissive = new THREE.Color(0x000000);
+                child.material.emissiveIntensity = 0;
             }
         }
     });
@@ -631,6 +751,16 @@ function onWindowResize() {
 // Manual Rotation State
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
+let rotationVelocity = { x: 0, y: 0 };
+const friction = 0.95;
+
+// Rotation Transition State
+let userRotationX = 0; // Tracks the manual rotation applied by user
+let transitionProgress = 0; // 0 = Hero (User Rotation), 1 = Mini (0 Rotation)
+
+export function setBrainTransitionProgress(progress) {
+    transitionProgress = Math.max(0, Math.min(progress, 1));
+}
 
 function onMouseDown(event) {
     isDragging = true;
@@ -652,7 +782,7 @@ function getNormalizedMouseCoordinates(clientX, clientY) {
 }
 
 function onClick(event) {
-    if (document.body.classList.contains('brain-mode-mini')) return;
+    // if (document.body.classList.contains('brain-mode-mini')) return; // Removed to allow raycast check
     if (event.clientX < currentViewport.x ||
         event.clientX > currentViewport.x + currentViewport.width ||
         event.clientY < currentViewport.y ||
@@ -678,6 +808,13 @@ function onClick(event) {
     const intersects = raycaster.intersectObjects(candidates, true);
 
     if (intersects.length > 0) {
+        // Mini Brain Click Handling
+        if (document.body.classList.contains('brain-mode-mini')) {
+            const event = new CustomEvent('mini-brain-clicked');
+            window.dispatchEvent(event);
+            return;
+        }
+
         const object = intersects[0].object;
         // console.log('Clicked Object:', object.name);
         const sectionId = brainSectionMap[object.name];
@@ -698,9 +835,55 @@ function onClick(event) {
 }
 
 let hoveredObject = null;
+let isHoveringMiniBrain = false;
 
 function onMouseMove(event) {
-    if (document.body.classList.contains('brain-mode-mini')) return;
+    if (document.body.classList.contains('brain-mode-mini')) {
+        // Check if mouse is within viewport first (optimization)
+        if (event.clientX >= currentViewport.x &&
+            event.clientX <= currentViewport.x + currentViewport.width &&
+            event.clientY >= currentViewport.y &&
+            event.clientY <= currentViewport.y + currentViewport.height) {
+
+            // Perform Raycasting for Precise Hover
+            const coords = getNormalizedMouseCoordinates(event.clientX, event.clientY);
+            mouse.x = coords.x;
+            mouse.y = coords.y;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // Find intersections
+            const candidates = [];
+            brainGroup.traverse((object) => {
+                if (object.isMesh && object !== nodeParticles && object !== signalParticles && object !== connectionLines) {
+                    candidates.push(object);
+                }
+            });
+
+            const intersects = raycaster.intersectObjects(candidates, true);
+
+            if (intersects.length > 0) {
+                if (!isHoveringMiniBrain) {
+                    isHoveringMiniBrain = true;
+                    document.body.style.cursor = 'pointer';
+                    highlightAllBrainRegions(true);
+                }
+            } else {
+                if (isHoveringMiniBrain) {
+                    isHoveringMiniBrain = false;
+                    document.body.style.cursor = 'default';
+                    highlightAllBrainRegions(false);
+                }
+            }
+        } else {
+            if (isHoveringMiniBrain) {
+                isHoveringMiniBrain = false;
+                document.body.style.cursor = 'default';
+                highlightAllBrainRegions(false);
+            }
+        }
+        return;
+    }
 
     // Handle Drag Rotation
     if (isDragging && brainPivot) {
@@ -710,8 +893,17 @@ function onMouseMove(event) {
         };
 
         // Rotate the pivot
-        brainPivot.rotation.y += deltaMove.x * 0.005;
-        brainPivot.rotation.x += deltaMove.y * 0.005;
+        const rotationSpeed = 0.005;
+        brainPivot.rotation.y += deltaMove.x * rotationSpeed;
+
+        // Update User Rotation X (instead of direct pivot rotation)
+        userRotationX += deltaMove.y * rotationSpeed;
+
+        // Update velocity for inertia
+        rotationVelocity = {
+            x: deltaMove.x * rotationSpeed,
+            y: deltaMove.y * rotationSpeed
+        };
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
 
@@ -754,6 +946,7 @@ function onMouseMove(event) {
         if (hoveredObject !== object) {
             if (hoveredObject) {
                 hoveredObject.material.opacity = simulationParams.brainOpacity;
+                hoveredObject.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
                 hoveredObject.material.emissive = new THREE.Color(0x000000);
                 hoveredObject.material.emissiveIntensity = 0;
             }
@@ -761,18 +954,28 @@ function onMouseMove(event) {
 
             // Smart Hover Logic - MATCHING setBrainRegionHighlight
             // Use the same visual style as menu hover
+
+            // Determine color based on section ID
+            const sectionId = brainSectionMap[hoveredObject.name];
+            let highlightColor = config.brainMapping.colors.default;
+            if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+            else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+            else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+            else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
+
             hoveredObject.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
-            hoveredObject.material.emissive = new THREE.Color(0x00ffff);
-            hoveredObject.material.emissiveIntensity = 0.25; // Subtle glow
+            hoveredObject.material.color = new THREE.Color(highlightColor);
+            hoveredObject.material.emissive = new THREE.Color(highlightColor);
+            hoveredObject.material.emissiveIntensity = 0.4;
 
             document.body.style.cursor = 'pointer';
 
             // Clear all menu highlights first, then highlight the current one
             document.querySelectorAll('.brain-nav-item.active').forEach(el => el.classList.remove('active'));
 
-            const sectionId = brainSectionMap[hoveredObject.name];
-            if (sectionId) {
-                const menuItem = document.querySelector(`.brain-nav-item[data-section="${sectionId}"]`);
+            const mappedSectionId = brainSectionMap[hoveredObject.name];
+            if (mappedSectionId) {
+                const menuItem = document.querySelector(`.brain-nav-item[data-section="${mappedSectionId}"]`);
                 if (menuItem) {
                     menuItem.classList.add('active');
                     // Trigger connector line from main.js logic?
@@ -790,6 +993,7 @@ function onMouseMove(event) {
         if (hoveredObject) {
             // Reset to base state
             hoveredObject.material.opacity = simulationParams.brainOpacity;
+            hoveredObject.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
             hoveredObject.material.emissive = new THREE.Color(0x000000);
             hoveredObject.material.emissiveIntensity = 0;
 
@@ -812,21 +1016,33 @@ function onMouseMove(event) {
     }
 }
 
-// External trigger to highlight a brain region (e.g. from menu hover)
 export function setBrainRegionHighlight(regionName, active) {
     if (!brainGroup) return;
     if (document.body.classList.contains('brain-mode-mini')) return;
 
     brainGroup.traverse((child) => {
         if (child.isMesh && child.name === regionName) {
+            // Only highlight if this region is mapped in our config
+            if (!brainSectionMap[child.name]) return;
+
             if (active) {
-                // Glow effect - REDUCED INTENSITY
-                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8); // Slightly lower max opacity
-                child.material.emissive = new THREE.Color(0x00ffff);
-                child.material.emissiveIntensity = 0.25; // Reduced from 0.5 for subtler effect
+                // Determine color based on section ID
+                const sectionId = brainSectionMap[child.name];
+                let highlightColor = config.brainMapping.colors.default;
+                if (sectionId === 'section-projects') highlightColor = config.brainMapping.colors.projects;
+                else if (sectionId === 'section-experience') highlightColor = config.brainMapping.colors.experience;
+                else if (sectionId === 'section-skills-labs') highlightColor = config.brainMapping.colors.skills;
+                else if (sectionId === 'section-profile') highlightColor = config.brainMapping.colors.profile;
+
+                // Glow effect
+                child.material.opacity = Math.min(simulationParams.brainOpacity + 0.3, 0.8);
+                child.material.color = new THREE.Color(highlightColor);
+                child.material.emissive = new THREE.Color(highlightColor);
+                child.material.emissiveIntensity = 0.4;
             } else {
                 // Reset
                 child.material.opacity = simulationParams.brainOpacity;
+                child.material.color = new THREE.Color(0x00ffff); // Reset to default cyan
                 child.material.emissive = new THREE.Color(0x000000);
                 child.material.emissiveIntensity = 0;
             }
@@ -884,12 +1100,34 @@ export function getBrainRegionScreenPosition(regionName) {
 function animate() {
     requestAnimationFrame(animate);
 
-    const delta = 0.016; // Approx 60fps
+    const delta = clock.getDelta();
 
+    if (loadingPlaceholder) {
+        loadingPlaceholder.rotation.y += 0.8 * delta;
+        loadingPlaceholder.rotation.x += 0.35 * delta;
+    }
+
+    // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
     // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
     if (brainPivot) {
         brainPivot.rotation.y += simulationParams.rotationSpeedY * delta;
-        brainPivot.rotation.x += simulationParams.rotationSpeedX * delta;
+        // brainPivot.rotation.x += simulationParams.rotationSpeedX * delta; // Disable auto X rotation for now to avoid conflict
+
+        // Apply inertia when not dragging
+        if (!isDragging) {
+            brainPivot.rotation.y += rotationVelocity.x;
+            userRotationX += rotationVelocity.y; // Apply inertia to user rotation
+
+            // Apply friction
+            rotationVelocity.x *= friction;
+            rotationVelocity.y *= friction;
+        }
+
+        // Apply Transition Logic for X Rotation
+        // Interpolate between userRotationX (Hero) and 0 (Mini)
+        // We use a smooth ease-out for the transition
+        const targetX = 0;
+        brainPivot.rotation.x = userRotationX * (1 - transitionProgress) + targetX * transitionProgress;
     }
 
     // 2. Update Signals
@@ -949,4 +1187,10 @@ function animate() {
     // controls.update(); // Removed manual controls
 
     renderer.render(scene, camera);
+
+    if (isBrainReady && !hasRenderedFirstFrame && container) {
+        hasRenderedFirstFrame = true;
+        container.classList.remove('loading');
+        container.classList.add('ready');
+    }
 }
