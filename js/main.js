@@ -467,6 +467,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sectionId = entry.target.id;
                 // Always call this - the function itself will check if we're in mini mode
                 updateActiveSectionHighlight(sectionId);
+
+                // Update help tooltip content for active section
+                updateHelpTooltip(sectionId);
             }
         });
     }, { threshold: 0.5 });
@@ -505,12 +508,81 @@ document.addEventListener('DOMContentLoaded', () => {
             sections.forEach(s => s.classList.remove('active'));
             activeSection.classList.add('active');
             updateActiveSectionHighlight(activeSection.id);
+
+            // Update help tooltip for the detected active section
+            updateHelpTooltip(activeSection.id);
+        } else {
+            // If no section is significantly visible (e.g., we're in hero), update to hero tooltip
+            updateHelpTooltip('hero');
         }
     }
 
     // Run initial detection after a short delay to ensure the brain is initialized
     setTimeout(detectInitialActiveSection, 100);
 
+    // --- DYNAMIC HELP TOOLTIP SYSTEM ---
+    const helpTooltipContent = {
+        'hero': {
+            items: [
+                'Drag to rotate. Click regions to navigate.',
+                'Click the mini-brain to return.',
+                'Click \'Ayaan Minhas | Portfolio\' to contact.'
+            ]
+        },
+        'section-projects': {
+            items: [
+                'Click any project card to view details.',
+                'Use the overlay sidebar to navigate between projects.'
+            ]
+        },
+        'section-experience': {
+            items: [
+                'Click any role to view full responsibilities and impact.',
+                'Timeline shows chronological progression.'
+            ]
+        },
+        'section-skills-labs': {
+            items: [
+                'Tap items above to explore details.',
+                'Switch between Skills, Labs, and Interests tabs.'
+            ]
+        },
+        'section-profile': {
+            items: [
+                'Click any card to view details.',
+                'Explore education, achievements, and certifications.'
+            ]
+        }
+    };
+
+    const helpTooltip = document.querySelector('.help-tooltip');
+    const helpBtn = document.getElementById('help-btn');
+
+    function updateHelpTooltip(sectionId = 'hero') {
+        if (!helpTooltip) return;
+
+        const content = helpTooltipContent[sectionId] || helpTooltipContent['hero'];
+        helpTooltip.innerHTML = content.items.map(item => `<p>• ${item}</p>`).join('');
+    }
+
+    function updateHelpTooltipVisibility() {
+        if (!helpBtn) return;
+
+        const projectOverlay = document.getElementById('project-overlay');
+        const contactOverlay = document.getElementById('contact-overlay');
+
+        const isProjectOverlayOpen = projectOverlay && projectOverlay.getAttribute('aria-hidden') === 'false';
+        const isContactOverlayOpen = contactOverlay && contactOverlay.getAttribute('aria-hidden') === 'false';
+
+        if (isProjectOverlayOpen || isContactOverlayOpen) {
+            helpBtn.classList.add('overlay-active');
+        } else {
+            helpBtn.classList.remove('overlay-active');
+        }
+    }
+
+    // Initialize tooltip with hero content
+    updateHelpTooltip('hero');
 
     // Connector Line Logic
     const overlay = document.getElementById('interaction-overlay');
@@ -792,6 +864,9 @@ document.addEventListener('DOMContentLoaded', () => {
             contactOverlay.style.opacity = '1';
             contactOverlay.setAttribute('aria-hidden', 'false'); // Required for content visibility
             document.body.classList.add('no-scroll'); // Prevent background scrolling
+
+            // Update help tooltip visibility (hide when contact overlay opens)
+            updateHelpTooltipVisibility();
         });
 
         contactCloseBtn.addEventListener('click', () => {
@@ -799,6 +874,9 @@ document.addEventListener('DOMContentLoaded', () => {
             contactOverlay.style.visibility = 'hidden';
             contactOverlay.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('no-scroll');
+
+            // Update help tooltip visibility (show when contact overlay closes)
+            updateHelpTooltipVisibility();
         });
     }
 
@@ -1045,6 +1123,9 @@ document.addEventListener('DOMContentLoaded', () => {
             brainContainer.style.visibility = 'visible';
             brainContainer.style.opacity = '1';
         }
+
+        // Update help tooltip visibility
+        updateHelpTooltipVisibility();
     }
 
     function renderOverlayContent(id, type = 'project') {
@@ -1219,6 +1300,9 @@ document.addEventListener('DOMContentLoaded', () => {
             brainContainer.style.visibility = 'hidden';
             brainContainer.style.opacity = '0';
         }
+
+        // Update help tooltip visibility (hide when overlay opens)
+        updateHelpTooltipVisibility();
 
         // Ensure close button works for both
         if (overlayCloseBtn) overlayCloseBtn.focus();

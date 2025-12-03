@@ -441,6 +441,11 @@ body.brain-mode-mini #hero-instructions {
     margin-bottom: 0;
 }
 
+/* Hide help button completely when overlays are active */
+#help-btn.overlay-active {
+    display: none !important;
+}
+
 /* Settings Panel (Refactored to Sidebar Overlay) */
 #settings-panel {
     position: fixed;
