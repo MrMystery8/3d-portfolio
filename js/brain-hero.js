@@ -788,6 +788,13 @@ function onClick(event) {
         event.clientY < currentViewport.y ||
         event.clientY > currentViewport.y + currentViewport.height) return;
 
+    // Disable navigation if settings panel is open
+    if (document.body.classList.contains('settings-open')) return;
+
+    // Disable navigation if contact overlay is open
+    const contactOverlay = document.getElementById('contact-overlay');
+    if (contactOverlay && contactOverlay.getAttribute('aria-hidden') === 'false') return;
+
     const coords = getNormalizedMouseCoordinates(event.clientX, event.clientY);
     mouse.x = coords.x;
     mouse.y = coords.y;
@@ -1111,6 +1118,8 @@ function animate() {
     // 1. Rotate Brain (Rotate the Pivot to keep axis centered)
     if (brainPivot) {
         brainPivot.rotation.y += simulationParams.rotationSpeedY * delta;
+        // Apply auto X rotation to userRotationX so it blends with transition logic
+        userRotationX += simulationParams.rotationSpeedX * delta;
         // brainPivot.rotation.x += simulationParams.rotationSpeedX * delta; // Disable auto X rotation for now to avoid conflict
 
         // Apply inertia when not dragging

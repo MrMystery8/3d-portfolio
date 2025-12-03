@@ -31,6 +31,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="importmap">
         {
             "imports": {
@@ -59,13 +60,21 @@
         <!-- Header Title (Top-Center) -->
         <div id="hero-title">
             <h1>Neural Interface</h1>
-            <p class="subtitle">Ayaan Minhas <span class="separator">|</span> Portfolio</p>
+            <p class="subtitle" id="hero-contact-trigger" role="button" aria-label="Open Contact Overlay">
+                Ayaan Minhas <span class="separator">|</span> Portfolio
+            </p>
         </div>
 
         <!-- Instructions (Bottom-Left) -->
-        <div id="hero-instructions">
-            <p class="instruction">Drag · Click brain areas</p>
-        </div>
+        <!-- Help Tooltip (Top-Right) -->
+        <button id="help-btn" aria-label="Help & Instructions">
+            ?
+            <div class="help-tooltip">
+                <p>• Drag to rotate. Click regions to navigate.</p>
+                <p>• Click the mini-brain to return.</p>
+                <p>• Click 'Ayaan Minhas | Portfolio' to contact.</p>
+            </div>
+        </button>
 
         <!-- Minimal Vertical Menu (Left) -->
         <nav id="brain-nav-menu">
@@ -100,6 +109,9 @@
         <!-- Visuals handled by CSS or shared canvas -->
     </button>
 
+    <!-- Resume Button (Top Left) - MOVED TO HERO TITLE -->
+    <!-- Contact Me Button (Top Right) - MOVED TO HERO TITLE -->
+
     <!-- Settings UI -->
     <button id="settings-btn" aria-label="Open Settings">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -109,71 +121,74 @@
             </path>
         </svg>
     </button>
+    <!-- Settings Panel (Refactored to Sidebar Overlay) -->
+    <div id="settings-panel" class="hidden" aria-hidden="true">
+        <div class="settings-content">
+            <button id="close-settings-cross" aria-label="Close Settings">&times;</button>
+            <h3>Neural Configuration</h3>
 
-    <div id="settings-panel" class="hidden">
-        <h3>Simulation Settings</h3>
+            <div class="setting-group">
+                <label>Node Count <span id="val-node-count">100</span></label>
+                <input type="range" id="node-count" min="0" max="1000" step="10" value="100">
+            </div>
 
-        <div class="setting-group">
-            <label for="node-count">Node Count: <span id="val-node-count">100</span></label>
-            <input type="range" id="node-count" min="0" max="1000" step="10" value="100">
+            <div class="setting-group">
+                <label>Menu Gap (vh) <span id="val-menu-gap">25</span></label>
+                <input type="range" id="menu-gap" min="10" max="40" step="1" value="25">
+            </div>
+
+            <div class="setting-group">
+                <label>Connection Dist <span id="val-conn-dist">0.3</span></label>
+                <input type="range" id="conn-dist" min="0" max="2.0" step="0.1" value="0.3">
+            </div>
+
+            <div class="setting-group">
+                <label>Signal Count <span id="val-sig-count">10</span></label>
+                <input type="range" id="sig-count" min="0" max="100" step="1" value="10">
+            </div>
+
+            <div class="setting-group">
+                <label>Signal Speed <span id="val-sig-speed">0.8</span></label>
+                <input type="range" id="sig-speed" min="0" max="10.0" step="0.1" value="0.8">
+            </div>
+
+            <div class="setting-group">
+                <label>Signal Size <span id="val-sig-size">1.0</span></label>
+                <input type="range" id="sig-size" min="0" max="5.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="setting-group">
+                <label>Network Opacity <span id="val-net-opacity">0.1</span></label>
+                <input type="range" id="net-opacity" min="0" max="1.0" step="0.05" value="0.1">
+            </div>
+
+            <div class="setting-group">
+                <label>Signal Opacity <span id="val-sig-opacity">1.0</span></label>
+                <input type="range" id="sig-opacity" min="0" max="1.0" step="0.05" value="1.0">
+            </div>
+
+            <div class="setting-group">
+                <label>Brain Opacity <span id="val-brain-opacity">0.15</span></label>
+                <input type="range" id="brain-opacity" min="0" max="1.0" step="0.05" value="0.15">
+            </div>
+
+            <div class="setting-group">
+                <label>Brain Size <span id="val-brain-size">1.5</span></label>
+                <input type="range" id="brain-size" min="0.5" max="3.0" step="0.1" value="1.5">
+            </div>
+
+            <div class="setting-group">
+                <label>Rotation X <span id="val-rot-x">0.0</span></label>
+                <input type="range" id="rot-x" min="0" max="2.0" step="0.1" value="0.0">
+            </div>
+
+            <div class="setting-group">
+                <label>Rotation Y <span id="val-rot-y">0.5</span></label>
+                <input type="range" id="rot-y" min="0" max="2.0" step="0.1" value="0.5">
+            </div>
+
+            <button id="close-settings">Close Configuration</button>
         </div>
-
-        <div class="setting-group">
-            <label for="menu-gap">Menu Gap (vh): <span id="val-menu-gap">25</span></label>
-            <input type="range" id="menu-gap" min="10" max="40" step="1" value="25">
-        </div>
-
-        <div class="setting-group">
-            <label for="conn-dist">Connection Dist: <span id="val-conn-dist">0.3</span></label>
-            <input type="range" id="conn-dist" min="0" max="2.0" step="0.1" value="0.3">
-        </div>
-
-        <div class="setting-group">
-            <label for="sig-count">Signal Count: <span id="val-sig-count">10</span></label>
-            <input type="range" id="sig-count" min="0" max="100" step="1" value="10">
-        </div>
-
-        <div class="setting-group">
-            <label for="sig-speed">Signal Speed: <span id="val-sig-speed">0.8</span></label>
-            <input type="range" id="sig-speed" min="0" max="10.0" step="0.1" value="0.8">
-        </div>
-
-        <div class="setting-group">
-            <label for="sig-size">Signal Size: <span id="val-sig-size">1.0</span></label>
-            <input type="range" id="sig-size" min="0" max="5.0" step="0.1" value="1.0">
-        </div>
-
-        <div class="setting-group">
-            <label for="net-opacity">Network Opacity: <span id="val-net-opacity">0.1</span></label>
-            <input type="range" id="net-opacity" min="0" max="1.0" step="0.05" value="0.1">
-        </div>
-
-        <div class="setting-group">
-            <label for="sig-opacity">Signal Opacity: <span id="val-sig-opacity">1.0</span></label>
-            <input type="range" id="sig-opacity" min="0" max="1.0" step="0.05" value="1.0">
-        </div>
-
-        <div class="setting-group">
-            <label for="brain-opacity">Brain Opacity: <span id="val-brain-opacity">0.15</span></label>
-            <input type="range" id="brain-opacity" min="0" max="1.0" step="0.05" value="0.15">
-        </div>
-
-        <div class="setting-group">
-            <label for="brain-size">Brain Size: <span id="val-brain-size">1.5</span></label>
-            <input type="range" id="brain-size" min="0.5" max="3.0" step="0.1" value="1.5">
-        </div>
-
-        <div class="setting-group">
-            <label for="rot-x">Rotation Speed X: <span id="val-rot-x">0.0</span></label>
-            <input type="range" id="rot-x" min="0" max="2.0" step="0.1" value="0.0">
-        </div>
-
-        <div class="setting-group">
-            <label for="rot-y">Rotation Speed Y: <span id="val-rot-y">0.5</span></label>
-            <input type="range" id="rot-y" min="0" max="2.0" step="0.1" value="0.5">
-        </div>
-
-        <button id="close-settings">Close</button>
     </div>
 
     <main id="content">
@@ -242,49 +257,49 @@
                 <div class="experience-timeline-vertical mobile-only">
                     <div class="v-line"></div>
 
-                    <!-- Item 1 (Left) -->
-                    <div class="v-item left" data-experience-id="0">
+                    <!-- Item 1 (Left) - Oldest -->
+                    <div class="v-item left" data-experience-id="4">
                         <div class="v-card">
-                            <span class="v-role">SWE Intern @ JurisTech</span>
-                            <span class="v-date">Aug 2025–Present</span>
+                            <span class="v-role">Physics TA @ Nixor</span>
+                            <span class="v-date">Oct 2021–Mar 2023</span>
                         </div>
-                        <div class="v-node"></div>
+                        <div class="v-node">01</div>
                     </div>
 
                     <!-- Item 2 (Right) -->
-                    <div class="v-item right" data-experience-id="1">
-                        <div class="v-node"></div>
-                        <div class="v-card">
-                            <span class="v-role">R&D Asst @ CTI (APU)</span>
-                            <span class="v-date">Nov 2024–Present</span>
-                        </div>
-                    </div>
-
-                    <!-- Item 3 (Left) -->
-                    <div class="v-item left" data-experience-id="2">
-                        <div class="v-card">
-                            <span class="v-role">TA @ Python w/ AI</span>
-                            <span class="v-date">Jul 2025</span>
-                        </div>
-                        <div class="v-node"></div>
-                    </div>
-
-                    <!-- Item 4 (Right) -->
                     <div class="v-item right" data-experience-id="3">
-                        <div class="v-node"></div>
+                        <div class="v-node">02</div>
                         <div class="v-card">
                             <span class="v-role">CIO @ Nixor Studios</span>
                             <span class="v-date">Feb 2022–Feb 2023</span>
                         </div>
                     </div>
 
-                    <!-- Item 5 (Left) -->
-                    <div class="v-item left" data-experience-id="4">
+                    <!-- Item 3 (Left) -->
+                    <div class="v-item left" data-experience-id="1">
                         <div class="v-card">
-                            <span class="v-role">Physics TA @ Nixor</span>
-                            <span class="v-date">Oct 2021–Mar 2023</span>
+                            <span class="v-role">R&D Asst @ CTI (APU)</span>
+                            <span class="v-date">Nov 2024–Present</span>
                         </div>
-                        <div class="v-node"></div>
+                        <div class="v-node">03</div>
+                    </div>
+
+                    <!-- Item 4 (Right) -->
+                    <div class="v-item right" data-experience-id="2">
+                        <div class="v-node">04</div>
+                        <div class="v-card">
+                            <span class="v-role">TA @ Python w/ AI</span>
+                            <span class="v-date">Jul 2025</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Left) - Newest -->
+                    <div class="v-item left" data-experience-id="0">
+                        <div class="v-card">
+                            <span class="v-role">SWE Intern @ JurisTech</span>
+                            <span class="v-date">Aug 2025–Nov 2025</span>
+                        </div>
+                        <div class="v-node">05</div>
                     </div>
                 </div>
 
@@ -296,39 +311,19 @@
                             fill="none" stroke="#00ffff" stroke-width="3" stroke-linecap="round" />
                     </svg>
 
-                    <!-- Item 1 (Top - Arc Over) -->
-                    <div class="snake-item" style="left: 10%; top: 50%;" data-experience-id="0">
+                    <!-- Item 1 (Top - Arc Over) - Oldest -->
+                    <div class="snake-item" style="left: 10%; top: 50%;" data-experience-id="4">
                         <div class="snake-node">01</div>
                         <div class="snake-card top">
-                            <span class="snake-role">SWE Intern</span>
-                            <span class="snake-org">JurisTech</span>
-                            <span class="snake-date">Aug 2025–Present</span>
+                            <span class="snake-role">Physics TA</span>
+                            <span class="snake-org">Nixor College</span>
+                            <span class="snake-date">Oct 2021–Mar 2023</span>
                         </div>
                     </div>
 
                     <!-- Item 2 (Bottom - Arc Under) -->
-                    <div class="snake-item" style="left: 30%; top: 50%;" data-experience-id="1">
+                    <div class="snake-item" style="left: 30%; top: 50%;" data-experience-id="3">
                         <div class="snake-node">02</div>
-                        <div class="snake-card bottom">
-                            <span class="snake-role">R&D Asst</span>
-                            <span class="snake-org">CTI (APU)</span>
-                            <span class="snake-date">Nov 2024–Present</span>
-                        </div>
-                    </div>
-
-                    <!-- Item 3 (Top - Arc Over) -->
-                    <div class="snake-item" style="left: 50%; top: 50%;" data-experience-id="2">
-                        <div class="snake-node">03</div>
-                        <div class="snake-card top">
-                            <span class="snake-role">TA @ Python w/ AI</span>
-                            <span class="snake-org">Minhas Rupsi</span>
-                            <span class="snake-date">Jul 2025</span>
-                        </div>
-                    </div>
-
-                    <!-- Item 4 (Bottom - Arc Under) -->
-                    <div class="snake-item" style="left: 70%; top: 50%;" data-experience-id="3">
-                        <div class="snake-node">04</div>
                         <div class="snake-card bottom">
                             <span class="snake-role">CIO</span>
                             <span class="snake-org">Nixor Studios</span>
@@ -336,13 +331,33 @@
                         </div>
                     </div>
 
-                    <!-- Item 5 (Top - Arc Over) -->
-                    <div class="snake-item" style="left: 90%; top: 50%;" data-experience-id="4">
+                    <!-- Item 3 (Top - Arc Over) -->
+                    <div class="snake-item" style="left: 50%; top: 50%;" data-experience-id="1">
+                        <div class="snake-node">03</div>
+                        <div class="snake-card top">
+                            <span class="snake-role">R&D Asst</span>
+                            <span class="snake-org">CTI (APU)</span>
+                            <span class="snake-date">Nov 2024–Present</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 (Bottom - Arc Under) -->
+                    <div class="snake-item" style="left: 70%; top: 50%;" data-experience-id="2">
+                        <div class="snake-node">04</div>
+                        <div class="snake-card bottom">
+                            <span class="snake-role">TA @ Python w/ AI</span>
+                            <span class="snake-org">Minhas Rupsi</span>
+                            <span class="snake-date">Jul 2025</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Top - Arc Over) - Newest -->
+                    <div class="snake-item" style="left: 90%; top: 50%;" data-experience-id="0">
                         <div class="snake-node">05</div>
                         <div class="snake-card top">
-                            <span class="snake-role">Physics TA</span>
-                            <span class="snake-org">Nixor College</span>
-                            <span class="snake-date">Oct 2021–Mar 2023</span>
+                            <span class="snake-role">SWE Intern</span>
+                            <span class="snake-org">JurisTech</span>
+                            <span class="snake-date">Aug 2025–Nov 2025</span>
                         </div>
                     </div>
                 </div>
@@ -481,9 +496,8 @@
                 </div>
 
                 <!-- Zone 3: Footer Band -->
-                <div class="sl-footer">
-                    <p>Tap items above to explore details in other sections.</p>
-                </div>
+                <!-- Zone 3: Footer Band -->
+                <p class="action-hint">Tap items above to explore details in other sections.</p>
             </div>
         </section>
 
@@ -541,6 +555,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Zone 3: Actions -->
+                <p class="action-hint">Click any card to view details.</p>
             </div>
         </section>
     </main>
@@ -627,7 +644,104 @@
         </div>
     </div>
 
-    <!-- EXPERIENCE TIMELINE OVERLAY -->
+    <!-- CONTACT OVERLAY -->
+    <div id="contact-overlay" class="overlay-container" aria-hidden="true">
+        <!-- Header -->
+        <div class="gallery-header">
+            <div class="gallery-branding">
+                <span class="gallery-icon">❖</span>
+                <h3>CONTACT CHANNEL</h3>
+            </div>
+            <button id="contact-close-btn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">CLOSE</span>
+            </button>
+        </div>
+
+        <div class="overlay-body">
+            <div class="content-wrapper">
+                <div class="details-split-row">
+                    <!-- Left Column: Image & Socials -->
+                    <div class="detail-col left" style="flex: 0 0 300px; align-items: center;">
+                        <div class="profile-image-container" style="margin-bottom: 30px;">
+                            <img src="https://mrmystery8.github.io/Me.png" alt="Ayaan Minhas"
+                                class="contact-profile-img">
+                            <div class="scan-line"></div>
+                        </div>
+
+                        <div class="contact-socials"
+                            style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <a href="assets/Resume.pdf" download="Ayaan_Minhas_Resume.pdf" class="card social-card"
+                                aria-label="Download Resume"
+                                style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; grid-column: span 2;">
+                                <i class="fas fa-file-download"
+                                    style="font-size: 1.5rem; color: var(--accent-color);"></i>
+                                <span
+                                    style="color: var(--text-color); font-family: var(--font-main); letter-spacing: 1px;">DOWNLOAD
+                                    RESUME</span>
+                            </a>
+                            <a href="mailto:ayaanminhas1@gmail.com" class="card social-card" aria-label="Send Email"
+                                style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px;">
+                                <i class="fas fa-envelope" style="font-size: 1.5rem; color: var(--accent-color);"></i>
+                                <span
+                                    style="color: var(--text-color); font-family: var(--font-main); letter-spacing: 1px;">EMAIL</span>
+                            </a>
+                            <a href="https://linkedin.com/in/ayaan-minhas" target="_blank" class="card social-card"
+                                aria-label="LinkedIn"
+                                style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px;">
+                                <i class="fab fa-linkedin" style="font-size: 1.5rem; color: var(--accent-color);"></i>
+                                <span
+                                    style="color: var(--text-color); font-family: var(--font-main); letter-spacing: 1px;">LINKEDIN</span>
+                            </a>
+                            <a href="https://github.com/mrmystery8" target="_blank" class="card social-card"
+                                aria-label="GitHub"
+                                style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px;">
+                                <i class="fab fa-github" style="font-size: 1.5rem; color: var(--accent-color);"></i>
+                                <span
+                                    style="color: var(--text-color); font-family: var(--font-main); letter-spacing: 1px;">GITHUB</span>
+                            </a>
+                            <a href="tel:+60106501072" class="card social-card" aria-label="Call Phone"
+                                style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px;">
+                                <i class="fas fa-phone" style="font-size: 1.5rem; color: var(--accent-color);"></i>
+                                <span
+                                    style="color: var(--text-color); font-family: var(--font-main); letter-spacing: 1px;">PHONE</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="detail-divider"></div>
+
+                    <!-- Right Column: Form -->
+                    <div class="detail-col right">
+                        <div class="project-header" style="margin-bottom: 20px;">
+                            <span id="overlay-project-type">Contact</span>
+                            <h2>Get in Touch</h2>
+                            <p style="color: rgba(255,255,255,0.7); margin-top: 10px;">Send a message directly to
+                                my inbox.</p>
+                        </div>
+
+                        <form action="https://formspree.io/f/myzepllj" method="POST" class="cyber-form">
+                            <div class="form-group">
+                                <input type="text" name="name" placeholder="Name" required />
+                                <span class="input-border"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" placeholder="Email" required />
+                                <span class="input-border"></span>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" rows="5" placeholder="Message" required></textarea>
+                                <span class="input-border"></span>
+                            </div>
+                            <button type="submit" class="primary-btn">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script type="module" src="js/main.js"></script>

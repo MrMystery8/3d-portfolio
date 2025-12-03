@@ -16,15 +16,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsBtn = document.getElementById('settings-btn');
     const settingsPanel = document.getElementById('settings-panel');
     const closeSettingsBtn = document.getElementById('close-settings');
+    const closeSettingsCrossBtn = document.getElementById('close-settings-cross');
 
-    if (settingsBtn && settingsPanel && closeSettingsBtn) {
+    if (settingsBtn && settingsPanel && (closeSettingsBtn || closeSettingsCrossBtn)) {
         settingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.toggle('hidden');
+            const isHidden = settingsPanel.classList.toggle('hidden');
+            if (!isHidden) {
+                document.body.classList.add('no-scroll');
+                document.body.classList.add('settings-open');
+                settingsPanel.setAttribute('aria-hidden', 'false');
+            } else {
+                document.body.classList.remove('no-scroll');
+                document.body.classList.remove('settings-open');
+                settingsPanel.setAttribute('aria-hidden', 'true');
+            }
         });
 
-        closeSettingsBtn.addEventListener('click', () => {
+        const closePanel = () => {
             settingsPanel.classList.add('hidden');
-        });
+            document.body.classList.remove('no-scroll');
+            document.body.classList.remove('settings-open');
+            settingsPanel.setAttribute('aria-hidden', 'true');
+        };
+
+        if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closePanel);
+        if (closeSettingsCrossBtn) closeSettingsCrossBtn.addEventListener('click', closePanel);
 
         // Sliders
         const inputs = {
@@ -255,7 +271,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         heroElements.forEach(el => {
             if (el) {
-                el.style.opacity = Math.max(1 - (t * 2), 0);
+                const opacity = Math.max(1 - (t * 2), 0);
+                el.style.opacity = opacity;
+
+                // Disable interactions when invisible
+                // Target the contact trigger specifically
+                const trigger = el.querySelector('#hero-contact-trigger');
+
+                if (opacity < 0.1) {
+                    el.style.pointerEvents = 'none';
+                    if (trigger) trigger.style.pointerEvents = 'none';
+                } else {
+                    // Reset to CSS defaults
+                    el.style.pointerEvents = '';
+                    if (trigger) trigger.style.pointerEvents = '';
+                }
             }
         });
 
@@ -751,6 +781,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 4. Contact Overlay Logic
+    const contactBtn = document.getElementById('hero-contact-trigger');
+    const contactOverlay = document.getElementById('contact-overlay');
+    const contactCloseBtn = document.getElementById('contact-close-btn');
+
+    if (contactBtn && contactOverlay) {
+        contactBtn.addEventListener('click', () => {
+            contactOverlay.style.visibility = 'visible';
+            contactOverlay.style.opacity = '1';
+            contactOverlay.setAttribute('aria-hidden', 'false'); // Required for content visibility
+            document.body.classList.add('no-scroll'); // Prevent background scrolling
+        });
+
+        contactCloseBtn.addEventListener('click', () => {
+            contactOverlay.style.opacity = '0';
+            contactOverlay.style.visibility = 'hidden';
+            contactOverlay.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('no-scroll');
+        });
+    }
+
     // --- PROJECT DATA & OVERLAY CONTROLLER ---
     const projectData = [
         {
@@ -874,7 +925,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 0,
             role: "Software Engineer Intern",
             org: "ORCA Team, JurisTech",
-            date: "Aug 2025 – Present",
+            date: "Aug 2025 – Nov 2025",
             location: "Kuala Lumpur, Malaysia",
             tags: ["Industry", "Fintech", "Oracle", "PHP"],
             did: [
