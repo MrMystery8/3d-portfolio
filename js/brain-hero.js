@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
-import { config } from './config.js';
+import { config, deviceInfo, miniBrainPresets } from './config.js';
 
 const clock = new THREE.Clock();
 let scene, camera, renderer, controls;
@@ -17,6 +17,11 @@ let loadingPlaceholder = null;
 // Current active section for mini-brain highlighting
 let currentActiveSection = null;
 
+// Mini-brain mode tracking for performance optimization
+let isInMiniMode = false;
+let miniModePreset = miniBrainPresets[deviceInfo.tier];
+let activeSignalCount = config.simulation.signalCount; // Can be reduced in mini mode
+
 // Simulation Data (Mutable, initialized from config)
 let simulationParams = { ...config.simulation };
 
@@ -27,6 +32,10 @@ let nodeParticles; // THREE.Points
 let connectionLines; // THREE.LineSegments
 let signalParticles; // THREE.Points
 
+// Performance: Raycast throttling (dynamic based on brain mode)
+let lastRaycastTime = 0;
+let currentRaycastThrottle = config.renderer.raycastThrottle;
+
 // Current viewport state (DOM coordinates)
 let currentViewport = {
     x: 0,
@@ -35,7 +44,6 @@ let currentViewport = {
     height: window.innerHeight
 };
 
-// Mapping from Mesh Names to Section IDs (for navigation on the shell)
 // Mapping from Mesh Names to Section IDs (for navigation on the shell)
 const brainSectionMap = config.brainMapping.sections;
 
@@ -54,14 +62,20 @@ export function initBrain() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(config.scene.cameraPosition.x, config.scene.cameraPosition.y, config.scene.cameraPosition.z);
 
-    // 3. Renderer
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    // 3. Renderer - Performance optimized based on device tier
+    renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: config.renderer.antialias,
+        powerPreference: 'high-performance'
+    });
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setScissorTest(true);
+    // Cap pixel ratio based on device performance tier
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, config.renderer.pixelRatioMax));
     renderer.setScissorTest(true);
     container.appendChild(renderer.domElement);
+
+    console.log(`[Brain] Renderer: antialias=${config.renderer.antialias}, pixelRatio=${renderer.getPixelRatio()}, tier=${deviceInfo.tier}`);
 
 
 
@@ -114,19 +128,36 @@ export function initBrain() {
         // Set initial rotation on the Pivot
         brainPivot.rotation.y = config.scene.initialRotationY;
 
-        // 6a. Setup Brain Shell (Glassy look)
+        // 6a. Setup Brain Shell - Material based on device performance
         brainGroup.traverse((child) => {
             if (child.isMesh) {
-                child.material = new THREE.MeshPhysicalMaterial({
-                    color: 0x00ffff,
-                    metalness: 0.1,
-                    roughness: 0.1,
-                    transmission: 0.6, // Glass-like
-                    transparent: true,
-                    opacity: 0.15,
-                    side: THREE.DoubleSide,
-                    depthWrite: false, // Allow seeing inside
-                });
+                // Use simpler material on low-end devices
+                if (config.renderer.usePhysicalMaterial) {
+                    // High-end: Full glass effect
+                    child.material = new THREE.MeshPhysicalMaterial({
+                        color: 0x00ffff,
+                        metalness: 0.1,
+                        roughness: 0.1,
+                        transmission: 0.6, // Glass-like (expensive)
+                        transparent: true,
+                        opacity: simulationParams.brainOpacity,
+                        side: THREE.DoubleSide,
+                        depthWrite: false,
+                    });
+                } else {
+                    // Low/Medium: Simplified material (no transmission)
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0x00ffff,
+                        metalness: 0.3,
+                        roughness: 0.4,
+                        transparent: true,
+                        opacity: simulationParams.brainOpacity + 0.05, // Slightly more visible
+                        side: THREE.DoubleSide,
+                        depthWrite: false,
+                        emissive: 0x003333,
+                        emissiveIntensity: 0.2
+                    });
+                }
                 child.renderOrder = 1; // Render after internal structure
             }
         });
@@ -689,54 +720,46 @@ export function updateBrainViewport(x, y, width, height) {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
+    // --- MINI BRAIN MODE DETECTION ---
+    // When viewport is less than 40% of screen width, we're in mini mode
+    const scaleFactor = Math.max(width / window.innerWidth, 0.65);
+    const wasInMiniMode = isInMiniMode;
+    isInMiniMode = width < window.innerWidth * 0.4;
+
+    // Performance: Adjust settings when entering/leaving mini mode
+    if (isInMiniMode !== wasInMiniMode) {
+        if (isInMiniMode) {
+            // ENTERING MINI MODE - reduce complexity (signals + raycast only)
+            activeSignalCount = miniModePreset.signalCount;
+            currentRaycastThrottle = miniModePreset.raycastThrottle;
+            console.log(`[Brain] Entering mini mode - signals: ${activeSignalCount}, raycast: ${currentRaycastThrottle}ms`);
+        } else {
+            // LEAVING MINI MODE - restore full complexity
+            activeSignalCount = config.simulation.signalCount;
+            currentRaycastThrottle = config.renderer.raycastThrottle;
+            console.log(`[Brain] Exiting mini mode - signals: ${activeSignalCount}, raycast: ${currentRaycastThrottle}ms`);
+        }
+    }
+
     // --- MINI BRAIN SCALING ---
-    // Calculate a scale factor based on viewport width relative to full screen width
-    // When full screen (hero), scale is 1.0
-    // When mini, width is small. We clamp it to a higher value to ensure it looks "decent sized" in the mini viewport.
-    const scaleFactor = Math.max(width / window.innerWidth, 0.65); // Don't shrink below 65% of original size
-
-    // Apply Brain Size Setting
-    // We apply the user setting consistently to avoid stutter.
-    // The base scale in initBrain is set to simulationParams.brainSize.
-    // Here we just need to ensure we are scaling relative to the viewport factor.
-
-    // Wait, if we set scale in initBrain, we shouldn't overwrite it blindly here unless we want to dynamic update.
-    // The logic here was: finalScale = baseScale * userScale.
-    // Let's simplify:
-    // 1. Base scale is simulationParams.brainSize.
-    // 2. We don't need to scale the object itself based on viewport width, because the camera/viewport handles the "shrinking" visual?
-    // NO. If we shrink the viewport, the object looks BIGGER because the window into the world is smaller.
-    // So we MUST scale the object down as the viewport shrinks to keep it "contained".
-
-    // Scale factor is 1.0 at full screen, and ~0.15 at mini.
-    // So we should multiply the User's Preferred Size by this Scale Factor.
-
     if (brainGroup) {
         const userSize = simulationParams.brainSize;
-        // We want the brain to be 'userSize' when scaleFactor is 1.0.
-        // And proportionally smaller when scaleFactor is small.
-
         const finalScale = userSize * scaleFactor;
         brainGroup.scale.set(finalScale, finalScale, finalScale);
     }
 
     if (nodeParticles) {
-        // Base size 0.12 * scaleFactor
-        // Use power to scale down more aggressively in mini mode to avoid clutter
+        // Use power to scale down more aggressively in mini mode
         nodeParticles.material.size = 0.12 * Math.pow(scaleFactor, 1.5);
     }
 
     if (signalParticles) {
-        // Base size 0.15 * userSetting * scaleFactor
         signalParticles.material.size = 0.15 * simulationParams.signalSize * Math.pow(scaleFactor, 1.5);
     }
 
     if (connectionLines) {
-        // Line width is not easily scalable in WebGL without custom shaders or Line2
-        // But we can adjust opacity to make it less intrusive when small if needed
-        // Scale opacity with size to reduce visual density
-        const baseOpacity = simulationParams.networkOpacity;
         // Fade out lines more in mini mode
+        const baseOpacity = simulationParams.networkOpacity;
         connectionLines.material.opacity = baseOpacity * Math.pow(scaleFactor, 2.0);
     }
 }
@@ -845,6 +868,28 @@ let hoveredObject = null;
 let isHoveringMiniBrain = false;
 
 function onMouseMove(event) {
+    // Performance: Throttle raycasting (dynamic based on mini mode)
+    const now = Date.now();
+    if (now - lastRaycastTime < currentRaycastThrottle) {
+        // Skip heavy raycasting, but still handle drag
+        if (isDragging && brainPivot && !document.body.classList.contains('brain-mode-mini')) {
+            const deltaMove = {
+                x: event.clientX - previousMousePosition.x,
+                y: event.clientY - previousMousePosition.y
+            };
+            const rotationSpeed = 0.005;
+            brainPivot.rotation.y += deltaMove.x * rotationSpeed;
+            userRotationX += deltaMove.y * rotationSpeed;
+            rotationVelocity = {
+                x: deltaMove.x * rotationSpeed,
+                y: deltaMove.y * rotationSpeed
+            };
+            previousMousePosition = { x: event.clientX, y: event.clientY };
+        }
+        return;
+    }
+    lastRaycastTime = now;
+
     if (document.body.classList.contains('brain-mode-mini')) {
         // Check if mouse is within viewport first (optimization)
         if (event.clientX >= currentViewport.x &&
@@ -891,6 +936,7 @@ function onMouseMove(event) {
         }
         return;
     }
+
 
     // Handle Drag Rotation
     if (isDragging && brainPivot) {
@@ -1139,15 +1185,16 @@ function animate() {
         brainPivot.rotation.x = userRotationX * (1 - transitionProgress) + targetX * transitionProgress;
     }
 
-    // 2. Update Signals
+    // 2. Update Signals (only animate activeSignalCount for performance in mini mode)
     if (signalParticles && nodes.length > 0) {
         const positions = signalParticles.geometry.attributes.position.array;
         let needsUpdate = false;
 
-        // If signal count changed, we might have fewer signals than array size or vice versa
-        // But we rebuild geometry on signal count change, so array size should match simulationParams.signalCount
+        // In mini mode, we animate fewer signals for performance
+        // activeSignalCount is reduced when entering mini mode
+        const signalsToAnimate = Math.min(activeSignalCount, signals.length);
 
-        for (let i = 0; i < simulationParams.signalCount; i++) {
+        for (let i = 0; i < signalsToAnimate; i++) {
             const sig = signals[i];
             if (!sig) continue;
 

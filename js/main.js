@@ -120,14 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Check for mobile or reduced motion
-    const isMobile = window.innerWidth < 768;
+    // Check for reduced motion preference only
+    // Mobile devices now use simplified 3D (handled via LOW performance tier in config)
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (!isMobile && !prefersReducedMotion) {
-        // Initialization moved to end of file
-    } else {
-        // Fallback...
+    if (prefersReducedMotion) {
+        // Only fallback to static image for users who prefer reduced motion
         const container = document.getElementById('brain-hero-container');
         container.innerHTML = '<img src="assets/brain_fallback.png" alt="3D Brain" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.5;">';
         container.style.display = 'flex';
@@ -135,7 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.justifyContent = 'center';
         container.classList.add('ready');
         container.classList.remove('loading');
+        document.body.classList.add('reduced-motion');
     }
+    // Note: Mobile devices now get simplified 3D via LOW performance tier (configured in config.js)
 
     // ============================================================================
     // BRAIN TRANSFORMATION SYSTEM
@@ -368,6 +368,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // On mobile, let native scroll handle it
+        if (config.device.isMobile) {
+            return;
+        }
+
         e.preventDefault(); // STOP native scroll only if we are in main view
 
         // INTENT DETECTION (Smart Momentum Filter)
@@ -439,15 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToElement(targetSection);
 
         // Lock scroll for a duration to prevent rapid skipping
-        // Native smooth scroll duration is variable, but ~800ms is usually safe
         setTimeout(() => {
             isAnimating = false;
-            // Reset delta history to ensure next scroll is fresh?
-            // Actually, we don't want to reset to 0 immediately, or a trailing momentum event might trigger?
-            // No, trailing momentum will be SMALLER than the high value we just had.
-            // So keeping lastAbsDelta high is good. It forces the user to really swipe again.
-
-            // After scroll completes, check which section is active and update mini-brain highlight
             detectInitialActiveSection();
         }, 800);
 
@@ -1562,8 +1560,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize Brain (Moved here to ensure all functions are defined)
-    // Initialize Brain (Moved here to ensure all functions are defined)
-    if (!isMobile && !prefersReducedMotion) {
+    // Only skip initialization if user prefers reduced motion (handled earlier with static fallback)
+    if (!prefersReducedMotion) {
         initBrain();
 
         // Immediate state check on load
