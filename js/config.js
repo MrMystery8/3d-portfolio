@@ -227,11 +227,13 @@ export const config = {
         position: {
             anchorX: 'right',
             anchorY: 'top',
-            offsetX: 30,
-            offsetY: -110
+            // Mobile: smaller offset to fit in viewport
+            offsetX: deviceInfo.isMobile ? 15 : 30,
+            offsetY: deviceInfo.isMobile ? -80 : -110
         },
-        minSize: deviceInfo.isMobile ? 180 : 250,
-        maxSize: deviceInfo.isMobile ? 280 : 400,
+        // Mobile: smaller sizes to not overwhelm the screen
+        minSize: deviceInfo.isMobile ? 120 : 250,
+        maxSize: deviceInfo.isMobile ? 180 : 400,
         targetProgressThreshold: 0.85,
     },
 

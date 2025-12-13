@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackground();
     initTextEffects();
 
+    // Mobile Detection - Add body class for CSS targeting
+    if (config.device.isMobile || config.device.isTablet) {
+        document.body.classList.add('mobile-view');
+    }
+
     // Set CSS variables from config
     document.documentElement.style.setProperty('--ping-duration', `${config.interaction.pingAnimationDuration}ms`);
     document.documentElement.style.setProperty('--menu-top', `${config.ui.menuGap}vh`);
@@ -174,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetProgress = 0;
 
     function updateTargetProgress() {
-        if (document.body.classList.contains('mobile-view')) return;
+        // Brain transformation works on all devices
 
         const scrollY = window.scrollY;
         const viewportHeight = window.innerHeight;
