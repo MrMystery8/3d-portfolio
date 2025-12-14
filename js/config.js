@@ -206,7 +206,12 @@ export const config = {
     // ============================================================================
     scene: {
         cameraPosition: { x: 0, y: 0, z: 8 },
-        brainPivotPosition: { x: 0.0, y: -1.7, z: 0 },
+        // Mobile: Brain positioned higher (more centered) 
+        brainPivotPosition: {
+            x: 0.0,
+            y: deviceInfo.isMobile ? -1.0 : -1.7, // Higher on mobile for better centering
+            z: 0
+        },
         initialRotationY: 0.4,
     },
 
@@ -227,11 +232,12 @@ export const config = {
         position: {
             anchorX: 'right',
             anchorY: 'top',
-            // Mobile: smaller offset to fit in viewport
-            offsetX: deviceInfo.isMobile ? 15 : 30,
-            offsetY: deviceInfo.isMobile ? -80 : -110
+            // Mobile: push off-screen so mini brain is not visible
+            // Desktop: normal positioning in top-right corner
+            offsetX: deviceInfo.isMobile ? 200 : 30,  // Push right off-screen on mobile
+            offsetY: deviceInfo.isMobile ? -300 : -110  // Push up off-screen on mobile
         },
-        // Mobile: smaller sizes to not overwhelm the screen
+        // Mobile: smaller sizes (even though it's off-screen)
         minSize: deviceInfo.isMobile ? 120 : 250,
         maxSize: deviceInfo.isMobile ? 180 : 400,
         targetProgressThreshold: 0.85,

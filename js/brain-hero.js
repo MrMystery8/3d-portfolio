@@ -181,6 +181,72 @@ export function initBrain() {
     window.addEventListener('mousedown', onMouseDown, false);
     window.addEventListener('mouseup', onMouseUp, false);
 
+    // Mobile Touch Event Listeners for brain rotation
+    if (config.device.isMobile) {
+        let touchStartPos = { x: 0, y: 0 };
+        let isTouchDragging = false;
+
+        container.addEventListener('touchstart', (e) => {
+            // Only enable drag rotation in hero mode (not mini mode)
+            if (document.body.classList.contains('brain-mode-mini')) return;
+            if (e.touches.length !== 1) return; // Single finger only
+
+            isTouchDragging = true;
+            touchStartPos = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+
+            // Add class to block scrolling
+            document.body.classList.add('brain-dragging');
+        }, { passive: false });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isTouchDragging || !brainPivot) return;
+            if (document.body.classList.contains('brain-mode-mini')) return;
+
+            // Prevent page scroll while dragging brain
+            e.preventDefault();
+
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+
+            const deltaMove = {
+                x: touchX - touchStartPos.x,
+                y: touchY - touchStartPos.y
+            };
+
+            // Rotate brain based on touch movement
+            const rotationSpeed = 0.005;
+            brainPivot.rotation.y += deltaMove.x * rotationSpeed;
+            userRotationX += deltaMove.y * rotationSpeed;
+
+            // Update velocity for inertia effect
+            rotationVelocity = {
+                x: deltaMove.x * rotationSpeed,
+                y: deltaMove.y * rotationSpeed
+            };
+
+            // Update start position for next frame
+            touchStartPos = { x: touchX, y: touchY };
+        }, { passive: false });
+
+        container.addEventListener('touchend', (e) => {
+            if (!isTouchDragging) return;
+
+            isTouchDragging = false;
+            document.body.classList.remove('brain-dragging');
+
+            // Check for tap (vs drag) - if minimal movement, treat as click
+            // This allows section navigation via brain tap on mobile
+        }, { passive: true });
+
+        container.addEventListener('touchcancel', () => {
+            isTouchDragging = false;
+            document.body.classList.remove('brain-dragging');
+        }, { passive: true });
+    }
+
     // Clear hover when mouse leaves the window/document
     document.addEventListener('mouseleave', () => {
         if (hoveredObject) {

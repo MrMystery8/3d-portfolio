@@ -587,6 +587,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize tooltip with hero content
     updateHelpTooltip('hero');
 
+    // Mobile: Toggle tooltip on click (since hover doesn't work well on touch)
+    // Use viewport width check instead of config.device.isMobile for better emulation support
+    const isMobileViewport = () => window.innerWidth <= 768;
+
+    if (helpBtn) {
+        helpBtn.addEventListener('click', (e) => {
+            if (!isMobileViewport()) return; // Only on mobile
+            e.stopPropagation();
+            helpBtn.classList.toggle('tooltip-visible');
+        });
+
+        // Close tooltip when clicking elsewhere (mobile only)
+        document.addEventListener('click', (e) => {
+            if (!isMobileViewport()) return;
+            if (!helpBtn.contains(e.target)) {
+                helpBtn.classList.remove('tooltip-visible');
+            }
+        });
+    }
+
+    // Mobile: Auto-scroll to hero when scrolling UP and hero becomes partially visible
+    if (isMobileViewport()) {
+        let lastScrollY = window.scrollY;
+        let heroAutoScrollTriggered = false;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const scrollDirection = currentScrollY < lastScrollY ? 'up' : 'down';
+            const viewportHeight = window.innerHeight;
+
+            // Only trigger when scrolling UP
+            if (scrollDirection === 'up') {
+                // Check if we're near the top (hero becoming visible - within 80% of viewport)
+                const heroThreshold = viewportHeight * 0.8; // 80% of viewport
+
+                if (currentScrollY < heroThreshold && currentScrollY > 0 && !heroAutoScrollTriggered) {
+                    heroAutoScrollTriggered = true;
+                    // Smooth scroll to top (hero/main nav)
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    // Reset trigger after animation completes
+                    setTimeout(() => {
+                        heroAutoScrollTriggered = false;
+                    }, 800);
+                }
+            }
+
+            // Reset trigger when scrolling down past threshold
+            if (currentScrollY > viewportHeight * 0.6) {
+                heroAutoScrollTriggered = false;
+            }
+
+            lastScrollY = currentScrollY;
+        }, { passive: true });
+    }
+
     // Connector Line Logic
     const overlay = document.getElementById('interaction-overlay');
     const connectorLine = document.getElementById('connector-line');
@@ -708,6 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     menuItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent immediate scroll
+            e.stopPropagation(); // Prevent event bubbling
 
             // Set ping color based on section
             const sectionId = item.dataset.section;
@@ -727,11 +784,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 connectorLine.classList.add('pulsing-line');
             }
 
+            // Mobile: Use shorter delay and direct scrollIntoView for reliability
+            const isMobile = window.innerWidth <= 768;
+            const scrollDelay = isMobile ? 100 : config.interaction.scrollDelay;
+
             // 3. Wait for animation then scroll
             setTimeout(() => {
                 const section = document.getElementById(sectionId);
                 if (section) {
-                    scrollToElement(section);
+                    // Mobile: Use scrollIntoView for more reliable scrolling
+                    if (isMobile) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        scrollToElement(section);
+                    }
                 }
 
                 // Cleanup animations and hide connector
@@ -741,8 +807,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     connectorLine.classList.remove('pulsing-line');
                     hideConnector(); // Ensure line disappears
                 }, 100); // Short delay after scroll start
-            }, config.interaction.scrollDelay);
+            }, scrollDelay);
         });
+
+        // Mobile: Add touch event listener as backup for unreliable clicks
+        item.addEventListener('touchend', (e) => {
+            // Only handle if this wasn't already processed by click
+            if (window.innerWidth > 768) return; // Desktop - let click handle it
+
+            // Small delay to let click fire first if it will
+            setTimeout(() => {
+                // If the item didn't scroll, this is a backup trigger
+                const sectionId = item.dataset.section;
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    // Check if section is not at top (scroll didn't happen)
+                    if (Math.abs(rect.top) > 100) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }, 200);
+        }, { passive: true });
 
         // Menu hover -> highlight brain region
         item.addEventListener('mouseenter', () => {
@@ -1108,6 +1194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const domFeatures = document.getElementById('overlay-features');
 
     let currentProjectId = 0;
+    let savedScrollPosition = 0; // Store scroll position before opening overlay
 
     // Duplicate openOverlay removed. Using the unified one below.
 
@@ -1115,6 +1202,12 @@ document.addEventListener('DOMContentLoaded', () => {
         projectOverlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('no-scroll');
         document.body.style.overflow = ''; // Reset inline style
+
+        // Restore scroll position (don't jump to top)
+        window.scrollTo({
+            top: savedScrollPosition,
+            behavior: 'instant' // Instant to avoid visual jump
+        });
 
         // Return focus to launcher button
         const launcherBtn = document.getElementById('open-gallery-btn');
@@ -1280,6 +1373,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openOverlay(id, type = 'project') {
+        // Save current scroll position before opening overlay
+        savedScrollPosition = window.scrollY;
+
         renderOverlayContent(id, type);
         renderSidebar(id, type);
 
